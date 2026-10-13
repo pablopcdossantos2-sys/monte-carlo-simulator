@@ -128,9 +128,13 @@ test("web interface includes the six-step guided lesson", () => {
   assert.match(html, /id="aula-guiada"/);
   assert.match(html, /id="lesson-start"/);
   assert.match(html, /id="lesson-analysis"/);
+  assert.match(html, /id="lesson-prediction"/);
+  assert.match(html, /id="language-selector"/);
   assert.match(app, /const LESSON_STEPS = \[/);
   assert.match(app, /id: "prop-firm"/);
   assert.ok(app.includes("lessonParamConfig(0.5)"));
+  assert.match(app, /prediction:/);
+  assert.match(app, /LESSON_TRANSLATIONS/);
 });
 
 test("offline build is self-contained and includes educational onboarding", () => {
@@ -139,7 +143,12 @@ test("offline build is self-contained and includes educational onboarding", () =
   assert.match(html, /id="aprender"/);
   assert.match(html, /id="aula-guiada"/);
   assert.match(html, /id="lesson-start"/);
+  assert.match(html, /id="lesson-prediction"/);
+  assert.match(html, /id="language-selector"/);
+  assert.match(html, /const LESSON_TRANSLATIONS/);
+  assert.match(html, /window\.I18N/);
   assert.match(html, /id="trades-panel"/);
   assert.doesNotMatch(html, /type="module"/);
   assert.doesNotMatch(html, /from\s+["']\.\/core\.js["']/);
+  assert.doesNotMatch(html, /src="i18n\.js"/);
 });
