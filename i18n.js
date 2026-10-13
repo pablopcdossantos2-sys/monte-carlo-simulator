@@ -219,6 +219,42 @@
     "Simulando...": { en: "Simulating...", es: "Simulando..." }
   });
 
+  Object.assign(phraseTranslations, {
+    "Aula intermediária": { en: "Intermediate lesson", es: "Clase intermedia" },
+    "LABORATÓRIO INTERMEDIÁRIO": { en: "INTERMEDIATE LAB", es: "LABORATORIO INTERMEDIO" },
+    "Expectância, Win Rate, Payoff e Risco de Ruína": { en: "Expectancy, Win Rate, Payoff and Risk of Ruin", es: "Expectativa, Win Rate, Payoff y Riesgo de Ruina" },
+    "Depois de entender drawdown e variabilidade, avance para a relação entre taxa de acerto, payoff, expectância e dimensionamento. São seis experimentos com desafios de previsão antes de cada simulação.": { en: "After understanding drawdown and variability, move on to the relationship between win rate, payoff, expectancy and position sizing. Six experiments include prediction challenges before each simulation.", es: "Después de comprender drawdown y variabilidad, avanza hacia la relación entre tasa de acierto, payoff, expectativa y dimensionamiento. Son seis experimentos con desafíos de predicción antes de cada simulación." },
+    "Win rate não é qualidade.": { en: "Win rate is not quality.", es: "Win rate no es calidad." },
+    "Uma estratégia pode acertar muito e ainda perder dinheiro se os ganhos forem pequenos diante das perdas.": { en: "A strategy can win often and still lose money if wins are small relative to losses.", es: "Una estrategia puede acertar mucho y aun perder dinero si las ganancias son pequeñas frente a las pérdidas." },
+    "Expectância combina probabilidade e payoff.": { en: "Expectancy combines probability and payoff.", es: "La expectativa combina probabilidad y payoff." },
+    "A aula usa a relação E[R] = p × ganho em R − (1 − p) × 1R para comparar estratégias.": { en: "The lesson uses E[R] = p × win in R − (1 − p) × 1R to compare strategies.", es: "La clase usa E[R] = p × ganancia en R − (1 − p) × 1R para comparar estrategias." },
+    "Edge não define o risco aceitável.": { en: "Edge does not define acceptable risk.", es: "El edge no define el riesgo aceptable." },
+    "Mesmo com expectância positiva, um sizing agressivo pode elevar drawdown e probabilidade de atingir um limite de perda.": { en: "Even with positive expectancy, aggressive sizing can raise drawdown and the probability of hitting a loss limit.", es: "Incluso con expectativa positiva, un sizing agresivo puede elevar drawdown y la probabilidad de alcanzar un límite de pérdida." },
+    "Pré-requisito recomendado:": { en: "Recommended prerequisite:", es: "Prerrequisito recomendado:" },
+    "conclua primeiro a Aula prática guiada sobre drawdown, risco por trade, Reshuffle e Bootstrap.": { en: "complete the guided practical lesson on drawdown, risk per trade, Reshuffle and Bootstrap first.", es: "completa primero la clase práctica guiada sobre drawdown, riesgo por trade, Reshuffle y Bootstrap." },
+    "Hipóteses do experimento": { en: "Experiment assumptions", es: "Hipótesis del experimento" },
+    "Simular experimento": { en: "Simulate experiment", es: "Simular experimento" },
+    "AULA INTERMEDIÁRIA CONCLUÍDA": { en: "INTERMEDIATE LESSON COMPLETED", es: "CLASE INTERMEDIA COMPLETADA" },
+    "Win rate, payoff e risco agora podem ser lidos em conjunto": { en: "Win rate, payoff and risk can now be read together", es: "Win rate, payoff y riesgo ahora pueden leerse en conjunto" },
+    "Win rate isolado engana": { en: "Win rate alone can mislead", es: "El win rate aislado engaña" },
+    "70% de acerto pode ter expectância negativa.": { en: "A 70% win rate can have negative expectancy.", es: "Un 70% de acierto puede tener expectativa negativa." },
+    "Payoff compensa baixa precisão": { en: "Payoff can compensate for low accuracy", es: "El payoff compensa baja precisión" },
+    "Uma estratégia de 35% pode ter edge positivo se os ganhos forem suficientemente maiores.": { en: "A 35% strategy can have a positive edge if wins are sufficiently larger.", es: "Una estrategia del 35% puede tener edge positivo si las ganancias son suficientemente mayores." },
+    "Mesma expectância ≠ mesma experiência": { en: "Same expectancy ≠ same experience", es: "Misma expectativa ≠ misma experiencia" },
+    "Estratégias com o mesmo E[R] podem produzir losing streaks e drawdowns diferentes.": { en: "Strategies with the same E[R] can produce different losing streaks and drawdowns.", es: "Estrategias con el mismo E[R] pueden producir rachas de pérdidas y drawdowns distintos." },
+    "Risco de ruína depende do sizing": { en: "Risk of ruin depends on sizing", es: "El riesgo de ruina depende del sizing" },
+    "O mesmo edge pode gerar probabilidades de violação muito diferentes.": { en: "The same edge can generate very different breach probabilities.", es: "El mismo edge puede generar probabilidades de incumplimiento muy diferentes." },
+    "Kelly não é sinônimo de conforto": { en: "Kelly does not mean comfort", es: "Kelly no es sinónimo de comodidad" },
+    "Uma fração teoricamente orientada a crescimento pode implicar drawdowns difíceis de tolerar.": { en: "A theoretically growth-oriented fraction can imply drawdowns that are hard to tolerate.", es: "Una fracción teóricamente orientada al crecimiento puede implicar drawdowns difíciles de tolerar." },
+    "Profissional combina métricas": { en: "Professionals combine metrics", es: "El profesional combina métricas" },
+    "Win rate, payoff, expectância, drawdown e sobrevivência precisam ser avaliados juntos.": { en: "Win rate, payoff, expectancy, drawdown and survival must be evaluated together.", es: "Win rate, payoff, expectativa, drawdown y supervivencia deben evaluarse juntos." },
+    "Refazer aula intermediária": { en: "Restart intermediate lesson", es: "Repetir clase intermedia" },
+    "Testar minhas próprias hipóteses": { en: "Test my own hypotheses", es: "Probar mis propias hipótesis" },
+    "Iniciar aula intermediária": { en: "Start intermediate lesson", es: "Iniciar clase intermedia" },
+    "Faça uma previsão em cada etapa antes de ver os resultados.": { en: "Make a prediction at each step before seeing the results.", es: "Haz una predicción en cada etapa antes de ver los resultados." },
+    "Progresso da aula intermediária": { en: "Intermediate lesson progress", es: "Progreso de la clase intermedia" }
+  });
+
   const messages = {
     "lesson.experiment": { pt: "Experimento {current} de {total}", en: "Experiment {current} of {total}", es: "Experimento {current} de {total}" },
     "lesson.progress": { pt: "{completed} de {total} experimentos", en: "{completed} of {total} experiments", es: "{completed} de {total} experimentos" },
