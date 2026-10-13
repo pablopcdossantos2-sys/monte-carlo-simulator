@@ -499,12 +499,16 @@ $("load-sample").addEventListener("click", () => {
 
 $("run-trades").addEventListener("click", () => {
   try {
-    setBusy($("run-trades"), true, "Simulando...");
+    setBusy($("run-trades"), true, trText("Simulando..."));
     const mode = document.querySelector('input[name="trade-source"]:checked').value;
     let config;
     if (mode === "historical") {
       const trades = parsePnlText($("trade-data").value);
-      if (trades.length < 2) throw new Error("Cole pelo menos dois resultados de trades válidos.");
+      if (trades.length < 2) throw new Error(langPick(
+        "Cole pelo menos dois resultados de trades válidos.",
+        "Paste at least two valid trade results.",
+        "Pega al menos dos resultados de trades válidos."
+      ));
       config = {
         mode: "historical",
         trades,
@@ -540,13 +544,13 @@ $("run-trades").addEventListener("click", () => {
   } catch (error) {
     alert(error?.message || String(error));
   } finally {
-    setBusy($("run-trades"), false, "Executar simulação");
+    setBusy($("run-trades"), false, trText("Executar simulação"));
   }
 });
 
 $("run-gbm").addEventListener("click", () => {
   try {
-    setBusy($("run-gbm"), true, "Simulando...");
+    setBusy($("run-gbm"), true, trText("Simulando..."));
     const config = {
       startPrice: numValue("gbm-start"),
       annualReturnPct: numValue("gbm-return"),
@@ -562,7 +566,7 @@ $("run-gbm").addEventListener("click", () => {
   } catch (error) {
     alert(error?.message || String(error));
   } finally {
-    setBusy($("run-gbm"), false, "Executar GBM");
+    setBusy($("run-gbm"), false, trText("Executar GBM"));
   }
 });
 
@@ -1066,7 +1070,11 @@ function finishLesson() {
 
 function numValue(id) {
   const value = Number($(id).value);
-  if (!Number.isFinite(value)) throw new Error(`Valor inválido em ${id}.`);
+  if (!Number.isFinite(value)) throw new Error(langPick(
+    `Valor inválido em ${id}.`,
+    `Invalid value in ${id}.`,
+    `Valor inválido en ${id}.`
+  ));
   return value;
 }
 
