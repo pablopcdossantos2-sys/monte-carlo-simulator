@@ -17,6 +17,7 @@
         <nav class="hero__nav" aria-label="Atalhos">
           <a href="#aprender">Entender primeiro</a>
           <a href="#aula-guiada">Aula prática guiada</a>
+          <a href="#aula-intermediaria">Aula intermediária</a>
           <a href="#simulador">Ir ao simulador</a>
           <a href="#glossario">Glossário</a>
           <a href="offline.html" download>Baixar versão offline</a>
@@ -199,6 +200,119 @@
       <div id="lesson-start-wrap" class="actions">
         <button id="lesson-start" class="primary">Iniciar aula prática</button>
         <span class="hint">Antes de cada simulação, faça uma previsão. O objetivo é comparar sua intuição com o comportamento estatístico observado.</span>
+      </div>
+    </section>
+
+    <section id="aula-intermediaria" class="guided-lesson panel intermediate-lesson">
+      <div class="guided-lesson__header">
+        <div>
+          <p class="eyebrow">LABORATÓRIO INTERMEDIÁRIO</p>
+          <h2>Expectância, Win Rate, Payoff e Risco de Ruína</h2>
+          <p class="section-explain">Depois de entender drawdown e variabilidade, avance para a relação entre taxa de acerto, payoff, expectância e dimensionamento. São seis experimentos com desafios de previsão antes de cada simulação.</p>
+        </div>
+        <span id="intermediate-status" class="lesson-status">Não iniciada</span>
+      </div>
+
+      <div class="lesson-progress-wrap" aria-label="Progresso da aula intermediária">
+        <div class="lesson-progress-meta">
+          <span id="intermediate-progress-label">0 de 6 experimentos</span>
+          <span id="intermediate-progress-percent">0%</span>
+        </div>
+        <div class="lesson-progress"><span id="intermediate-progress-bar"></span></div>
+      </div>
+
+      <div id="intermediate-intro" class="lesson-intro">
+        <div class="lesson-intro__grid">
+          <article>
+            <strong>Win rate não é qualidade.</strong>
+            <p>Uma estratégia pode acertar muito e ainda perder dinheiro se os ganhos forem pequenos diante das perdas.</p>
+          </article>
+          <article>
+            <strong>Expectância combina probabilidade e payoff.</strong>
+            <p>A aula usa a relação E[R] = p × ganho em R − (1 − p) × 1R para comparar estratégias.</p>
+          </article>
+          <article>
+            <strong>Edge não define o risco aceitável.</strong>
+            <p>Mesmo com expectância positiva, um sizing agressivo pode elevar drawdown e probabilidade de atingir um limite de perda.</p>
+          </article>
+        </div>
+        <div class="lesson-callout">
+          <strong>Pré-requisito recomendado:</strong> conclua primeiro a Aula prática guiada sobre drawdown, risco por trade, Reshuffle e Bootstrap.
+        </div>
+      </div>
+
+      <div id="intermediate-workspace" class="lesson-workspace hidden">
+        <div class="lesson-step-head">
+          <div>
+            <span id="intermediate-step-kicker" class="lesson-step-kicker">Experimento 1</span>
+            <h3 id="intermediate-step-title"></h3>
+          </div>
+          <span id="intermediate-step-tag" class="lesson-step-tag"></span>
+        </div>
+
+        <p id="intermediate-step-objective" class="lesson-objective"></p>
+
+        <div class="lesson-columns">
+          <article class="lesson-card">
+            <h4>Hipóteses do experimento</h4>
+            <div id="intermediate-controlled"></div>
+          </article>
+          <article class="lesson-card">
+            <h4>Pergunta para pensar</h4>
+            <p id="intermediate-question"></p>
+          </article>
+          <article class="lesson-card lesson-card--accent">
+            <h4>Observe principalmente</h4>
+            <div id="intermediate-watch"></div>
+          </article>
+        </div>
+
+        <div class="lesson-prediction">
+          <p class="eyebrow">DESAFIO DE PREVISÃO</p>
+          <h4>Escolha sua previsão antes de simular</h4>
+          <p id="intermediate-prediction-question"></p>
+          <div id="intermediate-prediction-options" class="lesson-prediction-options" role="group" aria-label="Sua previsão"></div>
+          <div id="intermediate-prediction-feedback" class="lesson-prediction-feedback hidden" aria-live="polite"></div>
+        </div>
+
+        <div id="intermediate-config-preview" class="lesson-config-preview"></div>
+
+        <div id="intermediate-analysis" class="lesson-analysis hidden">
+          <p class="eyebrow">O QUE O EXPERIMENTO MOSTROU</p>
+          <h3 id="intermediate-analysis-title"></h3>
+          <div id="intermediate-analysis-metrics" class="lesson-analysis-metrics"></div>
+          <div id="intermediate-analysis-text" class="lesson-analysis-text"></div>
+        </div>
+
+        <div class="lesson-actions">
+          <button id="intermediate-prev" class="secondary" disabled>← Experimento anterior</button>
+          <button id="intermediate-run" class="primary" disabled>Simular experimento</button>
+          <button id="intermediate-next" class="secondary" disabled>Próximo experimento →</button>
+          <button id="intermediate-exit" class="ghost-button">Encerrar aula</button>
+        </div>
+      </div>
+
+      <div id="intermediate-finish" class="lesson-finish hidden">
+        <p class="eyebrow">AULA INTERMEDIÁRIA CONCLUÍDA</p>
+        <h3>Win rate, payoff e risco agora podem ser lidos em conjunto</h3>
+        <div class="lesson-finish-grid">
+          <div><strong>Win rate isolado engana</strong><span>70% de acerto pode ter expectância negativa.</span></div>
+          <div><strong>Payoff compensa baixa precisão</strong><span>Uma estratégia de 35% pode ter edge positivo se os ganhos forem suficientemente maiores.</span></div>
+          <div><strong>Mesma expectância ≠ mesma experiência</strong><span>Estratégias com o mesmo E[R] podem produzir losing streaks e drawdowns diferentes.</span></div>
+          <div><strong>Risco de ruína depende do sizing</strong><span>O mesmo edge pode gerar probabilidades de violação muito diferentes.</span></div>
+          <div><strong>Kelly não é sinônimo de conforto</strong><span>Uma fração teoricamente orientada a crescimento pode implicar drawdowns difíceis de tolerar.</span></div>
+          <div><strong>Profissional combina métricas</strong><span>Win rate, payoff, expectância, drawdown e sobrevivência precisam ser avaliados juntos.</span></div>
+        </div>
+        <div id="intermediate-final-summary" class="lesson-final-summary"></div>
+        <div class="actions">
+          <button id="intermediate-restart" class="primary">Refazer aula intermediária</button>
+          <a href="#simulador" class="secondary button-link">Testar minhas próprias hipóteses</a>
+        </div>
+      </div>
+
+      <div id="intermediate-start-wrap" class="actions">
+        <button id="intermediate-start" class="primary">Iniciar aula intermediária</button>
+        <span class="hint">Faça uma previsão em cada etapa antes de ver os resultados.</span>
       </div>
     </section>
 
@@ -452,5 +566,6 @@
 
   <script src="i18n.js"></script>
   <script type="module" src="app.js"></script>
+  <script type="module" src="intermediate.js"></script>
 </body>
 </html>
