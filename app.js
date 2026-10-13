@@ -593,6 +593,19 @@ $("lesson-next").addEventListener("click", () => moveLesson(1));
 $("lesson-exit").addEventListener("click", resetLesson);
 $("lesson-restart").addEventListener("click", startLesson);
 
+document.addEventListener("i18n:change", () => {
+  updateTradeStatus();
+  if (lessonState.started && !$("lesson-workspace").classList.contains("hidden")) {
+    renderLessonStep();
+  } else if (lessonState.started && !$("lesson-finish").classList.contains("hidden")) {
+    finishLesson();
+  }
+  if (lastResult) {
+    if (lastResult.type === "gbm") renderGbmResults(lastResult, { scroll: false });
+    else renderTradeResults(lastResult, { scroll: false });
+  }
+});
+
 function activateMode(mode, hideResults = true) {
   document.querySelectorAll(".mode-btn").forEach((button) => {
     button.classList.toggle("active", button.dataset.mode === mode);
