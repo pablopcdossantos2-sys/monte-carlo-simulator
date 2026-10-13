@@ -1076,76 +1076,83 @@ function setBusy(button, busy, text) {
 function updateTradeStatus() {
   const trades = parsePnlText($("trade-data").value);
   if (!trades.length) {
-    $("trade-data-status").textContent = "Aceita um número por linha ou CSV delimitado por vírgula, ponto e vírgula ou tabulação.";
+    $("trade-data-status").textContent = tr("trade.empty");
     return;
   }
   const wins = trades.filter((x) => x > 0).length;
   const losses = trades.filter((x) => x < 0).length;
-  $("trade-data-status").textContent = `${trades.length} trades detectados · ${wins} ganhos · ${losses} perdas · média ${money(trades.reduce((a,b) => a+b,0)/trades.length)}`;
+  $("trade-data-status").textContent = tr("trade.detected", {
+    count: trades.length,
+    wins,
+    losses,
+    avg: money(trades.reduce((a,b) => a+b,0)/trades.length),
+  });
 }
 
 function renderTradeResults(result, options = {}) {
   const s = result.summary;
-  $("results-title").textContent = "Distribuição da estratégia";
-  $("run-meta").textContent = `${number(s.simulations, 0)} simulações · semente ${result.config.seed}`;
+  $("results-title").textContent = tr("results.strategy");
+  $("run-meta").textContent = tr("results.meta", { sims: number(s.simulations, 0), seed: result.config.seed });
   $("metric-cards").innerHTML = [
-    card("Prob. de lucro", pct(s.probabilityProfitPct), "terminou acima do capital inicial"),
-    card("Risco de violação", pct(s.probabilityBreachPct), "ruína, perda máx. ou perda diária"),
-    card("Meta antes da violação", pct(s.probabilityTargetBeforeBreachPct), "atingiu a meta primeiro"),
-    card("Saldo mediano", money(s.finalBalance.p50), `P5 ${money(s.finalBalance.p05)} · P95 ${money(s.finalBalance.p95)}`),
-    card("Drawdown mediano", pct(s.maxDrawdownPct.p50), `P95 ${pct(s.maxDrawdownPct.p95)}`),
-    card("Pior DD observado", pct(s.maxDrawdownPct.max), "máximo entre as simulações"),
-    card("Seq. perdas P95", number(s.losingStreak.p95, 0), `máximo ${number(s.losingStreak.max, 0)}`),
+    card(tr("results.profitProb"), pct(s.probabilityProfitPct), tr("results.profitProbSub")),
+    card(tr("results.breach"), pct(s.probabilityBreachPct), tr("results.breachSub")),
+    card(tr("results.targetBefore"), pct(s.probabilityTargetBeforeBreachPct), tr("results.targetBeforeSub")),
+    card(tr("results.medianBalance"), money(s.finalBalance.p50), `P5 ${money(s.finalBalance.p05)} · P95 ${money(s.finalBalance.p95)}`),
+    card(tr("results.medianDd"), pct(s.maxDrawdownPct.p50), `P95 ${pct(s.maxDrawdownPct.p95)}`),
+    card(tr("results.worstDd"), pct(s.maxDrawdownPct.max), tr("results.maxAmong")),
+    card(tr("results.lossStreak"), number(s.losingStreak.p95, 0), `${langPick("máximo", "maximum", "máximo")} ${number(s.losingStreak.max, 0)}`),
     result.config.mode === "historical"
-      ? card("Win rate da amostra", pct(s.inputWinRatePct), `PF ${Number.isFinite(s.inputProfitFactor) ? number(s.inputProfitFactor) : "∞"}`)
-      : card("Expectância", `${number(s.expectedRPerTrade, 3)}R`, `Kelly ${pct(s.kellyFraction * 100)}`),
+      ? card(tr("results.winRateSample"), pct(s.inputWinRatePct), `PF ${Number.isFinite(s.inputProfitFactor) ? number(s.inputProfitFactor) : "∞"}`)
+      : card(tr("results.expectancy"), `${number(s.expectedRPerTrade, 3)}R`, `Kelly ${pct(s.kellyFraction * 100)}`),
   ].join("");
 
   drawPaths($("paths-chart"), result.samplePaths.map((p) => p.equity), { baseline: result.config.startingCapital, yFormatter: compactCurrency });
-  $("hist-title").textContent = "Distribuição do saldo final";
+  $("hist-title").textContent = tr("results.finalBalanceDistribution");
   drawHistogram($("hist-chart"), result.distributions.finalBalances, compactCurrency);
 
   $("percentile-table-wrap").innerHTML = percentileTable(
-    "Saldo final",
+    tr("results.finalBalance"),
     ["P5", "P25", "P50", "P75", "P95"],
     [s.finalBalance.p05, s.finalBalance.p25, s.finalBalance.p50, s.finalBalance.p75, s.finalBalance.p95].map(money)
   );
 
-  const ddMessage = s.maxDrawdownPct.p95 > 30
-    ? "O P95 de drawdown é elevado; o dimensionamento merece atenção."
-    : "O P95 de drawdown está abaixo de 30% nesta configuração, mas ainda depende das hipóteses da amostra.";
-  $("interpretation-text").textContent =
-    `Em 95% das simulações, o drawdown máximo ficou em até aproximadamente ${pct(s.maxDrawdownPct.p95)}. ` +
-    `O saldo final P5 foi ${money(s.finalBalance.p05)} e o P95 foi ${money(s.finalBalance.p95)}. ${ddMessage} ` +
-    "Use esses percentis como faixa de stress test, não como promessa de resultado.";
+  const ddMessage = s.maxDrawdownPct.p95 > 30 ? tr("results.ddHigh") : tr("results.ddLow");
+  $("interpretation-text").textContent = tr("results.interpretTrade", {
+    dd: pct(s.maxDrawdownPct.p95),
+    p5: money(s.finalBalance.p05),
+    p95: money(s.finalBalance.p95),
+    ddMessage,
+  });
 
   revealResults(options.scroll !== false);
 }
 
-function renderGbmResults(result) {
+function renderGbmResults(result, options = {}) {
   const s = result.summary;
-  $("results-title").textContent = "Distribuição de preço — GBM";
-  $("run-meta").textContent = `${number(s.simulations, 0)} simulações · semente ${result.config.seed}`;
+  $("results-title").textContent = tr("results.gbm");
+  $("run-meta").textContent = tr("results.meta", { sims: number(s.simulations, 0), seed: result.config.seed });
   $("metric-cards").innerHTML = [
-    card("Preço mediano", number(s.finalPrice.p50), `retorno ${pct(s.medianReturnPct)}`),
-    card("Preço P5", number(s.finalPrice.p05), `retorno ${pct(s.p05ReturnPct)}`),
-    card("Preço P95", number(s.finalPrice.p95), `retorno ${pct(s.p95ReturnPct)}`),
-    card("Prob. acima do início", pct(s.probabilityAboveStartPct), "preço final > preço inicial"),
-    card("VaR empírico 95%", number(s.empiricalVaR95Amount), pct(s.empiricalVaR95Pct)),
+    card(tr("results.priceMedian"), number(s.finalPrice.p50), `${langPick("retorno", "return", "retorno")} ${pct(s.medianReturnPct)}`),
+    card(tr("results.priceP5"), number(s.finalPrice.p05), `${langPick("retorno", "return", "retorno")} ${pct(s.p05ReturnPct)}`),
+    card(tr("results.priceP95"), number(s.finalPrice.p95), `${langPick("retorno", "return", "retorno")} ${pct(s.p95ReturnPct)}`),
+    card(tr("results.aboveStart"), pct(s.probabilityAboveStartPct), tr("results.aboveStartSub")),
+    card(tr("results.var"), number(s.empiricalVaR95Amount), pct(s.empiricalVaR95Pct)),
   ].join("");
 
   drawPaths($("paths-chart"), result.samplePaths, { baseline: result.config.startPrice, yFormatter: compactNumber });
-  $("hist-title").textContent = "Distribuição do preço final";
+  $("hist-title").textContent = tr("results.finalPriceDistribution");
   drawHistogram($("hist-chart"), result.distributions.finalPrices, compactNumber);
   $("percentile-table-wrap").innerHTML = percentileTable(
-    "Preço final",
+    tr("results.finalPrice"),
     ["P5", "P25", "P50", "P75", "P95"],
     [s.finalPrice.p05, s.finalPrice.p25, s.finalPrice.p50, s.finalPrice.p75, s.finalPrice.p95].map((x) => number(x))
   );
-  $("interpretation-text").textContent =
-    `Sob as hipóteses de retorno e volatilidade fornecidas, metade das simulações terminou abaixo de ${number(s.finalPrice.p50)} e metade acima. ` +
-    `A faixa P5–P95 foi de ${number(s.finalPrice.p05)} a ${number(s.finalPrice.p95)}. GBM não modela saltos, volatilidade variável nem regimes.`;
-  revealResults();
+  $("interpretation-text").textContent = tr("results.gbmInterpret", {
+    median: number(s.finalPrice.p50),
+    p5: number(s.finalPrice.p05),
+    p95: number(s.finalPrice.p95),
+  });
+  revealResults(options.scroll !== false);
 }
 
 function revealResults(shouldScroll = true) {
@@ -1158,7 +1165,7 @@ function card(label, value, sub = "") {
 }
 
 function percentileTable(label, headers, values) {
-  return `<table><thead><tr><th>${escapeHtml(label)}</th>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody><tr><td>Distribuição</td>${values.map((v) => `<td>${escapeHtml(v)}</td>`).join("")}</tr></tbody></table>`;
+  return `<table><thead><tr><th>${escapeHtml(label)}</th>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody><tr><td>${escapeHtml(tr("results.distribution"))}</td>${values.map((v) => `<td>${escapeHtml(v)}</td>`).join("")}</tr></tbody></table>`;
 }
 
 function escapeHtml(value) {
@@ -1166,11 +1173,11 @@ function escapeHtml(value) {
 }
 
 function compactCurrency(value) {
-  return new Intl.NumberFormat("pt-BR", { notation: "compact", style: "currency", currency: "BRL", maximumFractionDigits: 1 }).format(value);
+  return new Intl.NumberFormat(currentLocale(), { notation: "compact", style: "currency", currency: "BRL", maximumFractionDigits: 1 }).format(value);
 }
 
 function compactNumber(value) {
-  return new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+  return new Intl.NumberFormat(currentLocale(), { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
 function prepCanvas(canvas) {
