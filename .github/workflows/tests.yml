@@ -18,5 +18,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Rebuild offline bundle
+        run: npm run build:offline
+      - name: Verify offline bundle is synchronized
+        run: git diff --exit-code -- offline.html
       - name: Run tests
         run: npm test
