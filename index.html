@@ -16,6 +16,7 @@
         <p class="hero__copy">Uma ferramenta educacional para aprender a pensar em <strong>probabilidades</strong>, e não em uma única curva de resultados. Teste milhares de futuros possíveis para uma estratégia, estime drawdowns, sequências de perdas, risco de violação e probabilidade de atingir metas.</p>
         <nav class="hero__nav" aria-label="Atalhos">
           <a href="#aprender">Entender primeiro</a>
+          <a href="#aula-guiada">Aula prática guiada</a>
           <a href="#simulador">Ir ao simulador</a>
           <a href="#glossario">Glossário</a>
           <a href="offline.html" download>Baixar versão offline</a>
@@ -75,6 +76,111 @@
         <div><strong>Prop firms</strong><span>Estimar a chance de atingir uma meta antes de tocar perda diária, perda máxima ou trailing drawdown.</span></div>
         <div><strong>Disciplina</strong><span>Preparar-se antecipadamente para variabilidade estatística reduz a tentação de aumentar risco depois de perdas ou abandonar uma estratégia por uma sequência normal.</span></div>
         <div><strong>Validação</strong><span>Usar Monte Carlo como uma camada de stress test — nunca como substituto de backtest, out-of-sample, custos e análise de regime.</span></div>
+      </div>
+    </section>
+
+    <section id="aula-guiada" class="guided-lesson panel">
+      <div class="guided-lesson__header">
+        <div>
+          <p class="eyebrow">LABORATÓRIO INTERATIVO</p>
+          <h2>Aula prática guiada</h2>
+          <p class="section-explain">Aprenda Monte Carlo executando seis experimentos. A aula configura o simulador por você, mantém as demais variáveis controladas e explica o que mudou depois de cada execução.</p>
+        </div>
+        <span id="lesson-status" class="lesson-status">Não iniciada</span>
+      </div>
+
+      <div id="lesson-progress-wrap" class="lesson-progress-wrap" aria-label="Progresso da aula">
+        <div class="lesson-progress-meta">
+          <span id="lesson-progress-label">0 de 6 experimentos</span>
+          <span id="lesson-progress-percent">0%</span>
+        </div>
+        <div class="lesson-progress"><span id="lesson-progress-bar"></span></div>
+      </div>
+
+      <div id="lesson-intro" class="lesson-intro">
+        <div class="lesson-intro__grid">
+          <article>
+            <strong>Você não precisa preparar dados.</strong>
+            <p>A aula usa uma estratégia hipotética e um histórico demonstrativo já incluídos no projeto.</p>
+          </article>
+          <article>
+            <strong>Uma variável por vez.</strong>
+            <p>Nos primeiros experimentos, somente o risco por trade muda. Assim você consegue enxergar causa e efeito.</p>
+          </article>
+          <article>
+            <strong>Os números serão reais.</strong>
+            <p>As explicações da aula usam os percentis e probabilidades calculados pelo próprio motor Monte Carlo.</p>
+          </article>
+        </div>
+        <div class="lesson-callout">
+          <strong>Objetivo da aula:</strong> perceber a diferença entre possuir uma vantagem estatística e escolher um nível de risco que permita sobreviver à variabilidade dessa vantagem.
+        </div>
+      </div>
+
+      <div id="lesson-workspace" class="lesson-workspace hidden">
+        <div class="lesson-step-head">
+          <div>
+            <span id="lesson-step-kicker" class="lesson-step-kicker">Experimento 1</span>
+            <h3 id="lesson-step-title">Ponto de partida</h3>
+          </div>
+          <span id="lesson-step-tag" class="lesson-step-tag">Risco</span>
+        </div>
+
+        <p id="lesson-step-objective" class="lesson-objective"></p>
+
+        <div class="lesson-columns">
+          <article class="lesson-card">
+            <h4>O que será controlado</h4>
+            <div id="lesson-controlled"></div>
+          </article>
+          <article class="lesson-card">
+            <h4>Pergunta para pensar</h4>
+            <p id="lesson-question"></p>
+          </article>
+          <article class="lesson-card lesson-card--accent">
+            <h4>Observe principalmente</h4>
+            <div id="lesson-watch"></div>
+          </article>
+        </div>
+
+        <div id="lesson-config-preview" class="lesson-config-preview"></div>
+
+        <div id="lesson-analysis" class="lesson-analysis hidden">
+          <p class="eyebrow">O QUE O EXPERIMENTO MOSTROU</p>
+          <h3 id="lesson-analysis-title"></h3>
+          <div id="lesson-analysis-metrics" class="lesson-analysis-metrics"></div>
+          <div id="lesson-analysis-text" class="lesson-analysis-text"></div>
+        </div>
+
+        <div class="lesson-actions">
+          <button id="lesson-prev" class="secondary" disabled>← Experimento anterior</button>
+          <button id="lesson-run" class="primary">Aplicar configuração e simular</button>
+          <button id="lesson-next" class="secondary" disabled>Próximo experimento →</button>
+          <button id="lesson-exit" class="ghost-button">Encerrar aula</button>
+        </div>
+      </div>
+
+      <div id="lesson-finish" class="lesson-finish hidden">
+        <p class="eyebrow">AULA CONCLUÍDA</p>
+        <h3>Agora você já sabe o que procurar em um Monte Carlo</h3>
+        <div class="lesson-finish-grid">
+          <div><strong>Edge ≠ trajetória suave</strong><span>Uma estratégia lucrativa pode atravessar sequências difíceis.</span></div>
+          <div><strong>Risco amplifica tudo</strong><span>Aumentar o risco não altera o edge; altera a dispersão, o drawdown e a chance de sobreviver.</span></div>
+          <div><strong>Ordem importa</strong><span>Os mesmos trades em outra sequência podem exigir muito mais tolerância ao drawdown.</span></div>
+          <div><strong>Reamostragem importa</strong><span>Bootstrap mostra incerteza não só da ordem, mas também da composição dos resultados futuros.</span></div>
+          <div><strong>Limites mudam a pergunta</strong><span>Em uma prop firm, não basta ganhar: é preciso atingir a meta antes de violar regras.</span></div>
+          <div><strong>Monte Carlo é stress test</strong><span>Ele não prevê o futuro e não substitui validação da estratégia.</span></div>
+        </div>
+        <div id="lesson-final-summary" class="lesson-final-summary"></div>
+        <div class="actions">
+          <button id="lesson-restart" class="primary">Refazer a aula</button>
+          <a href="#simulador" class="secondary button-link">Explorar o simulador livremente</a>
+        </div>
+      </div>
+
+      <div id="lesson-start-wrap" class="actions">
+        <button id="lesson-start" class="primary">Iniciar aula prática</button>
+        <span class="hint">Leva apenas alguns experimentos; não há respostas certas ou erradas.</span>
       </div>
     </section>
 
