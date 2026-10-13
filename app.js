@@ -227,6 +227,241 @@ const LESSON_STEPS = [
   },
 ];
 
+const LESSON_TRANSLATIONS = {
+  en: {
+    "risk-low": {
+      tag: "Risk per trade",
+      title: "Create a low-risk baseline",
+      objective: "We will start with a hypothetical positive-expectancy strategy and risk only 0.5% of capital per trade. This result will be our baseline for the next experiments.",
+      question: "If the strategy has a positive edge, does that mean the equity curve will always be smooth?",
+      controlled: ["Win rate: 45%", "Reward:Risk: 1.5 : 1", "200 trades per path", "2,500 simulations with the same seed", "No prop-firm limits in this first experiment"],
+      watch: ["P95 drawdown", "P5 final balance", "P95 losing streak"],
+      preview: ["Risk: 0.5%", "Win rate: 45%", "R:R: 1.5", "Sizing: fixed", "Rules: disabled"],
+      prediction: {
+        prompt: "Will a positive-expectancy strategy always have a smooth equity curve?",
+        choices: [
+          { id: "yes", label: "Yes, the edge eliminates difficult sequences" },
+          { id: "no", label: "No, drawdowns and losing streaks can still occur" }
+        ],
+        explanation: "Positive expectancy describes an average, not the order of results. Even a strategy with an edge can go through unfavorable sequences."
+      }
+    },
+    "risk-medium": {
+      tag: "Risk per trade",
+      title: "Double risk without changing the strategy",
+      objective: "Now we will change only risk per trade from 0.5% to 1%. Win rate, payoff, number of trades and the pseudo-random sequence remain the same.",
+      question: "Should doubling risk improve the strategy's statistical edge — or only amplify its results?",
+      controlled: ["Same 45% win rate", "Same 1.5 : 1 Reward:Risk", "Same 200 trades and same seed", "Only risk changes: 0.5% → 1%"],
+      watch: ["Change in P95 drawdown", "Change in P5 balance", "Probability of finishing profitable"],
+      preview: ["Risk: 1%", "Edge: unchanged", "Sizing: fixed", "Rules: disabled"],
+      prediction: {
+        prompt: "When risk rises from 0.5% to 1%, what do you expect for P95 drawdown?",
+        choices: [
+          { id: "down", label: "It should decrease" },
+          { id: "same", label: "It should remain almost the same" },
+          { id: "up", label: "It should increase" }
+        ],
+        explanation: "The edge did not change, but each loss weighs more on capital. Financial and percentage drawdown should increase."
+      }
+    },
+    "risk-high": {
+      tag: "Position sizing",
+      title: "See what happens with 2% risk",
+      objective: "The third experiment keeps exactly the same strategy and raises risk to 2% per trade. This is the lesson's main position-sizing experiment.",
+      question: "Can a strategy remain positive-expectancy and still become uncomfortable or impractical because of position size?",
+      controlled: ["Same edge as previous experiments", "Same seed and same number of trades", "Risk is now four times the initial baseline"],
+      watch: ["P95 drawdown", "Worst observed drawdown", "Spread between good and bad scenarios"],
+      preview: ["Risk: 2%", "Edge: unchanged", "Sizing: fixed", "Rules: disabled"],
+      prediction: {
+        prompt: "When risk rises to 2%, does the strategy's mathematical edge change?",
+        choices: [
+          { id: "higher", label: "Yes, the edge increases" },
+          { id: "same", label: "No, the edge remains the same" },
+          { id: "lower", label: "Yes, the edge decreases" }
+        ],
+        explanation: "Position sizing changes the magnitude of wins and losses, but it does not change the win rate or payoff that define the edge."
+      }
+    },
+    reshuffle: {
+      tag: "Trade order",
+      title: "The same trades in different orders",
+      objective: "Now we leave the parametric model and use a demonstration trade history. Reshuffle keeps exactly the same trades in every path and changes only their order.",
+      question: "If every path contains exactly the same wins and losses, does final balance change? What about drawdown?",
+      controlled: ["Same 64 trades in every path", "No trade is created or removed", "Only the order is shuffled", "No prop-firm rules"],
+      watch: ["Final-balance dispersion", "P50 and P95 drawdown", "Losing streaks"],
+      preview: ["Method: Reshuffle", "Trades: 64", "Sample: fixed", "Order: random"],
+      prediction: {
+        prompt: "When reshuffling the same trades, what should vary the most across simulations?",
+        choices: [
+          { id: "final", label: "The final balance" },
+          { id: "path", label: "Drawdown and the equity path" },
+          { id: "nothing", label: "Almost nothing" }
+        ],
+        explanation: "Because the same trades are present in every path, final balance tends to be the same; what changes strongly is their order and therefore drawdown."
+      }
+    },
+    bootstrap: {
+      tag: "Sample uncertainty",
+      title: "Now allow the composition to change too",
+      objective: "In Bootstrap, each trade is sampled with replacement. A historical result may appear several times or not at all. Both order and sample composition now vary.",
+      question: "Why should the final-balance distribution be wider than under Reshuffle?",
+      controlled: ["Same demonstration history", "Same number of trades per path", "Method changes from Reshuffle to Bootstrap"],
+      watch: ["P5–P95 balance range", "P95 drawdown", "Difference versus Reshuffle"],
+      preview: ["Method: Bootstrap", "Trades: 64", "With replacement", "Composition: variable"],
+      prediction: {
+        prompt: "Compared with Reshuffle, Bootstrap should produce a final-balance distribution that is...",
+        choices: [
+          { id: "narrower", label: "Narrower" },
+          { id: "same", label: "Almost the same" },
+          { id: "wider", label: "Wider" }
+        ],
+        explanation: "With Bootstrap, sample composition changes in addition to order because trades are drawn with replacement."
+      }
+    },
+    "prop-firm": {
+      tag: "Survival",
+      title: "Target versus prop-firm limits",
+      objective: "In the last experiment we apply an 8% target, 10% maximum loss and 4% daily loss. The lesson automatically compares 0.5%, 1% and 2% risk with the same edge.",
+      question: "Does more risk always increase the chance of passing an evaluation — or can it raise the chance of breaching rules before reaching the target?",
+      controlled: ["Win rate: 45% and Reward:Risk: 1.5 : 1", "Target: +8%", "Maximum loss: 10%", "Daily loss: 4%", "Same seed for all three risk levels"],
+      watch: ["Target before breach", "Breach risk", "Trade-off between speed and survival"],
+      preview: ["Comparison: 0.5% × 1% × 2%", "Target: 8%", "Max loss: 10%", "Daily loss: 4%"],
+      prediction: {
+        prompt: "With prop-firm limits, does increasing risk always improve the chance of reaching the target before a breach?",
+        choices: [
+          { id: "yes", label: "Yes, more risk always helps" },
+          { id: "no", label: "No, there is a trade-off between speed and survival" }
+        ],
+        explanation: "More risk can accelerate progress toward the target, but it also moves the account closer to loss limits. The relationship is not monotonic or universal."
+      }
+    }
+  },
+  es: {
+    "risk-low": {
+      tag: "Riesgo por trade",
+      title: "Crea una referencia con riesgo bajo",
+      objective: "Comenzaremos con una estrategia hipotética de expectativa positiva y arriesgaremos solo el 0,5% del capital por operación. Este resultado será nuestra referencia para los siguientes experimentos.",
+      question: "Si la estrategia tiene edge positivo, ¿significa que la curva de capital siempre será tranquila?",
+      controlled: ["Tasa de acierto: 45%", "Reward:Risk: 1,5 : 1", "200 trades por trayectoria", "2.500 simulaciones con la misma semilla", "Sin límites de prop firm en este primer experimento"],
+      watch: ["P95 del drawdown", "P5 del saldo final", "Racha de pérdidas P95"],
+      preview: ["Riesgo: 0,5%", "Win rate: 45%", "R:R: 1,5", "Sizing: fijo", "Reglas: desactivadas"],
+      prediction: {
+        prompt: "¿Una estrategia con expectativa positiva tendrá siempre una curva de capital suave?",
+        choices: [
+          { id: "yes", label: "Sí, el edge elimina las secuencias difíciles" },
+          { id: "no", label: "No, todavía pueden existir drawdowns y rachas de pérdidas" }
+        ],
+        explanation: "La expectativa positiva describe una media, no el orden de los resultados. Incluso una estrategia con edge puede atravesar secuencias desfavorables."
+      }
+    },
+    "risk-medium": {
+      tag: "Riesgo por trade",
+      title: "Duplica el riesgo sin cambiar la estrategia",
+      objective: "Ahora cambiaremos solo el riesgo por trade del 0,5% al 1%. La tasa de acierto, payoff, cantidad de trades y secuencia pseudoaleatoria permanecerán iguales.",
+      question: "¿Duplicar el riesgo debería mejorar la ventaja estadística de la estrategia o solo ampliar sus resultados?",
+      controlled: ["Mismo win rate del 45%", "Mismo Reward:Risk de 1,5 : 1", "Mismos 200 trades y misma semilla", "Solo cambia el riesgo: 0,5% → 1%"],
+      watch: ["Cambio en P95 del drawdown", "Cambio en P5 del saldo", "Probabilidad de terminar con beneficio"],
+      preview: ["Riesgo: 1%", "Edge: sin cambios", "Sizing: fijo", "Reglas: desactivadas"],
+      prediction: {
+        prompt: "Al pasar del 0,5% al 1% de riesgo, ¿qué esperas para el P95 del drawdown?",
+        choices: [
+          { id: "down", label: "Debe disminuir" },
+          { id: "same", label: "Debe quedar casi igual" },
+          { id: "up", label: "Debe aumentar" }
+        ],
+        explanation: "El edge no cambió, pero cada pérdida pesa más sobre el capital. Se espera que aumente el drawdown financiero y porcentual."
+      }
+    },
+    "risk-high": {
+      tag: "Dimensionamiento",
+      title: "Observa qué ocurre con 2% de riesgo",
+      objective: "El tercer experimento mantiene exactamente la misma estrategia y eleva el riesgo al 2% por trade. Es la prueba principal de position sizing de la clase.",
+      question: "¿Puede una estrategia mantener expectativa positiva y aun así volverse incómoda o impracticable por el tamaño de la posición?",
+      controlled: ["Mismo edge de los experimentos anteriores", "Misma semilla y mismo número de trades", "El riesgo ahora es cuatro veces la referencia inicial"],
+      watch: ["P95 del drawdown", "Peor drawdown observado", "Amplitud entre escenarios buenos y malos"],
+      preview: ["Riesgo: 2%", "Edge: sin cambios", "Sizing: fijo", "Reglas: desactivadas"],
+      prediction: {
+        prompt: "Al elevar el riesgo al 2%, ¿cambia el edge matemático de la estrategia?",
+        choices: [
+          { id: "higher", label: "Sí, el edge aumenta" },
+          { id: "same", label: "No, el edge permanece igual" },
+          { id: "lower", label: "Sí, el edge disminuye" }
+        ],
+        explanation: "El position sizing cambia la magnitud de ganancias y pérdidas, pero no la tasa de acierto ni el payoff que definen el edge."
+      }
+    },
+    reshuffle: {
+      tag: "Orden de trades",
+      title: "Los mismos trades en órdenes diferentes",
+      objective: "Ahora dejamos el modelo paramétrico y usamos un historial demostrativo. Reshuffle mantiene exactamente los mismos trades en cada trayectoria y solo cambia su orden.",
+      question: "Si todas las trayectorias contienen exactamente las mismas ganancias y pérdidas, ¿cambia el saldo final? ¿Y el drawdown?",
+      controlled: ["Los mismos 64 trades en todas las trayectorias", "No se crea ni elimina ningún trade", "Solo se baraja el orden", "Sin reglas de prop firm"],
+      watch: ["Dispersión del saldo final", "P50 y P95 del drawdown", "Rachas de pérdidas"],
+      preview: ["Método: Reshuffle", "Trades: 64", "Muestra: fija", "Orden: aleatorio"],
+      prediction: {
+        prompt: "Al reordenar los mismos trades, ¿qué debería variar más entre simulaciones?",
+        choices: [
+          { id: "final", label: "El saldo final" },
+          { id: "path", label: "El drawdown y la trayectoria de equity" },
+          { id: "nothing", label: "Prácticamente nada" }
+        ],
+        explanation: "Como los mismos trades están presentes en todas las trayectorias, el saldo final tiende a ser igual; lo que cambia fuertemente es el orden y, por tanto, el drawdown."
+      }
+    },
+    bootstrap: {
+      tag: "Incertidumbre de muestra",
+      title: "Ahora permite que también cambie la composición",
+      objective: "En Bootstrap, cada trade se sortea con reposición. Un resultado histórico puede aparecer varias veces o no aparecer. Ahora varían tanto el orden como la composición de la muestra.",
+      question: "¿Por qué la distribución del saldo final debería ser más amplia que en Reshuffle?",
+      controlled: ["Mismo historial demostrativo", "Mismo número de trades por trayectoria", "El método cambia de Reshuffle a Bootstrap"],
+      watch: ["Rango P5–P95 del saldo", "P95 del drawdown", "Diferencia frente a Reshuffle"],
+      preview: ["Método: Bootstrap", "Trades: 64", "Con reposición", "Composición: variable"],
+      prediction: {
+        prompt: "Comparado con Reshuffle, Bootstrap debería producir una distribución de saldo final...",
+        choices: [
+          { id: "narrower", label: "Más estrecha" },
+          { id: "same", label: "Prácticamente igual" },
+          { id: "wider", label: "Más amplia" }
+        ],
+        explanation: "En Bootstrap, además del orden, cambia la composición de la muestra porque los trades se sortean con reposición."
+      }
+    },
+    "prop-firm": {
+      tag: "Supervivencia",
+      title: "Meta frente a límites de una prop firm",
+      objective: "En el último experimento aplicamos una meta del 8%, pérdida máxima del 10% y pérdida diaria del 4%. La clase compara automáticamente riesgos del 0,5%, 1% y 2% con el mismo edge.",
+      question: "¿Más riesgo siempre aumenta la probabilidad de aprobar una evaluación o puede elevar la probabilidad de violar reglas antes de llegar a la meta?",
+      controlled: ["Win rate: 45% y Reward:Risk: 1,5 : 1", "Meta: +8%", "Pérdida máxima: 10%", "Pérdida diaria: 4%", "Misma semilla para los tres niveles de riesgo"],
+      watch: ["Meta antes del incumplimiento", "Riesgo de incumplimiento", "Trade-off entre velocidad y supervivencia"],
+      preview: ["Comparación: 0,5% × 1% × 2%", "Meta: 8%", "Max loss: 10%", "Daily loss: 4%"],
+      prediction: {
+        prompt: "Con límites de prop firm, ¿aumentar el riesgo siempre mejora la probabilidad de alcanzar la meta antes de incumplir?",
+        choices: [
+          { id: "yes", label: "Sí, más riesgo siempre ayuda" },
+          { id: "no", label: "No, existe un trade-off entre velocidad y supervivencia" }
+        ],
+        explanation: "Más riesgo puede acelerar el avance hacia la meta, pero también acerca la cuenta a los límites de pérdida. La relación no es monótona ni universal."
+      }
+    }
+  }
+};
+
+function localizedStep(step) {
+  const lang = currentLocale();
+  if (lang === "pt-BR") return step;
+  const translated = LESSON_TRANSLATIONS[lang]?.[step.id];
+  if (!translated) return step;
+  return {
+    ...step,
+    ...translated,
+    prediction: {
+      ...step.prediction,
+      ...translated.prediction,
+      choices: translated.prediction?.choices || step.prediction.choices,
+    },
+  };
+}
+
 const lessonState = {
   started: false,
   index: 0,
