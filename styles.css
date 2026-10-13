@@ -71,3 +71,37 @@ footer{max-width:1180px;margin:auto;padding:0 20px 42px;color:var(--muted);font-
   .cols-3,.cols-4,.metrics{grid-template-columns:1fr}
   .mode-switch{display:flex}.mode-btn{flex:1}
 }
+.hero__nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.hero__nav a{border:1px solid var(--line);background:rgba(17,23,34,.72);padding:8px 11px;border-radius:10px;text-decoration:none;font-size:.84rem;font-weight:750}
+.hero__nav a:hover{border-color:var(--accent2)}
+.learning-hero__title{max-width:900px}
+.learning-hero__title>p:last-child,.section-explain{color:var(--muted);max-width:900px}
+.concept-grid,.professional-grid,.glossary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px}
+.concept-card,.glossary-grid article{background:#0c121b;border:1px solid var(--line);border-radius:16px;padding:17px}
+.concept-card p,.glossary-grid p{color:var(--muted);margin-bottom:0}
+.concept-number{display:inline-flex;width:32px;height:32px;align-items:center;justify-content:center;border-radius:10px;background:rgba(110,231,183,.1);color:var(--accent);font-size:.78rem;font-weight:850;margin-bottom:12px}
+.lesson-callout{margin-top:18px;padding:15px 17px;border-left:3px solid var(--accent);background:rgba(110,231,183,.06);border-radius:0 12px 12px 0;color:#dfe9e6}
+.lesson-callout.small{font-size:.9rem}
+.learning-steps{margin-top:24px}
+.learning-steps ol{margin:10px 0 0;padding-left:22px}
+.learning-steps li{padding:6px 0;color:var(--muted)}
+.learning-steps strong{color:var(--text)}
+.professional-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.professional-grid>div,.mode-explainer>div{display:flex;flex-direction:column;gap:5px;background:#0c121b;border:1px solid var(--line);border-radius:14px;padding:15px}
+.professional-grid span,.mode-explainer span{color:var(--muted);font-size:.9rem}
+.mode-explainer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:15px}
+.learn-box{margin:16px 0 20px;border:1px solid var(--line);border-radius:15px;background:rgba(11,16,24,.55);padding:0 15px 14px}
+.learn-box summary{cursor:pointer;padding:14px 0;font-weight:800;color:var(--accent2)}
+.learn-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.learn-grid p{margin:0;border-top:1px solid var(--line);padding-top:11px;display:flex;flex-direction:column;gap:4px}
+.learn-grid span{font-size:.84rem;color:var(--muted)}
+.glossary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.glossary-grid article strong{color:var(--accent)}
+.glossary-grid article p{font-size:.88rem}
+@media(max-width:850px){
+  .concept-grid,.glossary-grid,.learn-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .professional-grid,.mode-explainer{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .concept-grid,.glossary-grid,.learn-grid{grid-template-columns:1fr}
+}
