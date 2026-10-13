@@ -48,29 +48,6 @@ html = html.replace(
   '<a href="https://github.com/pablopcdossantos2-sys/monte-carlo-simulator">Ver projeto no GitHub</a>'
 );
 
-html = html.replace(
-`    <section class="panel compact access-panel">
-      <p class="eyebrow">ONDE USAR</p>
-      <h2>Web ou computador local</h2>
-      <div class="mode-explainer">
-        <div><strong>GitHub Pages</strong><span>Abra no navegador e use normalmente. Todo o cálculo continua sendo feito no seu dispositivo.</span></div>
-        <div><strong>Versão offline</strong><span>Baixe <code>offline.html</code> e abra com dois cliques. Não exige terminal, Python, Node.js ou instalação.</span></div>
-      </div>
-      <div class="actions">
-        <a class="secondary button-link" href="offline.html" download>Baixar offline.html</a>
-        <a class="secondary button-link" href="docs/USO-LOCAL.md">Ver tutorial de uso local</a>
-        <a class="secondary button-link" href="docs/GUIA-DIDATICO.md">Abrir guia didático</a>
-      </div>
-    </section>`,
-`    <section class="panel compact access-panel">
-      <p class="eyebrow">VOCÊ ESTÁ NA VERSÃO OFFLINE</p>
-      <h2>Pronta para uso local</h2>
-      <p>Este arquivo é autossuficiente: a interface, os gráficos e o motor estatístico estão incorporados nele. Você pode guardá-lo em qualquer pasta e abri-lo novamente com dois cliques.</p>
-      <div class="actions">
-        <a class="secondary button-link" href="https://github.com/pablopcdossantos2-sys/monte-carlo-simulator">Ver projeto e documentação no GitHub</a>
-      </div>
-    </section>`
-);
 
 fs.writeFileSync("offline.html", html);
 console.log("offline.html atualizado.");
