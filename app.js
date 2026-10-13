@@ -1,8 +1,12 @@
 import { parsePnlText, runGbmMonteCarlo, runTradeMonteCarlo } from "./core.js";
 
 const $ = (id) => document.getElementById(id);
-const money = (value) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 }).format(value);
-const number = (value, digits = 2) => new Intl.NumberFormat("pt-BR", { maximumFractionDigits: digits }).format(value);
+const currentLocale = () => window.I18N?.getLanguage?.() || "pt-BR";
+const tr = (key, vars = {}) => window.I18N?.t?.(key, vars) || key;
+const trText = (value) => window.I18N?.text?.(value) || value;
+const langPick = (pt, en, es) => currentLocale() === "en" ? en : currentLocale() === "es" ? es : pt;
+const money = (value) => new Intl.NumberFormat(currentLocale(), { style: "currency", currency: "BRL", maximumFractionDigits: 2 }).format(value);
+const number = (value, digits = 2) => new Intl.NumberFormat(currentLocale(), { maximumFractionDigits: digits }).format(value);
 const pct = (value, digits = 1) => `${number(value, digits)}%`;
 let lastResult = null;
 
@@ -43,6 +47,15 @@ const LESSON_STEPS = [
     title: "Crie uma referência com risco baixo",
     objective: "Vamos começar com uma estratégia hipotética de expectância positiva e arriscar apenas 0,5% do capital por operação. Este resultado será nossa referência para os próximos experimentos.",
     question: "Se o edge da estratégia é positivo, isso significa que a curva de capital será sempre tranquila?",
+    prediction: {
+      prompt: "Uma estratégia com expectância positiva terá uma curva de capital sempre suave?",
+      choices: [
+        { id: "yes", label: "Sim, o edge elimina sequências difíceis" },
+        { id: "no", label: "Não, ainda podem existir drawdowns e losing streaks" },
+      ],
+      correct: "no",
+      explanation: "Expectância positiva descreve uma média, não a ordem dos resultados. Mesmo uma estratégia com edge pode atravessar sequências desfavoráveis.",
+    },
     controlled: [
       "Taxa de acerto: 45%",
       "Reward:Risk: 1,5 : 1",
@@ -61,6 +74,16 @@ const LESSON_STEPS = [
     title: "Dobre o risco sem mudar a estratégia",
     objective: "Agora mudaremos somente o risco por trade de 0,5% para 1%. A taxa de acerto, o payoff, a quantidade de trades e a sequência pseudoaleatória permanecerão iguais.",
     question: "Dobrar o risco deveria melhorar a vantagem estatística da estratégia — ou apenas ampliar seus resultados?",
+    prediction: {
+      prompt: "Ao passar de 0,5% para 1% de risco, o que você espera para o P95 do drawdown?",
+      choices: [
+        { id: "down", label: "Deve diminuir" },
+        { id: "same", label: "Deve ficar praticamente igual" },
+        { id: "up", label: "Deve aumentar" },
+      ],
+      correct: "up",
+      explanation: "O edge não mudou, mas cada perda pesa mais sobre o capital. O esperado é que o drawdown financeiro e percentual aumente.",
+    },
     controlled: [
       "Mesmo win rate de 45%",
       "Mesmo Reward:Risk de 1,5 : 1",
@@ -78,6 +101,16 @@ const LESSON_STEPS = [
     title: "Veja o que acontece com 2% de risco",
     objective: "O terceiro experimento mantém exatamente a mesma estratégia e eleva o risco para 2% por trade. Este é o teste mais importante da aula sobre position sizing.",
     question: "Uma estratégia pode continuar tendo expectância positiva e, mesmo assim, ficar desconfortável ou impraticável por causa do tamanho da posição?",
+    prediction: {
+      prompt: "Ao elevar o risco para 2%, o edge matemático da estratégia muda?",
+      choices: [
+        { id: "higher", label: "Sim, o edge aumenta" },
+        { id: "same", label: "Não, o edge permanece o mesmo" },
+        { id: "lower", label: "Sim, o edge diminui" },
+      ],
+      correct: "same",
+      explanation: "Position sizing muda a magnitude dos ganhos e perdas, mas não altera a taxa de acerto nem o payoff usados para definir o edge.",
+    },
     controlled: [
       "Mesmo edge dos experimentos anteriores",
       "Mesma semente e mesmo número de trades",
@@ -94,6 +127,16 @@ const LESSON_STEPS = [
     title: "Os mesmos trades, em ordens diferentes",
     objective: "Agora abandonamos a hipótese paramétrica e usamos um histórico demonstrativo. O método Reshuffle mantém exatamente os mesmos trades em cada caminho e altera apenas sua ordem.",
     question: "Se todos os caminhos contêm exatamente os mesmos ganhos e perdas, o saldo final muda? E o drawdown?",
+    prediction: {
+      prompt: "No Reshuffle dos mesmos trades, o que deve variar mais entre as simulações?",
+      choices: [
+        { id: "final", label: "O saldo final" },
+        { id: "path", label: "O drawdown e o caminho da equity" },
+        { id: "nothing", label: "Praticamente nada" },
+      ],
+      correct: "path",
+      explanation: "Como os mesmos trades estão presentes em todos os caminhos, o saldo final tende a ser igual; o que muda fortemente é a ordem e, portanto, o drawdown.",
+    },
     controlled: [
       "Mesmos 64 trades em todos os caminhos",
       "Nenhum trade é criado ou removido",
@@ -123,6 +166,16 @@ const LESSON_STEPS = [
     title: "Agora permita que a composição também mude",
     objective: "No Bootstrap, cada trade é sorteado com reposição. Um resultado histórico pode aparecer várias vezes ou não aparecer. Agora variam tanto a ordem quanto a composição da amostra.",
     question: "Por que a distribuição do saldo final deve ficar mais larga do que no Reshuffle?",
+    prediction: {
+      prompt: "Comparado ao Reshuffle, o Bootstrap deve produzir uma distribuição de saldo final...",
+      choices: [
+        { id: "narrower", label: "Mais estreita" },
+        { id: "same", label: "Praticamente igual" },
+        { id: "wider", label: "Mais ampla" },
+      ],
+      correct: "wider",
+      explanation: "No Bootstrap, além da ordem, a composição da amostra muda porque os trades são sorteados com reposição.",
+    },
     controlled: [
       "Mesmo histórico demonstrativo",
       "Mesmo número de trades por caminho",
@@ -151,6 +204,15 @@ const LESSON_STEPS = [
     title: "Meta versus limites de uma prop firm",
     objective: "No último experimento, aplicamos uma meta de 8%, perda máxima de 10% e perda diária de 4%. A aula compara automaticamente riscos de 0,5%, 1% e 2% com o mesmo edge.",
     question: "Mais risco sempre aumenta a chance de passar uma avaliação — ou pode elevar a chance de violar regras antes de chegar à meta?",
+    prediction: {
+      prompt: "Com limites de prop firm, aumentar o risco sempre melhora a chance de atingir a meta antes da violação?",
+      choices: [
+        { id: "yes", label: "Sim, mais risco sempre ajuda" },
+        { id: "no", label: "Não, existe um trade-off entre velocidade e sobrevivência" },
+      ],
+      correct: "no",
+      explanation: "Mais risco pode acelerar a meta, mas também aproxima a conta dos limites de perda. A relação não é monotônica nem universal.",
+    },
     controlled: [
       "Win rate: 45% e Reward:Risk: 1,5 : 1",
       "Meta: +8%",
@@ -169,6 +231,7 @@ const lessonState = {
   started: false,
   index: 0,
   results: {},
+  predictions: {},
 };
 
 document.querySelectorAll(".mode-btn").forEach((button) => {
