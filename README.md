@@ -25,7 +25,7 @@ O principal aprendizado é:
 
 Para uma introdução passo a passo, veja [docs/GUIA-DIDATICO.md](docs/GUIA-DIDATICO.md).
 
-A própria interface também possui uma **Aula prática guiada** com seis experimentos interativos. Ela altera uma variável de cada vez, executa o motor Monte Carlo e explica automaticamente os resultados calculados. O roteiro pedagógico está em [docs/AULA-PRATICA-GUIADA.md](docs/AULA-PRATICA-GUIADA.md).
+A própria interface também possui uma **Aula prática guiada** com seis experimentos interativos. Antes de cada simulação, o aluno responde a um **desafio de previsão**; depois o motor confronta essa previsão com o comportamento observado e explica o resultado. O roteiro pedagógico está em [docs/AULA-PRATICA-GUIADA.md](docs/AULA-PRATICA-GUIADA.md).
 
 ## Objetivos
 
@@ -64,6 +64,7 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
 - RNG com semente para resultados reproduzíveis.
 - Exportação de resumo em JSON.
 - Interface responsiva, adequada para GitHub Pages.
+- Interface trilíngue em **Português (Brasil), English e Español**, com troca de idioma em tempo real e preferência salva no navegador.
 - Aula prática guiada com seis experimentos:
   - referência com risco de 0,5%;
   - comparação com 1% e 2%;
@@ -113,6 +114,7 @@ Há também um CSV de exemplo em examples/trades.csv.
 - docs/GUIA-DIDATICO.md — introdução para traders que nunca usaram Monte Carlo.
 - docs/AULA-PRATICA-GUIADA.md — roteiro dos seis experimentos e orientação para instrutores.
 - docs/USO-LOCAL.md — instruções locais para usuários sem familiaridade com terminal.
+- docs/GITHUB-PAGES.md — tutorial para colocar a ferramenta no ar.
 - .github/workflows/tests.yml — CI.
 - package.json — comandos de teste.
 
@@ -140,7 +142,15 @@ Consulte docs/METHODOLOGY.md para a matriz completa de referências.
 
 ## Publicação no GitHub Pages
 
-Em Settings → Pages, selecione “Deploy from a branch”, escolha main e / (root). Como a aplicação é estática, não há build obrigatório.
+O repositório já inclui `.github/workflows/pages.yml`.
+
+Faça apenas a ativação inicial em **Settings → Pages → Source → GitHub Actions**. Depois disso, pushes para `main` publicam automaticamente a versão mais recente.
+
+URL esperada:
+
+    https://pablopcdossantos2-sys.github.io/monte-carlo-simulator/
+
+Tutorial completo: [docs/GITHUB-PAGES.md](docs/GITHUB-PAGES.md).
 
 ## Aviso
 
