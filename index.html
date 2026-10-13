@@ -13,13 +13,79 @@
       <div>
         <p class="eyebrow">MONTE CARLO · TRADING · RISCO</p>
         <h1>Simulador de Monte Carlo</h1>
-        <p class="hero__copy">Teste milhares de futuros possíveis para a sua estratégia, estime drawdowns, risco de violação e probabilidade de atingir metas antes de arriscar capital real.</p>
+        <p class="hero__copy">Uma ferramenta educacional para aprender a pensar em <strong>probabilidades</strong>, e não em uma única curva de resultados. Teste milhares de futuros possíveis para uma estratégia, estime drawdowns, sequências de perdas, risco de violação e probabilidade de atingir metas.</p>
+        <nav class="hero__nav" aria-label="Atalhos">
+          <a href="#aprender">Entender primeiro</a>
+          <a href="#simulador">Ir ao simulador</a>
+          <a href="#glossario">Glossário</a>
+        </nav>
       </div>
       <div class="hero__badge">100% no navegador<br><span>seus dados não são enviados</span></div>
     </div>
   </header>
 
   <main class="shell">
+    <section id="aprender" class="learning-hero panel">
+      <div class="learning-hero__title">
+        <p class="eyebrow">ANTES DE SIMULAR</p>
+        <h2>Por que Monte Carlo importa para um trader?</h2>
+        <p>Um backtest mostra <strong>uma sequência histórica</strong>. O problema é que duas estratégias com a mesma média de ganhos podem produzir experiências muito diferentes quando a ordem dos ganhos e perdas muda. Monte Carlo cria muitas sequências plausíveis para revelar essa incerteza.</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <span class="concept-number">01</span>
+          <h3>O backtest é só um caminho</h3>
+          <p>A curva que aconteceu no passado não é a única curva compatível com aquela taxa de acerto, payoff e distribuição de trades.</p>
+        </article>
+        <article class="concept-card">
+          <span class="concept-number">02</span>
+          <h3>O risco está na sequência</h3>
+          <p>Uma sequência desfavorável pode produzir um drawdown grande mesmo quando a estratégia tem expectância positiva.</p>
+        </article>
+        <article class="concept-card">
+          <span class="concept-number">03</span>
+          <h3>Profissional pensa em sobrevivência</h3>
+          <p>O objetivo não é descobrir “quanto vou ganhar”, mas avaliar quanto risco a estratégia pode exigir antes que sua vantagem estatística tenha tempo de aparecer.</p>
+        </article>
+      </div>
+
+      <div class="lesson-callout">
+        <strong>Ideia central:</strong> Monte Carlo não prevê o próximo trade. Ele ajuda a responder perguntas como “Que drawdown preciso estar preparado para suportar?”, “Qual sequência de perdas é plausível?” e “Meu risco por operação é compatível com os limites da conta?”.
+      </div>
+
+      <div class="learning-steps">
+        <h3>Primeiro contato: use nesta ordem</h3>
+        <ol>
+          <li><strong>Carregue o exemplo didático.</strong> Veja como a ferramenta funciona sem precisar ter um histórico próprio.</li>
+          <li><strong>Observe o P50 e o P95 de drawdown.</strong> A mediana mostra um cenário típico; o P95 é um cenário de stress muito mais exigente.</li>
+          <li><strong>Mude apenas o risco por trade.</strong> Compare 0,5%, 1% e 2% e veja como o risco muda sem alterar o “edge”.</li>
+          <li><strong>Só depois use seus próprios trades.</strong> O histórico precisa representar a estratégia que você realmente executa.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="panel compact professional-use">
+      <p class="eyebrow">USO PROFISSIONAL</p>
+      <h2>O que um trader pode aprender com a ferramenta</h2>
+      <div class="professional-grid">
+        <div><strong>Dimensionamento</strong><span>Descobrir se o risco por trade transforma uma estratégia razoável em uma trajetória difícil de sobreviver.</span></div>
+        <div><strong>Expectativas realistas</strong><span>Entender que períodos ruins e sequências de perdas podem ser normais, sem concluir cedo demais que o método “parou de funcionar”.</span></div>
+        <div><strong>Planejamento de drawdown</strong><span>Comparar o capital disponível e os limites da conta com drawdowns plausíveis, não apenas com o pior drawdown já observado.</span></div>
+        <div><strong>Prop firms</strong><span>Estimar a chance de atingir uma meta antes de tocar perda diária, perda máxima ou trailing drawdown.</span></div>
+        <div><strong>Disciplina</strong><span>Preparar-se antecipadamente para variabilidade estatística reduz a tentação de aumentar risco depois de perdas ou abandonar uma estratégia por uma sequência normal.</span></div>
+        <div><strong>Validação</strong><span>Usar Monte Carlo como uma camada de stress test — nunca como substituto de backtest, out-of-sample, custos e análise de regime.</span></div>
+      </div>
+    </section>
+
+    <section id="simulador" class="mode-intro panel compact">
+      <p class="eyebrow">ESCOLHA O EXPERIMENTO</p>
+      <h2>Dois simuladores, duas perguntas diferentes</h2>
+      <div class="mode-explainer">
+        <div><strong>Estratégia / Trades</strong><span>Use para estudar a robustez de uma estratégia, equity, drawdown, risco de ruína e regras de conta.</span></div>
+        <div><strong>Preço / GBM</strong><span>Use para aprender como retorno e volatilidade geram diferentes trajetórias possíveis de preço. É didático, não um modelo de previsão.</span></div>
+      </div>
+    </section>
+
     <section class="mode-switch" aria-label="Modo do simulador">
       <button class="mode-btn active" data-mode="trades">Estratégia / Trades</button>
       <button class="mode-btn" data-mode="gbm">Preço / GBM</button>
@@ -31,8 +97,22 @@
           <p class="eyebrow">ROBUSTEZ DA ESTRATÉGIA</p>
           <h2>Monte Carlo de operações</h2>
         </div>
-        <button id="load-sample" class="secondary">Carregar exemplo</button>
+        <button id="load-sample" class="secondary">Carregar exemplo didático</button>
       </div>
+
+      <p class="section-explain">Neste modo, você pode começar por uma hipótese simples de estratégia ou usar resultados reais de operações passadas. Para aprender, comece por <strong>Parâmetros</strong>; para analisar uma estratégia existente, prefira <strong>Histórico de trades</strong>.</p>
+
+      <details class="learn-box">
+        <summary>O que significam estes campos?</summary>
+        <div class="learn-grid">
+          <p><strong>Capital inicial</strong><span>É o ponto de partida da equity. Ele serve de referência para risco, metas e limites.</span></p>
+          <p><strong>Taxa de acerto</strong><span>Percentual de trades vencedores. Sozinha, ela não diz se uma estratégia é boa.</span></p>
+          <p><strong>Reward : Risk</strong><span>Quanto se ganha, em média, para cada unidade arriscada. Ex.: 1,5 significa ganhar 1,5R quando acerta e perder 1R quando erra.</span></p>
+          <p><strong>Risco por trade</strong><span>Percentual do capital exposto em cada operação. Pequenas mudanças aqui podem alterar muito o drawdown.</span></p>
+          <p><strong>Position sizing</strong><span>No composto, o tamanho acompanha a equity; no fixo, o risco monetário parte sempre do capital inicial.</span></p>
+          <p><strong>Custo por trade</strong><span>Corretagem, taxas e outros custos. Ignorar custos costuma superestimar o desempenho.</span></p>
+        </div>
+      </details>
 
       <div class="source-switch">
         <label><input type="radio" name="trade-source" value="parameters" checked> Parâmetros</label>
@@ -110,6 +190,7 @@
 
       <details class="rules">
         <summary>Regras de risco / Prop Firm</summary>
+        <p class="section-explain">Use esta seção quando quiser descobrir não apenas se a estratégia ganha dinheiro, mas se ela consegue <strong>sobreviver às regras da conta</strong> até chegar à meta.</p>
         <div class="grid cols-4">
           <label>Meta de lucro (%)
             <input id="target-pct" type="number" min="0" step="0.1" value="8">
@@ -174,7 +255,10 @@
       <div class="actions">
         <button id="run-gbm" class="primary">Executar GBM</button>
       </div>
-      <p class="hint warning">GBM é um modelo didático: assume retorno lognormal com volatilidade constante e não captura saltos, caudas pesadas ou mudanças de regime.</p>
+      <div class="lesson-callout small">
+        <strong>Como pensar neste módulo:</strong> ele mostra por que dois ativos com o mesmo retorno esperado podem terminar em lugares muito diferentes quando a volatilidade muda.
+      </div>
+      <p class="hint warning">GBM é um modelo didático: assume retorno lognormal com volatilidade constante e não captura saltos, caudas pesadas ou mudanças de regime. Não use este módulo como previsão de preço.</p>
     </section>
 
     <section id="results" class="results hidden">
@@ -200,6 +284,19 @@
       <div class="interpretation">
         <h3>Como interpretar</h3>
         <p id="interpretation-text"></p>
+      </div>
+    </section>
+
+    <section id="glossario" class="panel compact glossary">
+      <p class="eyebrow">GLOSSÁRIO DO RESULTADO</p>
+      <h2>Como ler as principais métricas</h2>
+      <div class="glossary-grid">
+        <article><strong>P5 do saldo</strong><p>Um cenário de cauda negativa: apenas cerca de 5% das simulações terminaram abaixo desse valor.</p></article>
+        <article><strong>P50 / Mediana</strong><p>Metade das simulações ficou abaixo e metade acima. É um centro da distribuição, não uma previsão.</p></article>
+        <article><strong>P95 de drawdown</strong><p>Em aproximadamente 95% das simulações o drawdown máximo ficou até esse valor. É útil como cenário de stress.</p></article>
+        <article><strong>Risco de violação</strong><p>Percentual de caminhos que tocaram algum limite configurado, como ruína, perda diária ou perda máxima.</p></article>
+        <article><strong>Meta antes da violação</strong><p>Mais útil em prop firms: mede quantos caminhos chegaram à meta antes de quebrar alguma regra.</p></article>
+        <article><strong>Sequência de perdas</strong><p>Ajuda a preparar risco e comportamento. Uma estratégia lucrativa pode atravessar várias perdas consecutivas.</p></article>
       </div>
     </section>
 
