@@ -65,7 +65,26 @@ Conhecer previamente drawdowns e losing streaks plausíveis não elimina o desco
 
 ---
 
-## 3. Exercício didático recomendado
+## 3. Aula prática guiada na própria ferramenta
+
+A interface possui um modo chamado **Aula prática guiada**. Para um primeiro contato, ele é o caminho recomendado.
+
+A aula conduz o usuário por seis experimentos e aplica as configurações automaticamente:
+
+1. risco de 0,5% como referência;
+2. risco de 1%, mantendo o mesmo edge;
+3. risco de 2%, mantendo o mesmo edge;
+4. Reshuffle dos mesmos trades;
+5. Bootstrap do mesmo histórico;
+6. comparação de 0,5%, 1% e 2% sob regras de prop firm.
+
+Antes de cada experimento há uma **Pergunta para pensar**. Depois da execução, a ferramenta interpreta as métricas calculadas e explica o que mudou.
+
+O aluno pode voltar a etapas anteriores, repetir uma simulação e, ao final, recebe um resumo dos principais aprendizados.
+
+Para o roteiro pedagógico detalhado, veja [AULA-PRATICA-GUIADA.md](AULA-PRATICA-GUIADA.md).
+
+## 4. Exercício didático recomendado fora do modo guiado
 
 ### Etapa A — Execute o exemplo
 
@@ -136,7 +155,7 @@ Este é um dos principais aprendizados da ferramenta.
 
 ---
 
-## 4. Reshuffle, Bootstrap e Block Bootstrap
+## 5. Reshuffle, Bootstrap e Block Bootstrap
 
 ### Reshuffle
 
@@ -168,7 +187,7 @@ Ele tenta preservar parte da tendência de ganhos e perdas aparecerem em grupos.
 
 ---
 
-## 5. Glossário essencial
+## 6. Glossário essencial
 
 ### Equity
 
@@ -217,7 +236,7 @@ Frequência com que os caminhos atingiram os limites definidos na simulação.
 
 ---
 
-## 6. O que a ferramenta não pode afirmar
+## 7. O que a ferramenta não pode afirmar
 
 A simulação não sabe se a estratégia continuará funcionando no futuro.
 
@@ -236,7 +255,7 @@ Monte Carlo é uma camada de **stress test**, não uma máquina de previsão.
 
 ---
 
-## 7. Regra de interpretação
+## 8. Regra de interpretação
 
 Evite perguntar:
 
@@ -252,7 +271,7 @@ E, para gerenciamento de risco:
 
 ---
 
-## 8. Uso em sala ou mentoria
+## 9. Uso em sala ou mentoria
 
 Uma aula curta pode seguir esta sequência:
 
