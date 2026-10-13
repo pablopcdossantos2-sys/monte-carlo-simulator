@@ -105,3 +105,6 @@ footer{max-width:1180px;margin:auto;padding:0 20px 42px;color:var(--muted);font-
 @media(max-width:560px){
   .concept-grid,.glossary-grid,.learn-grid{grid-template-columns:1fr}
 }
+
+.button-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b1018;border:1px solid var(--line);padding:2px 5px;border-radius:6px;color:#d9e6f5}
