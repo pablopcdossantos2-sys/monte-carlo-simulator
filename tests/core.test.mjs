@@ -152,3 +152,37 @@ test("offline build is self-contained and includes educational onboarding", () =
   assert.doesNotMatch(html, /from\s+["']\.\/core\.js["']/);
   assert.doesNotMatch(html, /src="i18n\.js"/);
 });
+
+
+test("intermediate lesson covers expectancy payoff ruin and Kelly", () => {
+  const html = fs.readFileSync("index.html", "utf8");
+  const lesson = fs.readFileSync("intermediate.js", "utf8");
+  assert.match(html, /id="aula-intermediaria"/);
+  assert.match(html, /id="intermediate-prediction-options"/);
+  assert.match(lesson, /id: "high-win-negative"/);
+  assert.match(lesson, /id: "low-win-positive"/);
+  assert.match(lesson, /id: "same-expectancy"/);
+  assert.match(lesson, /id: "payoff-flip"/);
+  assert.match(lesson, /id: "ruin-sizing"/);
+  assert.match(lesson, /id: "kelly"/);
+  assert.match(lesson, /winRatePct: 70/);
+  assert.match(lesson, /winRatePct: 35/);
+});
+
+test("all supported language READMEs cross-link each other", () => {
+  for (const path of ["README.md", "README_EN.md", "README_ES.md"]) {
+    const readme = fs.readFileSync(path, "utf8");
+    assert.match(readme, /\[Português\]\(README\.md\)/);
+    assert.match(readme, /\[English\]\(README_EN\.md\)/);
+    assert.match(readme, /\[Español\]\(README_ES\.md\)/);
+    assert.match(readme, /Read this in other languages:/);
+  }
+});
+
+test("offline build includes the intermediate lesson", () => {
+  const html = fs.readFileSync("offline.html", "utf8");
+  assert.match(html, /id="aula-intermediaria"/);
+  assert.match(html, /id="intermediate-start"/);
+  assert.match(html, /id: "kelly"/);
+  assert.doesNotMatch(html, /src="intermediate\.js"/);
+});
