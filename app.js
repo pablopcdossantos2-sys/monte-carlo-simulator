@@ -796,8 +796,16 @@ function clearLessonHighlights() {
 
 function runLessonExperiment() {
   const step = LESSON_STEPS[lessonState.index];
+  if (!lessonState.predictions[step.id]) {
+    alert(langPick(
+      "Escolha sua previsão antes de executar a simulação.",
+      "Choose your prediction before running the simulation.",
+      "Elige tu predicción antes de ejecutar la simulación."
+    ));
+    return;
+  }
   try {
-    setBusy($("lesson-run"), true, "Simulando...");
+    setBusy($("lesson-run"), true, langPick("Simulando...", "Simulating...", "Simulando..."));
     applyLessonConfig(step, true);
 
     let payload;
@@ -828,17 +836,18 @@ function runLessonExperiment() {
     lessonState.results[step.id] = payload;
     $("export-results").disabled = false;
     renderLessonAnalysis(step, payload, true);
+    renderPredictionFeedback(step, localizedStep(step));
     $("lesson-next").disabled = false;
     $("lesson-run").textContent = step.type === "prop-comparison"
-      ? "Executar comparação novamente"
-      : "Executar novamente";
+      ? tr("lesson.compareAgain")
+      : tr("lesson.rerun");
     updateLessonProgress();
   } catch (error) {
     alert(error?.message || String(error));
   } finally {
     setBusy($("lesson-run"), false, lessonState.results[step.id]
-      ? (step.type === "prop-comparison" ? "Executar comparação novamente" : "Executar novamente")
-      : "Aplicar configuração e simular");
+      ? (step.type === "prop-comparison" ? tr("lesson.compareAgain") : tr("lesson.rerun"))
+      : trText("Aplicar configuração e simular"));
   }
 }
 
@@ -848,7 +857,7 @@ function renderLessonAnalysis(step, payload, shouldScroll = true) {
   $("lesson-analysis-metrics").innerHTML = analysis.metrics
     .map((item) => `<div class="lesson-analysis-metric"><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.value)}</strong></div>`)
     .join("");
-  $("lesson-analysis-text").innerHTML = analysis.html + '<p><a href="#results">Ver gráficos e distribuição completos ↓</a></p>';
+  $("lesson-analysis-text").innerHTML = analysis.html + `<p><a href="#results">${escapeHtml(trText("Ver gráficos e distribuição completos ↓"))}</a></p>`;
   $("lesson-analysis").classList.remove("hidden");
   if (shouldScroll) $("lesson-analysis").scrollIntoView({ behavior: "smooth", block: "center" });
 }
