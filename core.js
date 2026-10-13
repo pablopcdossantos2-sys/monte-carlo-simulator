@@ -471,10 +471,22 @@ export function parsePnlText(text) {
   const lines = raw.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   if (lines.length === 0) return [];
 
-  const delimiters = [",", ";", "\t"];
-  const scoreDelimiter = (delimiter) => lines.slice(0, 5).reduce((score, line) => score + (line.split(delimiter).length - 1), 0);
-  let delimiter = delimiters.sort((a, b) => scoreDelimiter(b) - scoreDelimiter(a))[0];
-  if (scoreDelimiter(delimiter) === 0) delimiter = null;
+  const looksLikeSingleBrazilianNumbers =
+    !/[A-Za-zÀ-ÿ]/.test(lines[0]) &&
+    lines.every((line) => /^[-+]?\\s*(?:R\\$\\s*)?\\d{1,3}(?:\\.\\d{3})*,\\d+\\s*$|^[-+]?\\s*(?:R\\$\\s*)?\\d+,\\d+\\s*$/.test(line));
+
+  let delimiter = null;
+  if (!looksLikeSingleBrazilianNumbers) {
+    if (lines[0].includes(";")) delimiter = ";";
+    else if (lines[0].includes("\\t")) delimiter = "\\t";
+    else if (lines[0].includes(",")) delimiter = ",";
+    else {
+      const delimiters = [",", ";", "\\t"];
+      const scoreDelimiter = (candidate) => lines.slice(0, 5).reduce((score, line) => score + (line.split(candidate).length - 1), 0);
+      delimiter = delimiters.sort((a, b) => scoreDelimiter(b) - scoreDelimiter(a))[0];
+      if (scoreDelimiter(delimiter) === 0) delimiter = null;
+    }
+  }
 
   const normalizedNumber = (value) => {
     let s = String(value).trim().replace(/[R$€£%\s]/g, "");
