@@ -122,10 +122,23 @@ test("GBM with zero volatility follows deterministic drift", () => {
 });
 
 
+test("web interface includes the six-step guided lesson", () => {
+  const html = fs.readFileSync("index.html", "utf8");
+  const app = fs.readFileSync("app.js", "utf8");
+  assert.match(html, /id="aula-guiada"/);
+  assert.match(html, /id="lesson-start"/);
+  assert.match(html, /id="lesson-analysis"/);
+  assert.match(app, /const LESSON_STEPS = \[/);
+  assert.match(app, /id: "prop-firm"/);
+  assert.match(app, /riskPct: 0\.5/);
+});
+
 test("offline build is self-contained and includes educational onboarding", () => {
   const html = fs.readFileSync("offline.html", "utf8");
   assert.match(html, /VERSÃO OFFLINE/);
   assert.match(html, /id="aprender"/);
+  assert.match(html, /id="aula-guiada"/);
+  assert.match(html, /id="lesson-start"/);
   assert.match(html, /id="trades-panel"/);
   assert.doesNotMatch(html, /type="module"/);
   assert.doesNotMatch(html, /from\s+["']\.\/core\.js["']/);
