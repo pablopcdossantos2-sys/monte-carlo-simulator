@@ -4,6 +4,27 @@ Aplicação web gratuita, client-side e sem dependências de servidor para anali
 
 > Projeto educacional. Simulações não são previsões e não constituem recomendação financeira.
 
+## Formas de uso
+
+O projeto foi desenhado deliberadamente para funcionar em dois contextos:
+
+- **GitHub Pages** — versão web, sem backend e sem instalação;
+- **PC local** — use `offline.html` com duplo clique, sem terminal e sem instalar dependências.
+
+A versão de desenvolvimento também pode ser servida localmente para quem quiser modificar o código.
+
+Enquanto o motor puder continuar 100% client-side, **GitHub Pages continuará sendo o modo web oficial**. Futuras funções que exijam credenciais, banco de dados, processamento pesado ou APIs privadas não serão incorporadas de maneira que quebre esse modo; deverão ser opcionais ou exclusivas da versão local.
+
+## Objetivo educacional
+
+A ferramenta não foi criada apenas para gerar curvas. Ela deve ensinar traders em formação a pensar em **distribuições de resultados, sobrevivência, drawdown e variabilidade**.
+
+O principal aprendizado é:
+
+> uma estratégia com vantagem estatística ainda pode atravessar sequências difíceis; o gerenciamento de risco determina se a conta consegue sobreviver tempo suficiente para que essa vantagem tenha chance de aparecer.
+
+Para uma introdução passo a passo, veja [docs/GUIA-DIDATICO.md](docs/GUIA-DIDATICO.md).
+
 ## Objetivos
 
 O projeto combina duas famílias de uso de Monte Carlo:
@@ -49,9 +70,15 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
 
 Publique o repositório com GitHub Pages e abra a URL gerada pelo GitHub.
 
-### Opção 2 — Uso local
+### Opção 2 — Uso local sem terminal
 
-Como a interface usa módulos JavaScript, sirva a pasta por HTTP. Com Python 3 instalado:
+Baixe `offline.html` e abra o arquivo com dois cliques. Ele é uma versão completa em arquivo único e não requer Python ou Node.js.
+
+Tutorial detalhado: [docs/USO-LOCAL.md](docs/USO-LOCAL.md).
+
+### Opção 3 — Projeto completo local para desenvolvimento
+
+Como a versão de desenvolvimento usa módulos JavaScript, sirva a pasta por HTTP. Com Python 3 instalado:
 
     python -m http.server 8000
 
@@ -67,12 +94,15 @@ Há também um CSV de exemplo em examples/trades.csv.
 
 ## Estrutura
 
-- index.html — interface.
+- index.html — interface usada no GitHub Pages.
+- offline.html — versão completa em arquivo único para uso local por duplo clique.
 - styles.css — estilos.
 - app.js — integração entre interface, gráficos e motor.
 - core.js — motor estatístico e Monte Carlo, sem dependências de DOM.
 - tests/core.test.mjs — testes do motor.
 - docs/METHODOLOGY.md — metodologia, premissas, limitações e referências.
+- docs/GUIA-DIDATICO.md — introdução para traders que nunca usaram Monte Carlo.
+- docs/USO-LOCAL.md — instruções locais para usuários sem familiaridade com terminal.
 - .github/workflows/tests.yml — CI.
 - package.json — comandos de teste.
 
