@@ -1,3 +1,5 @@
+**Read this in other languages:** [Português](README.md) · [English](README_EN.md) · [Español](README_ES.md)
+
 # Simulador de Monte Carlo para Trading
 
 Aplicação web gratuita, client-side e sem dependências de servidor para analisar incerteza, drawdown e risco de ruína em estratégias de trading e também simular trajetórias de preço por Movimento Browniano Geométrico (GBM).
@@ -25,7 +27,10 @@ O principal aprendizado é:
 
 Para uma introdução passo a passo, veja [docs/GUIA-DIDATICO.md](docs/GUIA-DIDATICO.md).
 
-A própria interface também possui uma **Aula prática guiada** com seis experimentos interativos. Antes de cada simulação, o aluno responde a um **desafio de previsão**; depois o motor confronta essa previsão com o comportamento observado e explica o resultado. O roteiro pedagógico está em [docs/AULA-PRATICA-GUIADA.md](docs/AULA-PRATICA-GUIADA.md).
+A própria interface possui duas trilhas educacionais:
+
+1. **Aula prática guiada** — seis experimentos sobre drawdown, risco por trade, Reshuffle, Bootstrap e regras de prop firm. Antes de cada simulação, o aluno responde a um desafio de previsão. Roteiro: [docs/AULA-PRATICA-GUIADA.md](docs/AULA-PRATICA-GUIADA.md).
+2. **Aula intermediária** — seis experimentos sobre win rate, payoff, expectância, risco de ruína e Kelly. Ela mostra, entre outras coisas, como 70% de acerto pode ter expectância negativa e como 35% de acerto pode ter edge positivo. Roteiro: [docs/AULA-INTERMEDIARIA.md](docs/AULA-INTERMEDIARIA.md).
 
 ## Objetivos
 
@@ -65,12 +70,14 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
 - Exportação de resumo em JSON.
 - Interface responsiva, adequada para GitHub Pages.
 - Interface trilíngue em **Português (Brasil), English e Español**, com troca de idioma em tempo real e preferência salva no navegador.
-- Aula prática guiada com seis experimentos:
-  - referência com risco de 0,5%;
-  - comparação com 1% e 2%;
-  - Reshuffle para demonstrar risco de sequência;
-  - Bootstrap para demonstrar incerteza de amostragem;
-  - comparação de 0,5%, 1% e 2% sob regras de prop firm.
+- Aula prática guiada com seis experimentos sobre risco, drawdown, sequência e prop firms.
+- Aula intermediária com seis experimentos sobre:
+  - win rate versus payoff;
+  - expectância em R;
+  - estratégias com a mesma expectância e distribuições diferentes;
+  - risco de ruína sob diferentes sizings;
+  - interpretação crítica da fração de Kelly.
+- Desafios de previsão antes de cada experimento.
 - Interpretações didáticas geradas com os números reais de cada simulação.
 - Testes automatizados do motor matemático.
 
@@ -78,7 +85,9 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
 
 ### Opção 1 — GitHub Pages
 
-Publique o repositório com GitHub Pages e abra a URL gerada pelo GitHub.
+A versão web está disponível em:
+
+    https://pablopcdossantos2-sys.github.io/monte-carlo-simulator/
 
 ### Opção 2 — Uso local sem terminal
 
@@ -112,7 +121,8 @@ Há também um CSV de exemplo em examples/trades.csv.
 - tests/core.test.mjs — testes do motor.
 - docs/METHODOLOGY.md — metodologia, premissas, limitações e referências.
 - docs/GUIA-DIDATICO.md — introdução para traders que nunca usaram Monte Carlo.
-- docs/AULA-PRATICA-GUIADA.md — roteiro dos seis experimentos e orientação para instrutores.
+- docs/AULA-PRATICA-GUIADA.md — roteiro da aula introdutória e orientação para instrutores.
+- docs/AULA-INTERMEDIARIA.md — roteiro da segunda aula sobre expectância, payoff, ruína e Kelly.
 - docs/USO-LOCAL.md — instruções locais para usuários sem familiaridade com terminal.
 - docs/GITHUB-PAGES.md — tutorial para colocar a ferramenta no ar.
 - .github/workflows/tests.yml — CI.
