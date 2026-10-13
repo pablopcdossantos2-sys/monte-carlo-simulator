@@ -177,6 +177,27 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b10
   .lesson-actions>*{width:100%}
 }
 
+.hero__aside{display:flex;flex-direction:column;gap:12px;align-items:stretch;min-width:230px}
+.language-picker{border:1px solid var(--line);padding:12px 14px;border-radius:16px;background:rgba(17,23,34,.75)}
+.language-picker label{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--muted);margin-bottom:6px}
+.language-picker select{padding:8px 10px}
+.lesson-prediction{margin:18px 0;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.055);border-radius:17px;padding:16px}
+.lesson-prediction h4{margin:2px 0 7px;font-size:1rem}
+.lesson-prediction>p:not(.eyebrow){color:#e7dfc5;margin:0 0 13px}
+.lesson-prediction-options{display:flex;flex-wrap:wrap;gap:9px}
+.prediction-option{border:1px solid var(--line);background:#0b1018;color:var(--text);border-radius:12px;padding:9px 12px;font-weight:750}
+.prediction-option:hover{border-color:var(--warning)}
+.prediction-option.selected{border-color:var(--warning);background:rgba(251,191,36,.12);box-shadow:0 0 0 2px rgba(251,191,36,.08)}
+.prediction-option:disabled{cursor:default;opacity:.72}
+.lesson-prediction-feedback{margin-top:13px;padding:12px 14px;border-radius:12px;border-left:3px solid var(--accent2);background:rgba(96,165,250,.06)}
+.lesson-prediction-feedback.correct{border-left-color:var(--accent);background:rgba(110,231,183,.06)}
+.lesson-prediction-feedback.incorrect{border-left-color:var(--warning);background:rgba(251,191,36,.06)}
+.lesson-prediction-feedback strong{display:block;margin-bottom:4px}
+.lesson-prediction-score{font-weight:850;color:var(--accent)}
+@media(max-width:850px){
+  .hero__aside{min-width:0;align-items:stretch;margin-top:18px}
+}
+
   </style>
 </head>
 <body>
@@ -194,7 +215,17 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b10
           <a href="https://github.com/pablopcdossantos2-sys/monte-carlo-simulator">Ver projeto no GitHub</a>
         </nav>
       </div>
-      <div class="hero__badge">VERSÃO OFFLINE<br><span>abra este arquivo com duplo clique</span></div>
+      <div class="hero__aside">
+        <div class="language-picker">
+          <label for="language-selector">Idioma / Language / Idioma</label>
+          <select id="language-selector" aria-label="Idioma / Language / Idioma">
+            <option value="pt-BR">Português (Brasil)</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+          </select>
+        </div>
+        <div class="hero__badge">VERSÃO OFFLINE<br><span>abra este arquivo com duplo clique</span></div>
+      </div>
     </div>
   </header>
 
@@ -315,6 +346,14 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b10
           </article>
         </div>
 
+        <div id="lesson-prediction" class="lesson-prediction">
+          <p class="eyebrow">DESAFIO DE PREVISÃO</p>
+          <h4>Escolha sua previsão antes de simular</h4>
+          <p id="lesson-prediction-question"></p>
+          <div id="lesson-prediction-options" class="lesson-prediction-options" role="group" aria-label="Sua previsão"></div>
+          <div id="lesson-prediction-feedback" class="lesson-prediction-feedback hidden" aria-live="polite"></div>
+        </div>
+
         <div id="lesson-config-preview" class="lesson-config-preview"></div>
 
         <div id="lesson-analysis" class="lesson-analysis hidden">
@@ -352,7 +391,7 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b10
 
       <div id="lesson-start-wrap" class="actions">
         <button id="lesson-start" class="primary">Iniciar aula prática</button>
-        <span class="hint">Leva apenas alguns experimentos; não há respostas certas ou erradas.</span>
+        <span class="hint">Antes de cada simulação, faça uma previsão. O objetivo é comparar sua intuição com o comportamento estatístico observado.</span>
       </div>
     </section>
 
@@ -599,6 +638,407 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b10
     <p>Ferramenta educacional. Resultados simulados não garantem desempenho futuro.</p>
   </footer>
 
+  <script>
+(function () {
+  const phraseTranslations = {
+    "Entender primeiro": { en: "Understand first", es: "Entender primero" },
+    "Aula prática guiada": { en: "Guided practical lesson", es: "Clase práctica guiada" },
+    "Ir ao simulador": { en: "Go to simulator", es: "Ir al simulador" },
+    "Glossário": { en: "Glossary", es: "Glosario" },
+    "Baixar versão offline": { en: "Download offline version", es: "Descargar versión offline" },
+    "100% no navegador": { en: "100% in your browser", es: "100% en tu navegador" },
+    "seus dados não são enviados": { en: "your data is not sent anywhere", es: "tus datos no se envían" },
+    "VERSÃO OFFLINE": { en: "OFFLINE VERSION", es: "VERSIÓN OFFLINE" },
+    "abra este arquivo com duplo clique": { en: "open this file with a double click", es: "abre este archivo con doble clic" },
+    "MONTE CARLO · TRADING · RISCO": { en: "MONTE CARLO · TRADING · RISK", es: "MONTE CARLO · TRADING · RIESGO" },
+    "Simulador de Monte Carlo": { en: "Monte Carlo Simulator", es: "Simulador de Monte Carlo" },
+    "Uma ferramenta educacional para aprender a pensar em probabilidades, e não em uma única curva de resultados. Teste milhares de futuros possíveis para uma estratégia, estime drawdowns, sequências de perdas, risco de violação e probabilidade de atingir metas.": { en: "An educational tool for learning to think in probabilities instead of a single equity curve. Test thousands of possible futures for a strategy and estimate drawdowns, losing streaks, breach risk and the probability of reaching targets.", es: "Una herramienta educativa para aprender a pensar en probabilidades, y no en una sola curva de resultados. Prueba miles de futuros posibles para una estrategia y estima drawdowns, rachas de pérdidas, riesgo de incumplimiento y probabilidad de alcanzar objetivos." },
+    "ANTES DE SIMULAR": { en: "BEFORE YOU SIMULATE", es: "ANTES DE SIMULAR" },
+    "Por que Monte Carlo importa para um trader?": { en: "Why does Monte Carlo matter to a trader?", es: "¿Por qué Monte Carlo es importante para un trader?" },
+    "Um backtest mostra uma sequência histórica. O problema é que duas estratégias com a mesma média de ganhos podem produzir experiências muito diferentes quando a ordem dos ganhos e perdas muda. Monte Carlo cria muitas sequências plausíveis para revelar essa incerteza.": { en: "A backtest shows one historical sequence. Two strategies with the same average results can create very different experiences when the order of wins and losses changes. Monte Carlo creates many plausible sequences to expose that uncertainty.", es: "Un backtest muestra una secuencia histórica. Dos estrategias con los mismos resultados medios pueden producir experiencias muy distintas cuando cambia el orden de ganancias y pérdidas. Monte Carlo crea muchas secuencias plausibles para revelar esa incertidumbre." },
+    "O backtest é só um caminho": { en: "The backtest is only one path", es: "El backtest es solo un camino" },
+    "A curva que aconteceu no passado não é a única curva compatível com aquela taxa de acerto, payoff e distribuição de trades.": { en: "The curve observed in the past is not the only curve compatible with that win rate, payoff and trade distribution.", es: "La curva observada en el pasado no es la única compatible con esa tasa de acierto, payoff y distribución de trades." },
+    "O risco está na sequência": { en: "Risk is also in the sequence", es: "El riesgo también está en la secuencia" },
+    "Uma sequência desfavorável pode produzir um drawdown grande mesmo quando a estratégia tem expectância positiva.": { en: "An unfavorable sequence can create a large drawdown even when the strategy has positive expectancy.", es: "Una secuencia desfavorable puede producir un drawdown grande incluso cuando la estrategia tiene expectativa positiva." },
+    "Profissional pensa em sobrevivência": { en: "Professionals think about survival", es: "El profesional piensa en supervivencia" },
+    "O objetivo não é descobrir “quanto vou ganhar”, mas avaliar quanto risco a estratégia pode exigir antes que sua vantagem estatística tenha tempo de aparecer.": { en: "The goal is not to discover “how much I will make”, but to evaluate how much risk the strategy may demand before its statistical edge has time to appear.", es: "El objetivo no es descubrir “cuánto voy a ganar”, sino evaluar cuánto riesgo puede exigir la estrategia antes de que su ventaja estadística tenga tiempo de aparecer." },
+    "Ideia central:": { en: "Core idea:", es: "Idea central:" },
+    "Monte Carlo não prevê o próximo trade. Ele ajuda a responder perguntas como “Que drawdown preciso estar preparado para suportar?”, “Qual sequência de perdas é plausível?” e “Meu risco por operação é compatível com os limites da conta?”.": { en: "Monte Carlo does not predict the next trade. It helps answer questions such as “What drawdown should I be prepared to withstand?”, “What losing streak is plausible?” and “Is my risk per trade compatible with the account limits?”.", es: "Monte Carlo no predice el próximo trade. Ayuda a responder preguntas como “¿Qué drawdown debo estar preparado para soportar?”, “¿Qué racha de pérdidas es plausible?” y “¿Mi riesgo por operación es compatible con los límites de la cuenta?”." },
+    "Primeiro contato: use nesta ordem": { en: "First contact: use it in this order", es: "Primer contacto: úsalo en este orden" },
+    "Carregue o exemplo didático.": { en: "Load the educational example.", es: "Carga el ejemplo didáctico." },
+    "Veja como a ferramenta funciona sem precisar ter um histórico próprio.": { en: "See how the tool works before using your own history.", es: "Observa cómo funciona la herramienta sin necesitar un historial propio." },
+    "Observe o P50 e o P95 de drawdown.": { en: "Observe P50 and P95 drawdown.", es: "Observa el P50 y el P95 del drawdown." },
+    "A mediana mostra um cenário típico; o P95 é um cenário de stress muito mais exigente.": { en: "The median shows a typical scenario; P95 is a much more demanding stress scenario.", es: "La mediana muestra un escenario típico; el P95 es un escenario de estrés mucho más exigente." },
+    "Mude apenas o risco por trade.": { en: "Change only the risk per trade.", es: "Cambia solo el riesgo por trade." },
+    "Compare 0,5%, 1% e 2% e veja como o risco muda sem alterar o “edge”.": { en: "Compare 0.5%, 1% and 2% and see how risk changes without changing the edge.", es: "Compara 0,5%, 1% y 2% y observa cómo cambia el riesgo sin modificar el edge." },
+    "Só depois use seus próprios trades.": { en: "Only then use your own trades.", es: "Solo después usa tus propios trades." },
+    "O histórico precisa representar a estratégia que você realmente executa.": { en: "The history must represent the strategy you actually trade.", es: "El historial debe representar la estrategia que realmente ejecutas." },
+    "USO PROFISSIONAL": { en: "PROFESSIONAL USE", es: "USO PROFESIONAL" },
+    "O que um trader pode aprender com a ferramenta": { en: "What a trader can learn from this tool", es: "Qué puede aprender un trader con esta herramienta" },
+    "Dimensionamento": { en: "Position sizing", es: "Dimensionamiento" },
+    "Descobrir se o risco por trade transforma uma estratégia razoável em uma trajetória difícil de sobreviver.": { en: "Discover whether risk per trade turns a reasonable strategy into a path that is difficult to survive.", es: "Descubrir si el riesgo por trade transforma una estrategia razonable en una trayectoria difícil de sobrevivir." },
+    "Expectativas realistas": { en: "Realistic expectations", es: "Expectativas realistas" },
+    "Entender que períodos ruins e sequências de perdas podem ser normais, sem concluir cedo demais que o método “parou de funcionar”.": { en: "Understand that bad periods and losing streaks may be normal without concluding too early that the method “stopped working”.", es: "Entender que los períodos malos y las rachas de pérdidas pueden ser normales, sin concluir demasiado pronto que el método “dejó de funcionar”." },
+    "Planejamento de drawdown": { en: "Drawdown planning", es: "Planificación del drawdown" },
+    "Comparar o capital disponível e os limites da conta com drawdowns plausíveis, não apenas com o pior drawdown já observado.": { en: "Compare available capital and account limits with plausible drawdowns, not only the worst drawdown already observed.", es: "Comparar el capital disponible y los límites de la cuenta con drawdowns plausibles, no solo con el peor drawdown ya observado." },
+    "Prop firms": { en: "Prop firms", es: "Prop firms" },
+    "Estimar a chance de atingir uma meta antes de tocar perda diária, perda máxima ou trailing drawdown.": { en: "Estimate the chance of reaching a target before hitting daily loss, maximum loss or trailing drawdown.", es: "Estimar la probabilidad de alcanzar un objetivo antes de tocar pérdida diaria, pérdida máxima o trailing drawdown." },
+    "Disciplina": { en: "Discipline", es: "Disciplina" },
+    "Preparar-se antecipadamente para variabilidade estatística reduz a tentação de aumentar risco depois de perdas ou abandonar uma estratégia por uma sequência normal.": { en: "Preparing in advance for statistical variability reduces the temptation to increase risk after losses or abandon a strategy because of a normal sequence.", es: "Prepararse de antemano para la variabilidad estadística reduce la tentación de aumentar el riesgo después de pérdidas o abandonar una estrategia por una secuencia normal." },
+    "Validação": { en: "Validation", es: "Validación" },
+    "Usar Monte Carlo como uma camada de stress test — nunca como substituto de backtest, out-of-sample, custos e análise de regime.": { en: "Use Monte Carlo as a stress-testing layer — never as a substitute for backtesting, out-of-sample validation, costs and regime analysis.", es: "Usar Monte Carlo como una capa de stress test — nunca como sustituto del backtest, out-of-sample, costes y análisis de régimen." },
+    "LABORATÓRIO INTERATIVO": { en: "INTERACTIVE LAB", es: "LABORATORIO INTERACTIVO" },
+    "Aprenda Monte Carlo executando seis experimentos. A aula configura o simulador por você, mantém as demais variáveis controladas e explica o que mudou depois de cada execução.": { en: "Learn Monte Carlo by running six experiments. The lesson configures the simulator for you, keeps the other variables controlled and explains what changed after each run.", es: "Aprende Monte Carlo ejecutando seis experimentos. La clase configura el simulador por ti, mantiene las demás variables controladas y explica qué cambió después de cada ejecución." },
+    "Não iniciada": { en: "Not started", es: "No iniciada" },
+    "0 de 6 experimentos": { en: "0 of 6 experiments", es: "0 de 6 experimentos" },
+    "Você não precisa preparar dados.": { en: "You do not need to prepare data.", es: "No necesitas preparar datos." },
+    "A aula usa uma estratégia hipotética e um histórico demonstrativo já incluídos no projeto.": { en: "The lesson uses a hypothetical strategy and a demonstration trade history already included in the project.", es: "La clase usa una estrategia hipotética y un historial demostrativo ya incluido en el proyecto." },
+    "Uma variável por vez.": { en: "One variable at a time.", es: "Una variable a la vez." },
+    "Nos primeiros experimentos, somente o risco por trade muda. Assim você consegue enxergar causa e efeito.": { en: "In the first experiments only risk per trade changes, making cause and effect easier to see.", es: "En los primeros experimentos solo cambia el riesgo por trade, para que puedas ver causa y efecto." },
+    "Os números serão reais.": { en: "The numbers will be real.", es: "Los números serán reales." },
+    "As explicações da aula usam os percentis e probabilidades calculados pelo próprio motor Monte Carlo.": { en: "The lesson explanations use percentiles and probabilities calculated by the Monte Carlo engine itself.", es: "Las explicaciones usan percentiles y probabilidades calculados por el propio motor Monte Carlo." },
+    "Objetivo da aula:": { en: "Lesson goal:", es: "Objetivo de la clase:" },
+    "perceber a diferença entre possuir uma vantagem estatística e escolher um nível de risco que permita sobreviver à variabilidade dessa vantagem.": { en: "understand the difference between having a statistical edge and choosing a risk level that lets you survive the variability of that edge.", es: "comprender la diferencia entre tener una ventaja estadística y elegir un nivel de riesgo que permita sobrevivir a la variabilidad de esa ventaja." },
+    "O que será controlado": { en: "What will be controlled", es: "Qué se controlará" },
+    "Pergunta para pensar": { en: "Question to think about", es: "Pregunta para pensar" },
+    "Observe principalmente": { en: "Watch especially", es: "Observa principalmente" },
+    "O QUE O EXPERIMENTO MOSTROU": { en: "WHAT THE EXPERIMENT SHOWED", es: "QUÉ MOSTRÓ EL EXPERIMENTO" },
+    "← Experimento anterior": { en: "← Previous experiment", es: "← Experimento anterior" },
+    "Aplicar configuração e simular": { en: "Apply configuration and simulate", es: "Aplicar configuración y simular" },
+    "Próximo experimento →": { en: "Next experiment →", es: "Siguiente experimento →" },
+    "Encerrar aula": { en: "End lesson", es: "Finalizar clase" },
+    "AULA CONCLUÍDA": { en: "LESSON COMPLETED", es: "CLASE COMPLETADA" },
+    "Agora você já sabe o que procurar em um Monte Carlo": { en: "Now you know what to look for in a Monte Carlo analysis", es: "Ahora ya sabes qué buscar en un análisis de Monte Carlo" },
+    "Edge ≠ trajetória suave": { en: "Edge ≠ smooth path", es: "Edge ≠ trayectoria suave" },
+    "Uma estratégia lucrativa pode atravessar sequências difíceis.": { en: "A profitable strategy can go through difficult sequences.", es: "Una estrategia rentable puede atravesar secuencias difíciles." },
+    "Risco amplifica tudo": { en: "Risk amplifies everything", es: "El riesgo amplifica todo" },
+    "Aumentar o risco não altera o edge; altera a dispersão, o drawdown e a chance de sobreviver.": { en: "Increasing risk does not change the edge; it changes dispersion, drawdown and the chance of survival.", es: "Aumentar el riesgo no cambia el edge; cambia la dispersión, el drawdown y la probabilidad de sobrevivir." },
+    "Ordem importa": { en: "Order matters", es: "El orden importa" },
+    "Os mesmos trades em outra sequência podem exigir muito mais tolerância ao drawdown.": { en: "The same trades in another order can require much greater drawdown tolerance.", es: "Los mismos trades en otro orden pueden exigir mucha más tolerancia al drawdown." },
+    "Reamostragem importa": { en: "Resampling matters", es: "El remuestreo importa" },
+    "Bootstrap mostra incerteza não só da ordem, mas também da composição dos resultados futuros.": { en: "Bootstrap shows uncertainty not only in order but also in the composition of future results.", es: "Bootstrap muestra incertidumbre no solo del orden, sino también de la composición de los resultados futuros." },
+    "Limites mudam a pergunta": { en: "Limits change the question", es: "Los límites cambian la pregunta" },
+    "Em uma prop firm, não basta ganhar: é preciso atingir a meta antes de violar regras.": { en: "At a prop firm, making money is not enough: the target must be reached before violating rules.", es: "En una prop firm no basta con ganar: hay que alcanzar la meta antes de violar reglas." },
+    "Monte Carlo é stress test": { en: "Monte Carlo is a stress test", es: "Monte Carlo es un stress test" },
+    "Ele não prevê o futuro e não substitui validação da estratégia.": { en: "It does not predict the future and does not replace strategy validation.", es: "No predice el futuro ni sustituye la validación de la estrategia." },
+    "Refazer a aula": { en: "Restart lesson", es: "Repetir la clase" },
+    "Explorar o simulador livremente": { en: "Explore the simulator freely", es: "Explorar el simulador libremente" },
+    "Iniciar aula prática": { en: "Start practical lesson", es: "Iniciar clase práctica" },
+    "Leva apenas alguns experimentos; não há respostas certas ou erradas.": { en: "It only takes a few experiments; the goal is to reason before seeing the result.", es: "Solo toma unos pocos experimentos; el objetivo es razonar antes de ver el resultado." },
+    "ESCOLHA O EXPERIMENTO": { en: "CHOOSE THE EXPERIMENT", es: "ELIGE EL EXPERIMENTO" },
+    "Dois simuladores, duas perguntas diferentes": { en: "Two simulators, two different questions", es: "Dos simuladores, dos preguntas diferentes" },
+    "Estratégia / Trades": { en: "Strategy / Trades", es: "Estrategia / Trades" },
+    "Use para estudar a robustez de uma estratégia, equity, drawdown, risco de ruína e regras de conta.": { en: "Use it to study strategy robustness, equity, drawdown, risk of ruin and account rules.", es: "Úsalo para estudiar robustez de estrategia, equity, drawdown, riesgo de ruina y reglas de cuenta." },
+    "Preço / GBM": { en: "Price / GBM", es: "Precio / GBM" },
+    "Use para aprender como retorno e volatilidade geram diferentes trajetórias possíveis de preço. É didático, não um modelo de previsão.": { en: "Use it to learn how return and volatility generate different possible price paths. It is educational, not a forecasting model.", es: "Úsalo para aprender cómo retorno y volatilidad generan distintas trayectorias de precio. Es didáctico, no un modelo de predicción." },
+    "ROBUSTEZ DA ESTRATÉGIA": { en: "STRATEGY ROBUSTNESS", es: "ROBUSTEZ DE LA ESTRATEGIA" },
+    "Monte Carlo de operações": { en: "Trade Monte Carlo", es: "Monte Carlo de operaciones" },
+    "Carregar exemplo didático": { en: "Load educational example", es: "Cargar ejemplo didáctico" },
+    "Neste modo, você pode começar por uma hipótese simples de estratégia ou usar resultados reais de operações passadas. Para aprender, comece por Parâmetros; para analisar uma estratégia existente, prefira Histórico de trades.": { en: "In this mode you can start from a simple strategy hypothesis or use real past trade results. To learn, start with Parameters; to analyze an existing strategy, prefer Trade history.", es: "En este modo puedes comenzar con una hipótesis simple de estrategia o usar resultados reales de operaciones pasadas. Para aprender, comienza con Parámetros; para analizar una estrategia existente, usa Historial de trades." },
+    "O que significam estes campos?": { en: "What do these fields mean?", es: "¿Qué significan estos campos?" },
+    "Capital inicial": { en: "Starting capital", es: "Capital inicial" },
+    "É o ponto de partida da equity. Ele serve de referência para risco, metas e limites.": { en: "The starting point of the equity curve and the reference for risk, targets and limits.", es: "Es el punto de partida de la equity y la referencia para riesgo, metas y límites." },
+    "Taxa de acerto": { en: "Win rate", es: "Tasa de acierto" },
+    "Percentual de trades vencedores. Sozinha, ela não diz se uma estratégia é boa.": { en: "Percentage of winning trades. By itself it does not tell you whether a strategy is good.", es: "Porcentaje de trades ganadores. Por sí sola no dice si una estrategia es buena." },
+    "Reward : Risk": { en: "Reward : Risk", es: "Reward : Risk" },
+    "Quanto se ganha, em média, para cada unidade arriscada. Ex.: 1,5 significa ganhar 1,5R quando acerta e perder 1R quando erra.": { en: "How much is gained on average for each unit risked. Example: 1.5 means +1.5R on a win and -1R on a loss.", es: "Cuánto se gana en promedio por cada unidad arriesgada. Ej.: 1,5 significa +1,5R al ganar y -1R al perder." },
+    "Risco por trade": { en: "Risk per trade", es: "Riesgo por trade" },
+    "Percentual do capital exposto em cada operação. Pequenas mudanças aqui podem alterar muito o drawdown.": { en: "Percentage of capital exposed on each trade. Small changes here can greatly change drawdown.", es: "Porcentaje del capital expuesto en cada operación. Pequeños cambios aquí pueden alterar mucho el drawdown." },
+    "Position sizing": { en: "Position sizing", es: "Position sizing" },
+    "No composto, o tamanho acompanha a equity; no fixo, o risco monetário parte sempre do capital inicial.": { en: "With compounding, size follows equity; with fixed sizing, monetary risk is based on starting capital.", es: "En compuesto, el tamaño sigue la equity; en fijo, el riesgo monetario parte siempre del capital inicial." },
+    "Custo por trade": { en: "Cost per trade", es: "Coste por trade" },
+    "Corretagem, taxas e outros custos. Ignorar custos costuma superestimar o desempenho.": { en: "Commissions, fees and other costs. Ignoring costs often overstates performance.", es: "Comisiones, tasas y otros costes. Ignorar costes suele sobreestimar el rendimiento." },
+    "Parâmetros": { en: "Parameters", es: "Parámetros" },
+    "Histórico de trades": { en: "Trade history", es: "Historial de trades" },
+    "Composto (% da equity)": { en: "Compound (% of equity)", es: "Compuesto (% de equity)" },
+    "Fixo (% do capital inicial)": { en: "Fixed (% of starting capital)", es: "Fijo (% del capital inicial)" },
+    "Método": { en: "Method", es: "Método" },
+    "Bootstrap com reposição": { en: "Bootstrap with replacement", es: "Bootstrap con reposición" },
+    "Reshuffle / permutação": { en: "Reshuffle / permutation", es: "Reshuffle / permutación" },
+    "Block bootstrap": { en: "Block bootstrap", es: "Block bootstrap" },
+    "Tamanho do bloco": { en: "Block size", es: "Tamaño del bloque" },
+    "Multiplicador do P&L": { en: "P&L multiplier", es: "Multiplicador del P&L" },
+    "Custo adicional por trade": { en: "Additional cost per trade", es: "Coste adicional por trade" },
+    "Cole o P&L dos trades ou um CSV": { en: "Paste trade P&L or a CSV", es: "Pega el P&L de los trades o un CSV" },
+    "Trades por simulação": { en: "Trades per simulation", es: "Trades por simulación" },
+    "Simulações": { en: "Simulations", es: "Simulaciones" },
+    "Semente": { en: "Seed", es: "Semilla" },
+    "Trades por dia": { en: "Trades per day", es: "Trades por día" },
+    "Regras de risco / Prop Firm": { en: "Risk / Prop Firm rules", es: "Reglas de riesgo / Prop Firm" },
+    "Use esta seção quando quiser descobrir não apenas se a estratégia ganha dinheiro, mas se ela consegue sobreviver às regras da conta até chegar à meta.": { en: "Use this section when you want to know not only whether the strategy makes money, but whether it can survive the account rules until reaching the target.", es: "Usa esta sección cuando quieras saber no solo si la estrategia gana dinero, sino si puede sobrevivir a las reglas de la cuenta hasta llegar a la meta." },
+    "Meta de lucro (%)": { en: "Profit target (%)", es: "Meta de beneficio (%)" },
+    "Perda máxima (%)": { en: "Maximum loss (%)", es: "Pérdida máxima (%)" },
+    "Perda diária (%)": { en: "Daily loss (%)", es: "Pérdida diaria (%)" },
+    "Ruin threshold (%)": { en: "Ruin threshold (%)", es: "Umbral de ruina (%)" },
+    "Regra de drawdown": { en: "Drawdown rule", es: "Regla de drawdown" },
+    "Estático": { en: "Static", es: "Estático" },
+    "Desativado": { en: "Disabled", es: "Desactivado" },
+    "Trailing intraday": { en: "Intraday trailing", es: "Trailing intradía" },
+    "Trailing EOD": { en: "EOD trailing", es: "Trailing EOD" },
+    "As regras são genéricas. Confira a metodologia e adapte os valores às regras reais da firma que deseja estudar.": { en: "These rules are generic. Check the methodology and adapt the values to the actual rules of the firm you want to study.", es: "Estas reglas son genéricas. Consulta la metodología y adapta los valores a las reglas reales de la firma que quieras estudiar." },
+    "Executar simulação": { en: "Run simulation", es: "Ejecutar simulación" },
+    "Exportar resumo JSON": { en: "Export JSON summary", es: "Exportar resumen JSON" },
+    "TRAJETÓRIAS DE PREÇO": { en: "PRICE PATHS", es: "TRAYECTORIAS DE PRECIO" },
+    "Movimento Browniano Geométrico": { en: "Geometric Brownian Motion", es: "Movimiento Browniano Geométrico" },
+    "Preço inicial": { en: "Starting price", es: "Precio inicial" },
+    "Retorno anual esperado (%)": { en: "Expected annual return (%)", es: "Retorno anual esperado (%)" },
+    "Volatilidade anual (%)": { en: "Annual volatility (%)", es: "Volatilidad anual (%)" },
+    "Passos": { en: "Steps", es: "Pasos" },
+    "Passos por ano": { en: "Steps per year", es: "Pasos por año" },
+    "Executar GBM": { en: "Run GBM", es: "Ejecutar GBM" },
+    "Como pensar neste módulo:": { en: "How to think about this module:", es: "Cómo pensar en este módulo:" },
+    "ele mostra por que dois ativos com o mesmo retorno esperado podem terminar em lugares muito diferentes quando a volatilidade muda.": { en: "it shows why two assets with the same expected return can end in very different places when volatility changes.", es: "muestra por qué dos activos con el mismo retorno esperado pueden terminar en lugares muy distintos cuando cambia la volatilidad." },
+    "GBM é um modelo didático: assume retorno lognormal com volatilidade constante e não captura saltos, caudas pesadas ou mudanças de regime. Não use este módulo como previsão de preço.": { en: "GBM is an educational model: it assumes lognormal returns with constant volatility and does not capture jumps, fat tails or regime changes. Do not use this module as a price forecast.", es: "GBM es un modelo didáctico: asume retornos lognormales con volatilidad constante y no captura saltos, colas pesadas ni cambios de régimen. No uses este módulo como predicción de precio." },
+    "RESULTADOS": { en: "RESULTS", es: "RESULTADOS" },
+    "Distribuição simulada": { en: "Simulated distribution", es: "Distribución simulada" },
+    "Trajetórias": { en: "Paths", es: "Trayectorias" },
+    "Distribuição final": { en: "Final distribution", es: "Distribución final" },
+    "Como interpretar": { en: "How to interpret", es: "Cómo interpretar" },
+    "GLOSSÁRIO DO RESULTADO": { en: "RESULT GLOSSARY", es: "GLOSARIO DE RESULTADOS" },
+    "Como ler as principais métricas": { en: "How to read the main metrics", es: "Cómo leer las métricas principales" },
+    "P5 do saldo": { en: "P5 balance", es: "P5 del saldo" },
+    "Um cenário de cauda negativa: apenas cerca de 5% das simulações terminaram abaixo desse valor.": { en: "A negative-tail scenario: only about 5% of simulations finished below this value.", es: "Un escenario de cola negativa: solo cerca del 5% de las simulaciones terminaron por debajo de este valor." },
+    "P50 / Mediana": { en: "P50 / Median", es: "P50 / Mediana" },
+    "Metade das simulações ficou abaixo e metade acima. É um centro da distribuição, não uma previsão.": { en: "Half of simulations finished below and half above. It is a center of the distribution, not a forecast.", es: "La mitad de las simulaciones quedó por debajo y la mitad por encima. Es un centro de la distribución, no una predicción." },
+    "P95 de drawdown": { en: "P95 drawdown", es: "P95 de drawdown" },
+    "Em aproximadamente 95% das simulações o drawdown máximo ficou até esse valor. É útil como cenário de stress.": { en: "In about 95% of simulations, maximum drawdown stayed at or below this value. It is useful as a stress scenario.", es: "En aproximadamente el 95% de las simulaciones, el drawdown máximo quedó hasta este valor. Es útil como escenario de estrés." },
+    "Risco de violação": { en: "Breach risk", es: "Riesgo de incumplimiento" },
+    "Percentual de caminhos que tocaram algum limite configurado, como ruína, perda diária ou perda máxima.": { en: "Percentage of paths that hit a configured limit such as ruin, daily loss or maximum loss.", es: "Porcentaje de trayectorias que tocaron algún límite configurado, como ruina, pérdida diaria o pérdida máxima." },
+    "Meta antes da violação": { en: "Target before breach", es: "Meta antes del incumplimiento" },
+    "Mais útil em prop firms: mede quantos caminhos chegaram à meta antes de quebrar alguma regra.": { en: "Especially useful for prop firms: measures how many paths reached the target before breaking a rule.", es: "Especialmente útil en prop firms: mide cuántas trayectorias alcanzaron la meta antes de romper alguna regla." },
+    "Sequência de perdas": { en: "Losing streak", es: "Racha de pérdidas" },
+    "Ajuda a preparar risco e comportamento. Uma estratégia lucrativa pode atravessar várias perdas consecutivas.": { en: "Helps prepare risk and behavior. A profitable strategy can go through several consecutive losses.", es: "Ayuda a preparar el riesgo y el comportamiento. Una estrategia rentable puede atravesar varias pérdidas consecutivas." },
+    "ONDE USAR": { en: "WHERE TO USE IT", es: "DÓNDE USARLO" },
+    "Web ou computador local": { en: "Web or local computer", es: "Web o computadora local" },
+    "GitHub Pages": { en: "GitHub Pages", es: "GitHub Pages" },
+    "Abra no navegador e use normalmente. Todo o cálculo continua sendo feito no seu dispositivo.": { en: "Open it in the browser and use it normally. All calculations continue to run on your device.", es: "Ábrelo en el navegador y úsalo normalmente. Todos los cálculos siguen ejecutándose en tu dispositivo." },
+    "Versão offline": { en: "Offline version", es: "Versión offline" },
+    "Baixe offline.html e abra com dois cliques. Não exige terminal, Python, Node.js ou instalação.": { en: "Download offline.html and open it with a double click. No terminal, Python, Node.js or installation is required.", es: "Descarga offline.html y ábrelo con doble clic. No requiere terminal, Python, Node.js ni instalación." },
+    "Baixar offline.html": { en: "Download offline.html", es: "Descargar offline.html" },
+    "Ver tutorial de uso local": { en: "View local-use tutorial", es: "Ver tutorial de uso local" },
+    "Abrir guia didático": { en: "Open educational guide", es: "Abrir guía didáctica" },
+    "O que este simulador responde — e o que não responde": { en: "What this simulator answers — and what it does not", es: "Qué responde este simulador — y qué no responde" },
+    "Ele mede a variabilidade dos resultados sob as hipóteses fornecidas. Não prova que uma estratégia continuará tendo edge, não corrige overfitting e não substitui validação fora da amostra, custos realistas, slippage, liquidez e testes por regime.": { en: "It measures result variability under the supplied assumptions. It does not prove a strategy will keep its edge, does not fix overfitting, and does not replace out-of-sample validation, realistic costs, slippage, liquidity and regime testing.", es: "Mide la variabilidad de los resultados bajo las hipótesis suministradas. No prueba que una estrategia mantendrá su edge, no corrige overfitting y no sustituye validación fuera de muestra, costes realistas, slippage, liquidez y pruebas por régimen." },
+    "Leia a metodologia completa →": { en: "Read the full methodology →", es: "Lee la metodología completa →" },
+    "Ferramenta educacional. Resultados simulados não garantem desempenho futuro.": { en: "Educational tool. Simulated results do not guarantee future performance.", es: "Herramienta educativa. Los resultados simulados no garantizan rendimiento futuro." },
+    "VOCÊ ESTÁ NA VERSÃO OFFLINE": { en: "YOU ARE USING THE OFFLINE VERSION", es: "ESTÁS USANDO LA VERSIÓN OFFLINE" },
+    "Pronta para uso local": { en: "Ready for local use", es: "Lista para uso local" },
+    "Este arquivo é autossuficiente: a interface, os gráficos e o motor estatístico estão incorporados nele. Você pode guardá-lo em qualquer pasta e abri-lo novamente com dois cliques.": { en: "This file is self-contained: the interface, charts and statistical engine are embedded in it. You can keep it in any folder and open it again with a double click.", es: "Este archivo es autosuficiente: la interfaz, los gráficos y el motor estadístico están incorporados. Puedes guardarlo en cualquier carpeta y abrirlo de nuevo con doble clic." },
+    "Ver projeto e documentação no GitHub": { en: "View project and documentation on GitHub", es: "Ver proyecto y documentación en GitHub" },
+    "DESAFIO DE PREVISÃO": { en: "PREDICTION CHALLENGE", es: "DESAFÍO DE PREDICCIÓN" },
+    "Escolha sua previsão antes de simular": { en: "Choose your prediction before simulating", es: "Elige tu predicción antes de simular" },
+    "Sua previsão": { en: "Your prediction", es: "Tu predicción" },
+    "Previsão registrada. Agora execute a simulação.": { en: "Prediction recorded. Now run the simulation.", es: "Predicción registrada. Ahora ejecuta la simulación." },
+    "Acertou a previsão.": { en: "Your prediction was correct.", es: "Acertaste la predicción." },
+    "Sua previsão não se confirmou.": { en: "Your prediction was not confirmed.", es: "Tu predicción no se confirmó." },
+    "Ver gráficos e distribuição completos ↓": { en: "View full charts and distribution ↓", es: "Ver gráficos y distribución completos ↓" }
+  };
+
+  Object.assign(phraseTranslations, {
+    "Uma ferramenta educacional para aprender a pensar em": { en: "An educational tool for learning to think in", es: "Una herramienta educativa para aprender a pensar en" },
+    "probabilidades": { en: "probabilities", es: "probabilidades" },
+    ", e não em uma única curva de resultados. Teste milhares de futuros possíveis para uma estratégia, estime drawdowns, sequências de perdas, risco de violação e probabilidade de atingir metas.": { en: ", not in a single equity curve. Test thousands of possible futures for a strategy and estimate drawdowns, losing streaks, breach risk and target probabilities.", es: ", y no en una sola curva de resultados. Prueba miles de futuros posibles para una estrategia y estima drawdowns, rachas de pérdidas, riesgo de incumplimiento y probabilidades de alcanzar metas." },
+    "Um backtest mostra": { en: "A backtest shows", es: "Un backtest muestra" },
+    "uma sequência histórica": { en: "one historical sequence", es: "una secuencia histórica" },
+    ". O problema é que duas estratégias com a mesma média de ganhos podem produzir experiências muito diferentes quando a ordem dos ganhos e perdas muda. Monte Carlo cria muitas sequências plausíveis para revelar essa incerteza.": { en: ". The problem is that two strategies with the same average results can create very different experiences when the order of wins and losses changes. Monte Carlo creates many plausible sequences to reveal that uncertainty.", es: ". El problema es que dos estrategias con los mismos resultados medios pueden producir experiencias muy distintas cuando cambia el orden de ganancias y pérdidas. Monte Carlo crea muchas secuencias plausibles para revelar esa incertidumbre." },
+    "Neste modo, você pode começar por uma hipótese simples de estratégia ou usar resultados reais de operações passadas. Para aprender, comece por": { en: "In this mode you can start from a simple strategy hypothesis or use real past trade results. To learn, start with", es: "En este modo puedes comenzar con una hipótesis simple de estrategia o usar resultados reales de operaciones pasadas. Para aprender, comienza con" },
+    "; para analisar uma estratégia existente, prefira": { en: "; to analyze an existing strategy, prefer", es: "; para analizar una estrategia existente, usa" },
+    ".": { en: ".", es: "." },
+    "Use esta seção quando quiser descobrir não apenas se a estratégia ganha dinheiro, mas se ela consegue": { en: "Use this section when you want to know not only whether the strategy makes money, but whether it can", es: "Usa esta sección cuando quieras saber no solo si la estrategia gana dinero, sino si puede" },
+    "sobreviver às regras da conta": { en: "survive the account rules", es: "sobrevivir a las reglas de la cuenta" },
+    "até chegar à meta.": { en: "until reaching the target.", es: "hasta alcanzar la meta." },
+    "Taxa de acerto (%)": { en: "Win rate (%)", es: "Tasa de acierto (%)" },
+    "Risco por trade (%)": { en: "Risk per trade (%)", es: "Riesgo por trade (%)" },
+    "Custo por trade": { en: "Cost per trade", es: "Coste por trade" },
+    "Aceita um número por linha ou CSV delimitado por vírgula, ponto e vírgula ou tabulação.": { en: "Accepts one number per line or CSV delimited by comma, semicolon or tab.", es: "Acepta un número por línea o CSV delimitado por coma, punto y coma o tabulación." },
+    "Antes de cada simulação, faça uma previsão. O objetivo é comparar sua intuição com o comportamento estatístico observado.": { en: "Before each simulation, make a prediction. The goal is to compare your intuition with the statistical behavior you observe.", es: "Antes de cada simulación, haz una predicción. El objetivo es comparar tu intuición con el comportamiento estadístico observado." },
+    "Preço / GBM": { en: "Price / GBM", es: "Precio / GBM" },
+    "P5 do saldo final": { en: "P5 final balance", es: "P5 del saldo final" },
+    "Sequência de perdas P95": { en: "P95 losing streak", es: "Racha de pérdidas P95" },
+    "Pior drawdown observado": { en: "Worst observed drawdown", es: "Peor drawdown observado" },
+    "Amplitude entre cenários bons e ruins": { en: "Spread between good and bad scenarios", es: "Amplitud entre escenarios buenos y malos" },
+    "Simulando...": { en: "Simulating...", es: "Simulando..." }
+  });
+
+  const messages = {
+    "lesson.experiment": { pt: "Experimento {current} de {total}", en: "Experiment {current} of {total}", es: "Experimento {current} de {total}" },
+    "lesson.progress": { pt: "{completed} de {total} experimentos", en: "{completed} of {total} experiments", es: "{completed} de {total} experimentos" },
+    "lesson.kicker": { pt: "Experimento {n}", en: "Experiment {n}", es: "Experimento {n}" },
+    "lesson.completed": { pt: "Concluída", en: "Completed", es: "Completada" },
+    "lesson.rerun": { pt: "Executar novamente", en: "Run again", es: "Ejecutar nuevamente" },
+    "lesson.compareAgain": { pt: "Executar comparação novamente", en: "Run comparison again", es: "Ejecutar comparación nuevamente" },
+    "lesson.runComparison": { pt: "Executar comparação de riscos", en: "Run risk comparison", es: "Ejecutar comparación de riesgos" },
+    "lesson.finish": { pt: "Concluir aula →", en: "Finish lesson →", es: "Finalizar clase →" },
+    "lesson.predictionScore": { pt: "Desafios de previsão: {score}/{total} respostas corretas.", en: "Prediction challenges: {score}/{total} correct answers.", es: "Desafíos de predicción: {score}/{total} respuestas correctas." },
+    "trade.detected": { pt: "{count} trades detectados · {wins} ganhos · {losses} perdas · média {avg}", en: "{count} trades detected · {wins} wins · {losses} losses · average {avg}", es: "{count} trades detectados · {wins} ganancias · {losses} pérdidas · media {avg}" },
+    "trade.empty": { pt: "Aceita um número por linha ou CSV delimitado por vírgula, ponto e vírgula ou tabulação.", en: "Accepts one number per line or CSV delimited by comma, semicolon or tab.", es: "Acepta un número por línea o CSV delimitado por coma, punto y coma o tabulación." },
+    "results.strategy": { pt: "Distribuição da estratégia", en: "Strategy distribution", es: "Distribución de la estrategia" },
+    "results.gbm": { pt: "Distribuição de preço — GBM", en: "Price distribution — GBM", es: "Distribución de precio — GBM" },
+    "results.meta": { pt: "{sims} simulações · semente {seed}", en: "{sims} simulations · seed {seed}", es: "{sims} simulaciones · semilla {seed}" },
+    "results.profitProb": { pt: "Prob. de lucro", en: "Profit probability", es: "Prob. de beneficio" },
+    "results.profitProbSub": { pt: "terminou acima do capital inicial", en: "finished above starting capital", es: "terminó por encima del capital inicial" },
+    "results.breach": { pt: "Risco de violação", en: "Breach risk", es: "Riesgo de incumplimiento" },
+    "results.breachSub": { pt: "ruína, perda máx. ou perda diária", en: "ruin, max loss or daily loss", es: "ruina, pérdida máx. o pérdida diaria" },
+    "results.targetBefore": { pt: "Meta antes da violação", en: "Target before breach", es: "Meta antes del incumplimiento" },
+    "results.targetBeforeSub": { pt: "atingiu a meta primeiro", en: "target was reached first", es: "alcanzó la meta primero" },
+    "results.medianBalance": { pt: "Saldo mediano", en: "Median balance", es: "Saldo mediano" },
+    "results.medianDd": { pt: "Drawdown mediano", en: "Median drawdown", es: "Drawdown mediano" },
+    "results.worstDd": { pt: "Pior DD observado", en: "Worst observed DD", es: "Peor DD observado" },
+    "results.maxAmong": { pt: "máximo entre as simulações", en: "maximum across simulations", es: "máximo entre las simulaciones" },
+    "results.lossStreak": { pt: "Seq. perdas P95", en: "P95 losing streak", es: "Racha de pérdidas P95" },
+    "results.winRateSample": { pt: "Win rate da amostra", en: "Sample win rate", es: "Win rate de la muestra" },
+    "results.expectancy": { pt: "Expectância", en: "Expectancy", es: "Expectativa" },
+    "results.finalBalanceDistribution": { pt: "Distribuição do saldo final", en: "Final balance distribution", es: "Distribución del saldo final" },
+    "results.finalBalance": { pt: "Saldo final", en: "Final balance", es: "Saldo final" },
+    "results.distribution": { pt: "Distribuição", en: "Distribution", es: "Distribución" },
+    "results.interpretTrade": { pt: "Em 95% das simulações, o drawdown máximo ficou em até aproximadamente {dd}. O saldo final P5 foi {p5} e o P95 foi {p95}. {ddMessage} Use esses percentis como faixa de stress test, não como promessa de resultado.", en: "In 95% of simulations, maximum drawdown stayed at or below approximately {dd}. Final balance P5 was {p5} and P95 was {p95}. {ddMessage} Use these percentiles as a stress-test range, not as a promise of performance.", es: "En el 95% de las simulaciones, el drawdown máximo quedó en aproximadamente {dd} o menos. El saldo final P5 fue {p5} y el P95 fue {p95}. {ddMessage} Usa estos percentiles como rango de stress test, no como promesa de resultado." },
+    "results.ddHigh": { pt: "O P95 de drawdown é elevado; o dimensionamento merece atenção.", en: "P95 drawdown is high; position sizing deserves attention.", es: "El P95 de drawdown es elevado; el dimensionamiento merece atención." },
+    "results.ddLow": { pt: "O P95 de drawdown está abaixo de 30% nesta configuração, mas ainda depende das hipóteses da amostra.", en: "P95 drawdown is below 30% in this configuration, but still depends on the sample assumptions.", es: "El P95 de drawdown está por debajo del 30% en esta configuración, pero sigue dependiendo de las hipótesis de la muestra." },
+    "results.priceMedian": { pt: "Preço mediano", en: "Median price", es: "Precio mediano" },
+    "results.priceP5": { pt: "Preço P5", en: "P5 price", es: "Precio P5" },
+    "results.priceP95": { pt: "Preço P95", en: "P95 price", es: "Precio P95" },
+    "results.aboveStart": { pt: "Prob. acima do início", en: "Prob. above start", es: "Prob. por encima del inicio" },
+    "results.aboveStartSub": { pt: "preço final > preço inicial", en: "final price > starting price", es: "precio final > precio inicial" },
+    "results.var": { pt: "VaR empírico 95%", en: "Empirical VaR 95%", es: "VaR empírico 95%" },
+    "results.finalPriceDistribution": { pt: "Distribuição do preço final", en: "Final price distribution", es: "Distribución del precio final" },
+    "results.finalPrice": { pt: "Preço final", en: "Final price", es: "Precio final" },
+    "results.gbmInterpret": { pt: "Sob as hipóteses de retorno e volatilidade fornecidas, metade das simulações terminou abaixo de {median} e metade acima. A faixa P5–P95 foi de {p5} a {p95}. GBM não modela saltos, volatilidade variável nem regimes.", en: "Under the supplied return and volatility assumptions, half the simulations finished below {median} and half above. The P5–P95 range was {p5} to {p95}. GBM does not model jumps, changing volatility or regimes.", es: "Bajo las hipótesis de retorno y volatilidad suministradas, la mitad de las simulaciones terminó por debajo de {median} y la mitad por encima. El rango P5–P95 fue de {p5} a {p95}. GBM no modela saltos, volatilidad variable ni regímenes." }
+  };
+
+  const nodeOriginal = new WeakMap();
+  const attrOriginal = new WeakMap();
+  let current = "pt-BR";
+  let applying = false;
+
+  function localeKey(lang = current) {
+    return lang === "en" ? "en" : lang === "es" ? "es" : "pt";
+  }
+
+  function interpolate(value, vars = {}) {
+    return String(value).replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? "");
+  }
+
+  function t(key, vars = {}) {
+    const entry = messages[key];
+    if (!entry) return key;
+    return interpolate(entry[localeKey()] ?? entry.pt, vars);
+  }
+
+  function text(value) {
+    const clean = String(value ?? "").trim();
+    const entry = phraseTranslations[clean];
+    if (!entry || current === "pt-BR") return clean;
+    return entry[localeKey()] ?? clean;
+  }
+
+  function translatedPhrase(original) {
+    const clean = original.trim();
+    const entry = phraseTranslations[clean];
+    if (!entry || current === "pt-BR") return original;
+    const translated = entry[localeKey()] ?? clean;
+    const prefix = original.match(/^\s*/)?.[0] ?? "";
+    const suffix = original.match(/\s*$/)?.[0] ?? "";
+    return prefix + translated + suffix;
+  }
+
+  function translateTextNode(node) {
+    if (!node.nodeValue || !node.nodeValue.trim()) return;
+    if (!nodeOriginal.has(node)) nodeOriginal.set(node, node.nodeValue);
+    node.nodeValue = translatedPhrase(nodeOriginal.get(node));
+  }
+
+  function translateAttributes(element) {
+    if (!(element instanceof Element)) return;
+    const attrs = ["placeholder", "title", "aria-label"];
+    if (!attrOriginal.has(element)) attrOriginal.set(element, {});
+    const originals = attrOriginal.get(element);
+    attrs.forEach((attr) => {
+      if (!element.hasAttribute(attr)) return;
+      if (!(attr in originals)) originals[attr] = element.getAttribute(attr);
+      const original = originals[attr];
+      const clean = String(original ?? "").trim();
+      const entry = phraseTranslations[clean];
+      element.setAttribute(attr, current === "pt-BR" || !entry ? original : (entry[localeKey()] ?? original));
+    });
+  }
+
+  function translateTree(root = document.body) {
+    if (!root) return;
+    applying = true;
+    try {
+      if (root.nodeType === Node.TEXT_NODE) {
+        translateTextNode(root);
+        return;
+      }
+      if (root.nodeType === Node.ELEMENT_NODE) translateAttributes(root);
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const parent = node.parentElement;
+          if (parent && !["SCRIPT", "STYLE", "CODE"].includes(parent.tagName)) translateTextNode(node);
+        } else {
+          translateAttributes(node);
+        }
+      }
+    } finally {
+      applying = false;
+    }
+  }
+
+  function setLanguage(lang) {
+    current = ["pt-BR", "en", "es"].includes(lang) ? lang : "pt-BR";
+    document.documentElement.lang = current;
+    try { localStorage.setItem("mc-language", current); } catch {}
+    const selector = document.getElementById("language-selector");
+    if (selector) selector.value = current;
+    translateTree(document.body);
+    document.dispatchEvent(new CustomEvent("i18n:change", { detail: { language: current } }));
+  }
+
+  function detectLanguage() {
+    try {
+      const saved = localStorage.getItem("mc-language");
+      if (["pt-BR", "en", "es"].includes(saved)) return saved;
+    } catch {}
+    const nav = (navigator.language || "").toLowerCase();
+    if (nav.startsWith("es")) return "es";
+    if (nav.startsWith("en")) return "en";
+    return "pt-BR";
+  }
+
+  function init() {
+    const selector = document.getElementById("language-selector");
+    if (selector) selector.addEventListener("change", () => setLanguage(selector.value));
+    const observer = new MutationObserver((mutations) => {
+      if (applying) return;
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.TEXT_NODE) translateTextNode(node);
+          else if (node.nodeType === Node.ELEMENT_NODE) translateTree(node);
+        });
+      });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    setLanguage(detectLanguage());
+  }
+
+  window.I18N = {
+    init,
+    setLanguage,
+    getLanguage: () => current,
+    t,
+    text,
+    translateTree
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+})();
+  </script>
 
   <script>
 function mulberry32(seed = 123456789) {
@@ -1145,8 +1585,12 @@ function structuredCloneSafe(value) {
 
 
 const $ = (id) => document.getElementById(id);
-const money = (value) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 }).format(value);
-const number = (value, digits = 2) => new Intl.NumberFormat("pt-BR", { maximumFractionDigits: digits }).format(value);
+const currentLocale = () => window.I18N?.getLanguage?.() || "pt-BR";
+const tr = (key, vars = {}) => window.I18N?.t?.(key, vars) || key;
+const trText = (value) => window.I18N?.text?.(value) || value;
+const langPick = (pt, en, es) => currentLocale() === "en" ? en : currentLocale() === "es" ? es : pt;
+const money = (value) => new Intl.NumberFormat(currentLocale(), { style: "currency", currency: "BRL", maximumFractionDigits: 2 }).format(value);
+const number = (value, digits = 2) => new Intl.NumberFormat(currentLocale(), { maximumFractionDigits: digits }).format(value);
 const pct = (value, digits = 1) => `${number(value, digits)}%`;
 let lastResult = null;
 
@@ -1187,6 +1631,15 @@ const LESSON_STEPS = [
     title: "Crie uma referência com risco baixo",
     objective: "Vamos começar com uma estratégia hipotética de expectância positiva e arriscar apenas 0,5% do capital por operação. Este resultado será nossa referência para os próximos experimentos.",
     question: "Se o edge da estratégia é positivo, isso significa que a curva de capital será sempre tranquila?",
+    prediction: {
+      prompt: "Uma estratégia com expectância positiva terá uma curva de capital sempre suave?",
+      choices: [
+        { id: "yes", label: "Sim, o edge elimina sequências difíceis" },
+        { id: "no", label: "Não, ainda podem existir drawdowns e losing streaks" },
+      ],
+      correct: "no",
+      explanation: "Expectância positiva descreve uma média, não a ordem dos resultados. Mesmo uma estratégia com edge pode atravessar sequências desfavoráveis.",
+    },
     controlled: [
       "Taxa de acerto: 45%",
       "Reward:Risk: 1,5 : 1",
@@ -1205,6 +1658,16 @@ const LESSON_STEPS = [
     title: "Dobre o risco sem mudar a estratégia",
     objective: "Agora mudaremos somente o risco por trade de 0,5% para 1%. A taxa de acerto, o payoff, a quantidade de trades e a sequência pseudoaleatória permanecerão iguais.",
     question: "Dobrar o risco deveria melhorar a vantagem estatística da estratégia — ou apenas ampliar seus resultados?",
+    prediction: {
+      prompt: "Ao passar de 0,5% para 1% de risco, o que você espera para o P95 do drawdown?",
+      choices: [
+        { id: "down", label: "Deve diminuir" },
+        { id: "same", label: "Deve ficar praticamente igual" },
+        { id: "up", label: "Deve aumentar" },
+      ],
+      correct: "up",
+      explanation: "O edge não mudou, mas cada perda pesa mais sobre o capital. O esperado é que o drawdown financeiro e percentual aumente.",
+    },
     controlled: [
       "Mesmo win rate de 45%",
       "Mesmo Reward:Risk de 1,5 : 1",
@@ -1222,6 +1685,16 @@ const LESSON_STEPS = [
     title: "Veja o que acontece com 2% de risco",
     objective: "O terceiro experimento mantém exatamente a mesma estratégia e eleva o risco para 2% por trade. Este é o teste mais importante da aula sobre position sizing.",
     question: "Uma estratégia pode continuar tendo expectância positiva e, mesmo assim, ficar desconfortável ou impraticável por causa do tamanho da posição?",
+    prediction: {
+      prompt: "Ao elevar o risco para 2%, o edge matemático da estratégia muda?",
+      choices: [
+        { id: "higher", label: "Sim, o edge aumenta" },
+        { id: "same", label: "Não, o edge permanece o mesmo" },
+        { id: "lower", label: "Sim, o edge diminui" },
+      ],
+      correct: "same",
+      explanation: "Position sizing muda a magnitude dos ganhos e perdas, mas não altera a taxa de acerto nem o payoff usados para definir o edge.",
+    },
     controlled: [
       "Mesmo edge dos experimentos anteriores",
       "Mesma semente e mesmo número de trades",
@@ -1238,6 +1711,16 @@ const LESSON_STEPS = [
     title: "Os mesmos trades, em ordens diferentes",
     objective: "Agora abandonamos a hipótese paramétrica e usamos um histórico demonstrativo. O método Reshuffle mantém exatamente os mesmos trades em cada caminho e altera apenas sua ordem.",
     question: "Se todos os caminhos contêm exatamente os mesmos ganhos e perdas, o saldo final muda? E o drawdown?",
+    prediction: {
+      prompt: "No Reshuffle dos mesmos trades, o que deve variar mais entre as simulações?",
+      choices: [
+        { id: "final", label: "O saldo final" },
+        { id: "path", label: "O drawdown e o caminho da equity" },
+        { id: "nothing", label: "Praticamente nada" },
+      ],
+      correct: "path",
+      explanation: "Como os mesmos trades estão presentes em todos os caminhos, o saldo final tende a ser igual; o que muda fortemente é a ordem e, portanto, o drawdown.",
+    },
     controlled: [
       "Mesmos 64 trades em todos os caminhos",
       "Nenhum trade é criado ou removido",
@@ -1267,6 +1750,16 @@ const LESSON_STEPS = [
     title: "Agora permita que a composição também mude",
     objective: "No Bootstrap, cada trade é sorteado com reposição. Um resultado histórico pode aparecer várias vezes ou não aparecer. Agora variam tanto a ordem quanto a composição da amostra.",
     question: "Por que a distribuição do saldo final deve ficar mais larga do que no Reshuffle?",
+    prediction: {
+      prompt: "Comparado ao Reshuffle, o Bootstrap deve produzir uma distribuição de saldo final...",
+      choices: [
+        { id: "narrower", label: "Mais estreita" },
+        { id: "same", label: "Praticamente igual" },
+        { id: "wider", label: "Mais ampla" },
+      ],
+      correct: "wider",
+      explanation: "No Bootstrap, além da ordem, a composição da amostra muda porque os trades são sorteados com reposição.",
+    },
     controlled: [
       "Mesmo histórico demonstrativo",
       "Mesmo número de trades por caminho",
@@ -1295,6 +1788,15 @@ const LESSON_STEPS = [
     title: "Meta versus limites de uma prop firm",
     objective: "No último experimento, aplicamos uma meta de 8%, perda máxima de 10% e perda diária de 4%. A aula compara automaticamente riscos de 0,5%, 1% e 2% com o mesmo edge.",
     question: "Mais risco sempre aumenta a chance de passar uma avaliação — ou pode elevar a chance de violar regras antes de chegar à meta?",
+    prediction: {
+      prompt: "Com limites de prop firm, aumentar o risco sempre melhora a chance de atingir a meta antes da violação?",
+      choices: [
+        { id: "yes", label: "Sim, mais risco sempre ajuda" },
+        { id: "no", label: "Não, existe um trade-off entre velocidade e sobrevivência" },
+      ],
+      correct: "no",
+      explanation: "Mais risco pode acelerar a meta, mas também aproxima a conta dos limites de perda. A relação não é monotônica nem universal.",
+    },
     controlled: [
       "Win rate: 45% e Reward:Risk: 1,5 : 1",
       "Meta: +8%",
@@ -1309,10 +1811,246 @@ const LESSON_STEPS = [
   },
 ];
 
+const LESSON_TRANSLATIONS = {
+  en: {
+    "risk-low": {
+      tag: "Risk per trade",
+      title: "Create a low-risk baseline",
+      objective: "We will start with a hypothetical positive-expectancy strategy and risk only 0.5% of capital per trade. This result will be our baseline for the next experiments.",
+      question: "If the strategy has a positive edge, does that mean the equity curve will always be smooth?",
+      controlled: ["Win rate: 45%", "Reward:Risk: 1.5 : 1", "200 trades per path", "2,500 simulations with the same seed", "No prop-firm limits in this first experiment"],
+      watch: ["P95 drawdown", "P5 final balance", "P95 losing streak"],
+      preview: ["Risk: 0.5%", "Win rate: 45%", "R:R: 1.5", "Sizing: fixed", "Rules: disabled"],
+      prediction: {
+        prompt: "Will a positive-expectancy strategy always have a smooth equity curve?",
+        choices: [
+          { id: "yes", label: "Yes, the edge eliminates difficult sequences" },
+          { id: "no", label: "No, drawdowns and losing streaks can still occur" }
+        ],
+        explanation: "Positive expectancy describes an average, not the order of results. Even a strategy with an edge can go through unfavorable sequences."
+      }
+    },
+    "risk-medium": {
+      tag: "Risk per trade",
+      title: "Double risk without changing the strategy",
+      objective: "Now we will change only risk per trade from 0.5% to 1%. Win rate, payoff, number of trades and the pseudo-random sequence remain the same.",
+      question: "Should doubling risk improve the strategy's statistical edge — or only amplify its results?",
+      controlled: ["Same 45% win rate", "Same 1.5 : 1 Reward:Risk", "Same 200 trades and same seed", "Only risk changes: 0.5% → 1%"],
+      watch: ["Change in P95 drawdown", "Change in P5 balance", "Probability of finishing profitable"],
+      preview: ["Risk: 1%", "Edge: unchanged", "Sizing: fixed", "Rules: disabled"],
+      prediction: {
+        prompt: "When risk rises from 0.5% to 1%, what do you expect for P95 drawdown?",
+        choices: [
+          { id: "down", label: "It should decrease" },
+          { id: "same", label: "It should remain almost the same" },
+          { id: "up", label: "It should increase" }
+        ],
+        explanation: "The edge did not change, but each loss weighs more on capital. Financial and percentage drawdown should increase."
+      }
+    },
+    "risk-high": {
+      tag: "Position sizing",
+      title: "See what happens with 2% risk",
+      objective: "The third experiment keeps exactly the same strategy and raises risk to 2% per trade. This is the lesson's main position-sizing experiment.",
+      question: "Can a strategy remain positive-expectancy and still become uncomfortable or impractical because of position size?",
+      controlled: ["Same edge as previous experiments", "Same seed and same number of trades", "Risk is now four times the initial baseline"],
+      watch: ["P95 drawdown", "Worst observed drawdown", "Spread between good and bad scenarios"],
+      preview: ["Risk: 2%", "Edge: unchanged", "Sizing: fixed", "Rules: disabled"],
+      prediction: {
+        prompt: "When risk rises to 2%, does the strategy's mathematical edge change?",
+        choices: [
+          { id: "higher", label: "Yes, the edge increases" },
+          { id: "same", label: "No, the edge remains the same" },
+          { id: "lower", label: "Yes, the edge decreases" }
+        ],
+        explanation: "Position sizing changes the magnitude of wins and losses, but it does not change the win rate or payoff that define the edge."
+      }
+    },
+    reshuffle: {
+      tag: "Trade order",
+      title: "The same trades in different orders",
+      objective: "Now we leave the parametric model and use a demonstration trade history. Reshuffle keeps exactly the same trades in every path and changes only their order.",
+      question: "If every path contains exactly the same wins and losses, does final balance change? What about drawdown?",
+      controlled: ["Same 64 trades in every path", "No trade is created or removed", "Only the order is shuffled", "No prop-firm rules"],
+      watch: ["Final-balance dispersion", "P50 and P95 drawdown", "Losing streaks"],
+      preview: ["Method: Reshuffle", "Trades: 64", "Sample: fixed", "Order: random"],
+      prediction: {
+        prompt: "When reshuffling the same trades, what should vary the most across simulations?",
+        choices: [
+          { id: "final", label: "The final balance" },
+          { id: "path", label: "Drawdown and the equity path" },
+          { id: "nothing", label: "Almost nothing" }
+        ],
+        explanation: "Because the same trades are present in every path, final balance tends to be the same; what changes strongly is their order and therefore drawdown."
+      }
+    },
+    bootstrap: {
+      tag: "Sample uncertainty",
+      title: "Now allow the composition to change too",
+      objective: "In Bootstrap, each trade is sampled with replacement. A historical result may appear several times or not at all. Both order and sample composition now vary.",
+      question: "Why should the final-balance distribution be wider than under Reshuffle?",
+      controlled: ["Same demonstration history", "Same number of trades per path", "Method changes from Reshuffle to Bootstrap"],
+      watch: ["P5–P95 balance range", "P95 drawdown", "Difference versus Reshuffle"],
+      preview: ["Method: Bootstrap", "Trades: 64", "With replacement", "Composition: variable"],
+      prediction: {
+        prompt: "Compared with Reshuffle, Bootstrap should produce a final-balance distribution that is...",
+        choices: [
+          { id: "narrower", label: "Narrower" },
+          { id: "same", label: "Almost the same" },
+          { id: "wider", label: "Wider" }
+        ],
+        explanation: "With Bootstrap, sample composition changes in addition to order because trades are drawn with replacement."
+      }
+    },
+    "prop-firm": {
+      tag: "Survival",
+      title: "Target versus prop-firm limits",
+      objective: "In the last experiment we apply an 8% target, 10% maximum loss and 4% daily loss. The lesson automatically compares 0.5%, 1% and 2% risk with the same edge.",
+      question: "Does more risk always increase the chance of passing an evaluation — or can it raise the chance of breaching rules before reaching the target?",
+      controlled: ["Win rate: 45% and Reward:Risk: 1.5 : 1", "Target: +8%", "Maximum loss: 10%", "Daily loss: 4%", "Same seed for all three risk levels"],
+      watch: ["Target before breach", "Breach risk", "Trade-off between speed and survival"],
+      preview: ["Comparison: 0.5% × 1% × 2%", "Target: 8%", "Max loss: 10%", "Daily loss: 4%"],
+      prediction: {
+        prompt: "With prop-firm limits, does increasing risk always improve the chance of reaching the target before a breach?",
+        choices: [
+          { id: "yes", label: "Yes, more risk always helps" },
+          { id: "no", label: "No, there is a trade-off between speed and survival" }
+        ],
+        explanation: "More risk can accelerate progress toward the target, but it also moves the account closer to loss limits. The relationship is not monotonic or universal."
+      }
+    }
+  },
+  es: {
+    "risk-low": {
+      tag: "Riesgo por trade",
+      title: "Crea una referencia con riesgo bajo",
+      objective: "Comenzaremos con una estrategia hipotética de expectativa positiva y arriesgaremos solo el 0,5% del capital por operación. Este resultado será nuestra referencia para los siguientes experimentos.",
+      question: "Si la estrategia tiene edge positivo, ¿significa que la curva de capital siempre será tranquila?",
+      controlled: ["Tasa de acierto: 45%", "Reward:Risk: 1,5 : 1", "200 trades por trayectoria", "2.500 simulaciones con la misma semilla", "Sin límites de prop firm en este primer experimento"],
+      watch: ["P95 del drawdown", "P5 del saldo final", "Racha de pérdidas P95"],
+      preview: ["Riesgo: 0,5%", "Win rate: 45%", "R:R: 1,5", "Sizing: fijo", "Reglas: desactivadas"],
+      prediction: {
+        prompt: "¿Una estrategia con expectativa positiva tendrá siempre una curva de capital suave?",
+        choices: [
+          { id: "yes", label: "Sí, el edge elimina las secuencias difíciles" },
+          { id: "no", label: "No, todavía pueden existir drawdowns y rachas de pérdidas" }
+        ],
+        explanation: "La expectativa positiva describe una media, no el orden de los resultados. Incluso una estrategia con edge puede atravesar secuencias desfavorables."
+      }
+    },
+    "risk-medium": {
+      tag: "Riesgo por trade",
+      title: "Duplica el riesgo sin cambiar la estrategia",
+      objective: "Ahora cambiaremos solo el riesgo por trade del 0,5% al 1%. La tasa de acierto, payoff, cantidad de trades y secuencia pseudoaleatoria permanecerán iguales.",
+      question: "¿Duplicar el riesgo debería mejorar la ventaja estadística de la estrategia o solo ampliar sus resultados?",
+      controlled: ["Mismo win rate del 45%", "Mismo Reward:Risk de 1,5 : 1", "Mismos 200 trades y misma semilla", "Solo cambia el riesgo: 0,5% → 1%"],
+      watch: ["Cambio en P95 del drawdown", "Cambio en P5 del saldo", "Probabilidad de terminar con beneficio"],
+      preview: ["Riesgo: 1%", "Edge: sin cambios", "Sizing: fijo", "Reglas: desactivadas"],
+      prediction: {
+        prompt: "Al pasar del 0,5% al 1% de riesgo, ¿qué esperas para el P95 del drawdown?",
+        choices: [
+          { id: "down", label: "Debe disminuir" },
+          { id: "same", label: "Debe quedar casi igual" },
+          { id: "up", label: "Debe aumentar" }
+        ],
+        explanation: "El edge no cambió, pero cada pérdida pesa más sobre el capital. Se espera que aumente el drawdown financiero y porcentual."
+      }
+    },
+    "risk-high": {
+      tag: "Dimensionamiento",
+      title: "Observa qué ocurre con 2% de riesgo",
+      objective: "El tercer experimento mantiene exactamente la misma estrategia y eleva el riesgo al 2% por trade. Es la prueba principal de position sizing de la clase.",
+      question: "¿Puede una estrategia mantener expectativa positiva y aun así volverse incómoda o impracticable por el tamaño de la posición?",
+      controlled: ["Mismo edge de los experimentos anteriores", "Misma semilla y mismo número de trades", "El riesgo ahora es cuatro veces la referencia inicial"],
+      watch: ["P95 del drawdown", "Peor drawdown observado", "Amplitud entre escenarios buenos y malos"],
+      preview: ["Riesgo: 2%", "Edge: sin cambios", "Sizing: fijo", "Reglas: desactivadas"],
+      prediction: {
+        prompt: "Al elevar el riesgo al 2%, ¿cambia el edge matemático de la estrategia?",
+        choices: [
+          { id: "higher", label: "Sí, el edge aumenta" },
+          { id: "same", label: "No, el edge permanece igual" },
+          { id: "lower", label: "Sí, el edge disminuye" }
+        ],
+        explanation: "El position sizing cambia la magnitud de ganancias y pérdidas, pero no la tasa de acierto ni el payoff que definen el edge."
+      }
+    },
+    reshuffle: {
+      tag: "Orden de trades",
+      title: "Los mismos trades en órdenes diferentes",
+      objective: "Ahora dejamos el modelo paramétrico y usamos un historial demostrativo. Reshuffle mantiene exactamente los mismos trades en cada trayectoria y solo cambia su orden.",
+      question: "Si todas las trayectorias contienen exactamente las mismas ganancias y pérdidas, ¿cambia el saldo final? ¿Y el drawdown?",
+      controlled: ["Los mismos 64 trades en todas las trayectorias", "No se crea ni elimina ningún trade", "Solo se baraja el orden", "Sin reglas de prop firm"],
+      watch: ["Dispersión del saldo final", "P50 y P95 del drawdown", "Rachas de pérdidas"],
+      preview: ["Método: Reshuffle", "Trades: 64", "Muestra: fija", "Orden: aleatorio"],
+      prediction: {
+        prompt: "Al reordenar los mismos trades, ¿qué debería variar más entre simulaciones?",
+        choices: [
+          { id: "final", label: "El saldo final" },
+          { id: "path", label: "El drawdown y la trayectoria de equity" },
+          { id: "nothing", label: "Prácticamente nada" }
+        ],
+        explanation: "Como los mismos trades están presentes en todas las trayectorias, el saldo final tiende a ser igual; lo que cambia fuertemente es el orden y, por tanto, el drawdown."
+      }
+    },
+    bootstrap: {
+      tag: "Incertidumbre de muestra",
+      title: "Ahora permite que también cambie la composición",
+      objective: "En Bootstrap, cada trade se sortea con reposición. Un resultado histórico puede aparecer varias veces o no aparecer. Ahora varían tanto el orden como la composición de la muestra.",
+      question: "¿Por qué la distribución del saldo final debería ser más amplia que en Reshuffle?",
+      controlled: ["Mismo historial demostrativo", "Mismo número de trades por trayectoria", "El método cambia de Reshuffle a Bootstrap"],
+      watch: ["Rango P5–P95 del saldo", "P95 del drawdown", "Diferencia frente a Reshuffle"],
+      preview: ["Método: Bootstrap", "Trades: 64", "Con reposición", "Composición: variable"],
+      prediction: {
+        prompt: "Comparado con Reshuffle, Bootstrap debería producir una distribución de saldo final...",
+        choices: [
+          { id: "narrower", label: "Más estrecha" },
+          { id: "same", label: "Prácticamente igual" },
+          { id: "wider", label: "Más amplia" }
+        ],
+        explanation: "En Bootstrap, además del orden, cambia la composición de la muestra porque los trades se sortean con reposición."
+      }
+    },
+    "prop-firm": {
+      tag: "Supervivencia",
+      title: "Meta frente a límites de una prop firm",
+      objective: "En el último experimento aplicamos una meta del 8%, pérdida máxima del 10% y pérdida diaria del 4%. La clase compara automáticamente riesgos del 0,5%, 1% y 2% con el mismo edge.",
+      question: "¿Más riesgo siempre aumenta la probabilidad de aprobar una evaluación o puede elevar la probabilidad de violar reglas antes de llegar a la meta?",
+      controlled: ["Win rate: 45% y Reward:Risk: 1,5 : 1", "Meta: +8%", "Pérdida máxima: 10%", "Pérdida diaria: 4%", "Misma semilla para los tres niveles de riesgo"],
+      watch: ["Meta antes del incumplimiento", "Riesgo de incumplimiento", "Trade-off entre velocidad y supervivencia"],
+      preview: ["Comparación: 0,5% × 1% × 2%", "Meta: 8%", "Max loss: 10%", "Daily loss: 4%"],
+      prediction: {
+        prompt: "Con límites de prop firm, ¿aumentar el riesgo siempre mejora la probabilidad de alcanzar la meta antes de incumplir?",
+        choices: [
+          { id: "yes", label: "Sí, más riesgo siempre ayuda" },
+          { id: "no", label: "No, existe un trade-off entre velocidad y supervivencia" }
+        ],
+        explanation: "Más riesgo puede acelerar el avance hacia la meta, pero también acerca la cuenta a los límites de pérdida. La relación no es monótona ni universal."
+      }
+    }
+  }
+};
+
+function localizedStep(step) {
+  const lang = currentLocale();
+  if (lang === "pt-BR") return step;
+  const translated = LESSON_TRANSLATIONS[lang]?.[step.id];
+  if (!translated) return step;
+  return {
+    ...step,
+    ...translated,
+    prediction: {
+      ...step.prediction,
+      ...translated.prediction,
+      choices: translated.prediction?.choices || step.prediction.choices,
+    },
+  };
+}
+
 const lessonState = {
   started: false,
   index: 0,
   results: {},
+  predictions: {},
 };
 
 document.querySelectorAll(".mode-btn").forEach((button) => {
@@ -1345,12 +2083,16 @@ $("load-sample").addEventListener("click", () => {
 
 $("run-trades").addEventListener("click", () => {
   try {
-    setBusy($("run-trades"), true, "Simulando...");
+    setBusy($("run-trades"), true, trText("Simulando..."));
     const mode = document.querySelector('input[name="trade-source"]:checked').value;
     let config;
     if (mode === "historical") {
       const trades = parsePnlText($("trade-data").value);
-      if (trades.length < 2) throw new Error("Cole pelo menos dois resultados de trades válidos.");
+      if (trades.length < 2) throw new Error(langPick(
+        "Cole pelo menos dois resultados de trades válidos.",
+        "Paste at least two valid trade results.",
+        "Pega al menos dos resultados de trades válidos."
+      ));
       config = {
         mode: "historical",
         trades,
@@ -1386,13 +2128,13 @@ $("run-trades").addEventListener("click", () => {
   } catch (error) {
     alert(error?.message || String(error));
   } finally {
-    setBusy($("run-trades"), false, "Executar simulação");
+    setBusy($("run-trades"), false, trText("Executar simulação"));
   }
 });
 
 $("run-gbm").addEventListener("click", () => {
   try {
-    setBusy($("run-gbm"), true, "Simulando...");
+    setBusy($("run-gbm"), true, trText("Simulando..."));
     const config = {
       startPrice: numValue("gbm-start"),
       annualReturnPct: numValue("gbm-return"),
@@ -1408,7 +2150,7 @@ $("run-gbm").addEventListener("click", () => {
   } catch (error) {
     alert(error?.message || String(error));
   } finally {
-    setBusy($("run-gbm"), false, "Executar GBM");
+    setBusy($("run-gbm"), false, trText("Executar GBM"));
   }
 });
 
@@ -1439,6 +2181,19 @@ $("lesson-next").addEventListener("click", () => moveLesson(1));
 $("lesson-exit").addEventListener("click", resetLesson);
 $("lesson-restart").addEventListener("click", startLesson);
 
+document.addEventListener("i18n:change", () => {
+  updateTradeStatus();
+  if (lessonState.started && !$("lesson-workspace").classList.contains("hidden")) {
+    renderLessonStep();
+  } else if (lessonState.started && !$("lesson-finish").classList.contains("hidden")) {
+    finishLesson();
+  }
+  if (lastResult) {
+    if (lastResult.type === "gbm") renderGbmResults(lastResult, { scroll: false });
+    else renderTradeResults(lastResult, { scroll: false });
+  }
+});
+
 function activateMode(mode, hideResults = true) {
   document.querySelectorAll(".mode-btn").forEach((button) => {
     button.classList.toggle("active", button.dataset.mode === mode);
@@ -1452,6 +2207,7 @@ function startLesson() {
   lessonState.started = true;
   lessonState.index = 0;
   lessonState.results = {};
+  lessonState.predictions = {};
   $("lesson-intro").classList.add("hidden");
   $("lesson-start-wrap").classList.add("hidden");
   $("lesson-finish").classList.add("hidden");
@@ -1466,12 +2222,13 @@ function resetLesson() {
   lessonState.started = false;
   lessonState.index = 0;
   lessonState.results = {};
+  lessonState.predictions = {};
   $("lesson-workspace").classList.add("hidden");
   $("lesson-finish").classList.add("hidden");
   $("lesson-intro").classList.remove("hidden");
   $("lesson-start-wrap").classList.remove("hidden");
   $("lesson-status").className = "lesson-status";
-  $("lesson-status").textContent = "Não iniciada";
+  $("lesson-status").textContent = trText("Não iniciada");
   clearLessonHighlights();
   updateLessonProgress();
 }
@@ -1489,11 +2246,13 @@ function moveLesson(delta) {
 }
 
 function renderLessonStep() {
-  const step = LESSON_STEPS[lessonState.index];
-  const existing = lessonState.results[step.id];
+  const baseStep = LESSON_STEPS[lessonState.index];
+  const step = localizedStep(baseStep);
+  const existing = lessonState.results[baseStep.id];
+  const prediction = lessonState.predictions[baseStep.id];
 
-  $("lesson-status").textContent = `Experimento ${lessonState.index + 1} de ${LESSON_STEPS.length}`;
-  $("lesson-step-kicker").textContent = `Experimento ${lessonState.index + 1}`;
+  $("lesson-status").textContent = tr("lesson.experiment", { current: lessonState.index + 1, total: LESSON_STEPS.length });
+  $("lesson-step-kicker").textContent = tr("lesson.kicker", { n: lessonState.index + 1 });
   $("lesson-step-title").textContent = step.title;
   $("lesson-step-tag").textContent = step.tag;
   $("lesson-step-objective").textContent = step.objective;
@@ -1504,29 +2263,75 @@ function renderLessonStep() {
     .map((item) => `<span class="lesson-chip">${escapeHtml(item)}</span>`)
     .join("");
 
+  renderPrediction(baseStep, step, Boolean(existing));
+
   $("lesson-prev").disabled = lessonState.index === 0;
   $("lesson-next").disabled = !existing;
   $("lesson-next").textContent = lessonState.index === LESSON_STEPS.length - 1
-    ? "Concluir aula →"
-    : "Próximo experimento →";
+    ? tr("lesson.finish")
+    : trText("Próximo experimento →");
   $("lesson-run").textContent = existing
-    ? "Executar novamente"
-    : step.type === "prop-comparison"
-      ? "Executar comparação de riscos"
-      : "Aplicar configuração e simular";
+    ? (baseStep.type === "prop-comparison" ? tr("lesson.compareAgain") : tr("lesson.rerun"))
+    : baseStep.type === "prop-comparison"
+      ? tr("lesson.runComparison")
+      : trText("Aplicar configuração e simular");
+  $("lesson-run").disabled = !prediction;
 
   if (existing) {
-    renderLessonAnalysis(step, existing, false);
+    renderLessonAnalysis(baseStep, existing, false);
   } else {
     $("lesson-analysis").classList.add("hidden");
   }
 
-  applyLessonConfig(step, false);
+  applyLessonConfig(baseStep, false);
   updateLessonProgress();
 }
 
 function lessonList(items) {
   return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+}
+
+function renderPrediction(baseStep, step, hasResult) {
+  const selected = lessonState.predictions[baseStep.id];
+  $("lesson-prediction-question").textContent = step.prediction.prompt;
+  $("lesson-prediction-options").innerHTML = step.prediction.choices.map((choice) =>
+    `<button type="button" class="prediction-option ${selected?.choice === choice.id ? "selected" : ""}" data-prediction="${escapeHtml(choice.id)}" ${hasResult ? "disabled" : ""}>${escapeHtml(choice.label)}</button>`
+  ).join("");
+
+  $("lesson-prediction-options").querySelectorAll(".prediction-option").forEach((button) => {
+    button.addEventListener("click", () => choosePrediction(baseStep, button.dataset.prediction));
+  });
+
+  if (hasResult && selected) {
+    renderPredictionFeedback(baseStep, step);
+  } else {
+    $("lesson-prediction-feedback").className = "lesson-prediction-feedback hidden";
+    $("lesson-prediction-feedback").innerHTML = selected
+      ? `<strong>${escapeHtml(trText("Previsão registrada. Agora execute a simulação."))}</strong>`
+      : "";
+  }
+}
+
+function choosePrediction(baseStep, choice) {
+  if (lessonState.results[baseStep.id]) return;
+  lessonState.predictions[baseStep.id] = {
+    choice,
+    correct: choice === baseStep.prediction.correct,
+  };
+  const step = localizedStep(baseStep);
+  renderPrediction(baseStep, step, false);
+  $("lesson-run").disabled = false;
+  $("lesson-prediction-feedback").className = "lesson-prediction-feedback";
+  $("lesson-prediction-feedback").innerHTML = `<strong>${escapeHtml(trText("Previsão registrada. Agora execute a simulação."))}</strong>`;
+}
+
+function renderPredictionFeedback(baseStep, step) {
+  const prediction = lessonState.predictions[baseStep.id];
+  if (!prediction) return;
+  const correct = prediction.correct;
+  $("lesson-prediction-feedback").className = `lesson-prediction-feedback ${correct ? "correct" : "incorrect"}`;
+  $("lesson-prediction-feedback").innerHTML =
+    `<strong>${escapeHtml(trText(correct ? "Acertou a previsão." : "Sua previsão não se confirmou."))}</strong><span>${escapeHtml(step.prediction.explanation)}</span>`;
 }
 
 function applyLessonConfig(step, highlight = true) {
@@ -1592,8 +2397,16 @@ function clearLessonHighlights() {
 
 function runLessonExperiment() {
   const step = LESSON_STEPS[lessonState.index];
+  if (!lessonState.predictions[step.id]) {
+    alert(langPick(
+      "Escolha sua previsão antes de executar a simulação.",
+      "Choose your prediction before running the simulation.",
+      "Elige tu predicción antes de ejecutar la simulación."
+    ));
+    return;
+  }
   try {
-    setBusy($("lesson-run"), true, "Simulando...");
+    setBusy($("lesson-run"), true, langPick("Simulando...", "Simulating...", "Simulando..."));
     applyLessonConfig(step, true);
 
     let payload;
@@ -1624,17 +2437,18 @@ function runLessonExperiment() {
     lessonState.results[step.id] = payload;
     $("export-results").disabled = false;
     renderLessonAnalysis(step, payload, true);
+    renderPredictionFeedback(step, localizedStep(step));
     $("lesson-next").disabled = false;
     $("lesson-run").textContent = step.type === "prop-comparison"
-      ? "Executar comparação novamente"
-      : "Executar novamente";
+      ? tr("lesson.compareAgain")
+      : tr("lesson.rerun");
     updateLessonProgress();
   } catch (error) {
     alert(error?.message || String(error));
   } finally {
     setBusy($("lesson-run"), false, lessonState.results[step.id]
-      ? (step.type === "prop-comparison" ? "Executar comparação novamente" : "Executar novamente")
-      : "Aplicar configuração e simular");
+      ? (step.type === "prop-comparison" ? tr("lesson.compareAgain") : tr("lesson.rerun"))
+      : trText("Aplicar configuração e simular"));
   }
 }
 
@@ -1644,7 +2458,7 @@ function renderLessonAnalysis(step, payload, shouldScroll = true) {
   $("lesson-analysis-metrics").innerHTML = analysis.metrics
     .map((item) => `<div class="lesson-analysis-metric"><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.value)}</strong></div>`)
     .join("");
-  $("lesson-analysis-text").innerHTML = analysis.html + '<p><a href="#results">Ver gráficos e distribuição completos ↓</a></p>';
+  $("lesson-analysis-text").innerHTML = analysis.html + `<p><a href="#results">${escapeHtml(trText("Ver gráficos e distribuição completos ↓"))}</a></p>`;
   $("lesson-analysis").classList.remove("hidden");
   if (shouldScroll) $("lesson-analysis").scrollIntoView({ behavior: "smooth", block: "center" });
 }
@@ -1653,14 +2467,22 @@ function lessonAnalysisFor(step, payload) {
   if (step.id === "risk-low") {
     const s = payload.summary;
     return {
-      title: "A referência já mostra que edge positivo não elimina períodos difíceis",
+      title: langPick(
+        "A referência já mostra que edge positivo não elimina períodos difíceis",
+        "The baseline already shows that positive edge does not eliminate difficult periods",
+        "La referencia ya muestra que un edge positivo no elimina períodos difíciles"
+      ),
       metrics: [
         { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
-        { label: "Saldo P5", value: money(s.finalBalance.p05) },
-        { label: "Seq. perdas P95", value: number(s.losingStreak.p95, 0) },
-        { label: "Prob. lucro", value: pct(s.probabilityProfitPct) },
+        { label: langPick("Saldo P5", "P5 balance", "Saldo P5"), value: money(s.finalBalance.p05) },
+        { label: langPick("Seq. perdas P95", "P95 losing streak", "Racha de pérdidas P95"), value: number(s.losingStreak.p95, 0) },
+        { label: langPick("Prob. lucro", "Profit probability", "Prob. beneficio"), value: pct(s.probabilityProfitPct) },
       ],
-      html: `<p>Com apenas <strong>0,5% de risco por trade</strong>, já existe uma distribuição de drawdowns e sequências de perdas. Isso é normal: expectância positiva descreve uma média de longo prazo, não uma trajetória lisa.</p><p>Guarde o <strong>P95 de drawdown de ${pct(s.maxDrawdownPct.p95)}</strong>. Ele será nossa referência quando aumentarmos o tamanho da posição.</p>`,
+      html: langPick(
+        `<p>Com apenas <strong>0,5% de risco por trade</strong>, já existe uma distribuição de drawdowns e sequências de perdas. Expectância positiva descreve uma média de longo prazo, não uma trajetória lisa.</p><p>Guarde o <strong>P95 de drawdown de ${pct(s.maxDrawdownPct.p95)}</strong>. Ele será nossa referência quando aumentarmos o tamanho da posição.</p>`,
+        `<p>Even with only <strong>0.5% risk per trade</strong>, there is already a distribution of drawdowns and losing streaks. Positive expectancy describes a long-run average, not a smooth path.</p><p>Remember the <strong>P95 drawdown of ${pct(s.maxDrawdownPct.p95)}</strong>. It will be our baseline when position size increases.</p>`,
+        `<p>Incluso con solo <strong>0,5% de riesgo por trade</strong>, ya existe una distribución de drawdowns y rachas de pérdidas. La expectativa positiva describe una media de largo plazo, no una trayectoria suave.</p><p>Guarda el <strong>P95 de drawdown de ${pct(s.maxDrawdownPct.p95)}</strong>. Será nuestra referencia al aumentar el tamaño de la posición.</p>`
+      ),
     };
   }
 
@@ -1671,18 +2493,28 @@ function lessonAnalysisFor(step, payload) {
     const risk = step.config.riskPct;
     const baselineRatio = baseline ? s.maxDrawdownPct.p95 / Math.max(0.0001, baseline.maxDrawdownPct.p95) : NaN;
     const priorDelta = prior ? s.maxDrawdownPct.p95 - prior.maxDrawdownPct.p95 : NaN;
+    const ratioText = Number.isFinite(baselineRatio)
+      ? langPick(
+          `, cerca de ${number(baselineRatio, 2)}× o valor da referência de 0,5%`,
+          `, about ${number(baselineRatio, 2)}× the 0.5% baseline`,
+          `, cerca de ${number(baselineRatio, 2)}× el valor de la referencia de 0,5%`
+        )
+      : "";
     return {
       title: step.id === "risk-medium"
-        ? "O edge ficou igual; o caminho ficou mais agressivo"
-        : "Position sizing pode transformar a experiência sem alterar a estratégia",
+        ? langPick("O edge ficou igual; o caminho ficou mais agressivo", "The edge stayed the same; the path became more aggressive", "El edge quedó igual; la trayectoria se volvió más agresiva")
+        : langPick("Position sizing pode transformar a experiência sem alterar a estratégia", "Position sizing can transform the experience without changing the strategy", "El position sizing puede transformar la experiencia sin cambiar la estrategia"),
       metrics: [
-        { label: "Risco por trade", value: pct(risk) },
+        { label: langPick("Risco por trade", "Risk per trade", "Riesgo por trade"), value: pct(risk) },
         { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
-        { label: "Aumento vs. etapa anterior", value: Number.isFinite(priorDelta) ? `+${pct(priorDelta)}` : "—" },
-        { label: "Saldo P5", value: money(s.finalBalance.p05) },
+        { label: langPick("Aumento vs. etapa anterior", "Increase vs. previous step", "Aumento vs. etapa anterior"), value: Number.isFinite(priorDelta) ? `+${pct(priorDelta)}` : "—" },
+        { label: langPick("Saldo P5", "P5 balance", "Saldo P5"), value: money(s.finalBalance.p05) },
       ],
-      html: `<p>A taxa de acerto e o Reward:Risk não mudaram. Portanto, <strong>a vantagem estatística teórica é a mesma</strong>. O que mudou foi o tamanho financeiro de cada acerto e de cada erro.</p>
-      <p>O P95 de drawdown agora é <strong>${pct(s.maxDrawdownPct.p95)}</strong>${Number.isFinite(baselineRatio) ? `, cerca de ${number(baselineRatio, 2)}× o valor da referência de 0,5%` : ""}. A probabilidade de lucro pode permanecer semelhante enquanto a experiência de risco se torna muito mais severa.</p>`,
+      html: langPick(
+        `<p>A taxa de acerto e o Reward:Risk não mudaram. Portanto, <strong>a vantagem estatística teórica é a mesma</strong>. O que mudou foi o tamanho financeiro de cada acerto e de cada erro.</p><p>O P95 de drawdown agora é <strong>${pct(s.maxDrawdownPct.p95)}</strong>${ratioText}. A probabilidade de lucro pode permanecer semelhante enquanto a experiência de risco se torna muito mais severa.</p>`,
+        `<p>Win rate and Reward:Risk did not change. Therefore, <strong>the theoretical statistical edge is the same</strong>. What changed is the financial size of each win and loss.</p><p>P95 drawdown is now <strong>${pct(s.maxDrawdownPct.p95)}</strong>${ratioText}. Profit probability may remain similar while the risk experience becomes much more severe.</p>`,
+        `<p>La tasa de acierto y el Reward:Risk no cambiaron. Por tanto, <strong>la ventaja estadística teórica es la misma</strong>. Lo que cambió fue el tamaño financiero de cada acierto y error.</p><p>El P95 del drawdown ahora es <strong>${pct(s.maxDrawdownPct.p95)}</strong>${ratioText}. La probabilidad de beneficio puede seguir siendo similar mientras la experiencia de riesgo se vuelve mucho más severa.</p>`
+      ),
     };
   }
 
@@ -1690,14 +2522,22 @@ function lessonAnalysisFor(step, payload) {
     const s = payload.summary;
     const spread = s.finalBalance.p95 - s.finalBalance.p05;
     return {
-      title: "O saldo final quase não muda, mas o caminho até ele muda muito",
+      title: langPick(
+        "O saldo final quase não muda, mas o caminho até ele muda muito",
+        "Final balance barely changes, but the path to it changes a lot",
+        "El saldo final casi no cambia, pero la trayectoria cambia mucho"
+      ),
       metrics: [
-        { label: "Faixa P5–P95 saldo", value: money(spread) },
+        { label: langPick("Faixa P5–P95 saldo", "P5–P95 balance range", "Rango P5–P95 saldo"), value: money(spread) },
         { label: "Drawdown P50", value: pct(s.maxDrawdownPct.p50) },
         { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
-        { label: "Seq. perdas P95", value: number(s.losingStreak.p95, 0) },
+        { label: langPick("Seq. perdas P95", "P95 losing streak", "Racha pérdidas P95"), value: number(s.losingStreak.p95, 0) },
       ],
-      html: `<p>No Reshuffle, cada caminho contém <strong>os mesmos trades</strong>. Por isso o saldo final é praticamente o mesmo em todas as simulações — a faixa P5–P95 ficou em ${money(spread)}.</p><p>Mas os drawdowns não são iguais. Esta é a demonstração de <strong>sequence risk</strong>: a ordem dos mesmos resultados altera a pressão sobre a conta e sobre o trader.</p>`,
+      html: langPick(
+        `<p>No Reshuffle, cada caminho contém <strong>os mesmos trades</strong>. Por isso o saldo final é praticamente o mesmo em todas as simulações — a faixa P5–P95 ficou em ${money(spread)}.</p><p>Mas os drawdowns não são iguais. Esta é a demonstração de <strong>sequence risk</strong>: a ordem dos mesmos resultados altera a pressão sobre a conta e sobre o trader.</p>`,
+        `<p>Under Reshuffle, every path contains <strong>the same trades</strong>. Final balance is therefore virtually the same across simulations — the P5–P95 range was ${money(spread)}.</p><p>But drawdowns are not the same. This demonstrates <strong>sequence risk</strong>: the order of identical outcomes changes the pressure on the account and the trader.</p>`,
+        `<p>En Reshuffle, cada trayectoria contiene <strong>los mismos trades</strong>. Por eso el saldo final es prácticamente igual en todas las simulaciones — el rango P5–P95 fue de ${money(spread)}.</p><p>Pero los drawdowns no son iguales. Esta es una demostración de <strong>sequence risk</strong>: el orden de los mismos resultados cambia la presión sobre la cuenta y sobre el trader.</p>`
+      ),
     };
   }
 
@@ -1707,14 +2547,22 @@ function lessonAnalysisFor(step, payload) {
     const spread = s.finalBalance.p95 - s.finalBalance.p05;
     const reshuffleSpread = reshuffle ? reshuffle.finalBalance.p95 - reshuffle.finalBalance.p05 : 0;
     return {
-      title: "Bootstrap adiciona incerteza sobre quais resultados voltarão a aparecer",
+      title: langPick(
+        "Bootstrap adiciona incerteza sobre quais resultados voltarão a aparecer",
+        "Bootstrap adds uncertainty about which outcomes will appear again",
+        "Bootstrap añade incertidumbre sobre qué resultados volverán a aparecer"
+      ),
       metrics: [
-        { label: "Faixa P5–P95 saldo", value: money(spread) },
-        { label: "Faixa no Reshuffle", value: money(reshuffleSpread) },
+        { label: langPick("Faixa P5–P95 saldo", "P5–P95 balance range", "Rango P5–P95 saldo"), value: money(spread) },
+        { label: langPick("Faixa no Reshuffle", "Reshuffle range", "Rango en Reshuffle"), value: money(reshuffleSpread) },
         { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
-        { label: "Saldo P5", value: money(s.finalBalance.p05) },
+        { label: langPick("Saldo P5", "P5 balance", "Saldo P5"), value: money(s.finalBalance.p05) },
       ],
-      html: `<p>Agora não mudamos apenas a ordem. Como o sorteio é com reposição, alguns trades aparecem várias vezes e outros desaparecem. Por isso o saldo final passa a formar uma distribuição muito mais ampla.</p><p>Reshuffle estuda principalmente <strong>risco de sequência</strong>; Bootstrap adiciona <strong>incerteza de amostragem</strong>. Eles respondem perguntas diferentes e não devem ser confundidos.</p>`,
+      html: langPick(
+        "<p>Agora não mudamos apenas a ordem. Como o sorteio é com reposição, alguns trades aparecem várias vezes e outros desaparecem. Por isso o saldo final passa a formar uma distribuição muito mais ampla.</p><p>Reshuffle estuda principalmente <strong>risco de sequência</strong>; Bootstrap adiciona <strong>incerteza de amostragem</strong>. Eles respondem perguntas diferentes.</p>",
+        "<p>Now we are changing more than order. Because sampling is with replacement, some trades appear several times and others disappear. Final balance therefore forms a much wider distribution.</p><p>Reshuffle mainly studies <strong>sequence risk</strong>; Bootstrap adds <strong>sampling uncertainty</strong>. They answer different questions.</p>",
+        "<p>Ahora no cambiamos solo el orden. Como el muestreo es con reposición, algunos trades aparecen varias veces y otros desaparecen. Por eso el saldo final forma una distribución mucho más amplia.</p><p>Reshuffle estudia principalmente <strong>riesgo de secuencia</strong>; Bootstrap añade <strong>incertidumbre de muestreo</strong>. Responden preguntas diferentes.</p>"
+      ),
     };
   }
 
@@ -1726,30 +2574,38 @@ function lessonAnalysisFor(step, payload) {
       dd: result.summary.maxDrawdownPct.p95,
     }));
     const bestSuccess = Math.max(...rows.map((row) => row.success));
-    const table = `<table class="lesson-comparison"><thead><tr><th>Risco</th><th>Meta antes da violação</th><th>Violação</th><th>DD P95</th></tr></thead><tbody>${rows.map((row) =>
+    const table = `<table class="lesson-comparison"><thead><tr><th>${escapeHtml(langPick("Risco", "Risk", "Riesgo"))}</th><th>${escapeHtml(langPick("Meta antes da violação", "Target before breach", "Meta antes del incumplimiento"))}</th><th>${escapeHtml(langPick("Violação", "Breach", "Incumplimiento"))}</th><th>DD P95</th></tr></thead><tbody>${rows.map((row) =>
       `<tr><td>${pct(row.risk)}</td><td class="${row.success === bestSuccess ? "best" : ""}">${pct(row.success)}</td><td>${pct(row.breach)}</td><td>${pct(row.dd)}</td></tr>`
     ).join("")}</tbody></table>`;
     const low = rows[0];
     const high = rows[rows.length - 1];
     return {
-      title: "Em contas com regras, retorno e sobrevivência precisam ser analisados juntos",
+      title: langPick(
+        "Em contas com regras, retorno e sobrevivência precisam ser analisados juntos",
+        "With account rules, return and survival must be analyzed together",
+        "Con reglas de cuenta, retorno y supervivencia deben analizarse juntos"
+      ),
       metrics: [
-        { label: "Sucesso 0,5%", value: pct(low.success) },
-        { label: "Sucesso 2%", value: pct(high.success) },
-        { label: "Violação 0,5%", value: pct(low.breach) },
-        { label: "Violação 2%", value: pct(high.breach) },
+        { label: langPick("Sucesso 0,5%", "Success 0.5%", "Éxito 0,5%"), value: pct(low.success) },
+        { label: langPick("Sucesso 2%", "Success 2%", "Éxito 2%"), value: pct(high.success) },
+        { label: langPick("Violação 0,5%", "Breach 0.5%", "Incumplimiento 0,5%"), value: pct(low.breach) },
+        { label: langPick("Violação 2%", "Breach 2%", "Incumplimiento 2%"), value: pct(high.breach) },
       ],
-      html: `<p>Quando há meta e limites, a pergunta profissional muda: não basta saber se a estratégia tende a ganhar. Precisamos saber se ela consegue <strong>chegar à meta antes de quebrar uma regra</strong>.</p>${table}<p>Não trate o maior percentual da tabela como uma recomendação automática. O objetivo é enxergar o trade-off: mais risco pode acelerar a chegada à meta, mas também pode aumentar a chance de violação.</p>`,
+      html: langPick(
+        `<p>Quando há meta e limites, a pergunta profissional muda: precisamos saber se a estratégia consegue <strong>chegar à meta antes de quebrar uma regra</strong>.</p>${table}<p>Não trate o maior percentual como uma recomendação automática. O objetivo é enxergar o trade-off entre velocidade e sobrevivência.</p>`,
+        `<p>When targets and limits exist, the professional question changes: we need to know whether the strategy can <strong>reach the target before breaking a rule</strong>.</p>${table}<p>Do not treat the highest percentage as an automatic recommendation. The goal is to see the trade-off between speed and survival.</p>`,
+        `<p>Cuando existen metas y límites, la pregunta profesional cambia: necesitamos saber si la estrategia puede <strong>alcanzar la meta antes de romper una regla</strong>.</p>${table}<p>No trates el porcentaje más alto como una recomendación automática. El objetivo es ver el trade-off entre velocidad y supervivencia.</p>`
+      ),
     };
   }
 
-  return { title: "Experimento concluído", metrics: [], html: "" };
+  return { title: langPick("Experimento concluído", "Experiment completed", "Experimento completado"), metrics: [], html: "" };
 }
 
 function updateLessonProgress() {
   const completed = Object.keys(lessonState.results).length;
   const pctDone = Math.round(completed / LESSON_STEPS.length * 100);
-  $("lesson-progress-label").textContent = `${completed} de ${LESSON_STEPS.length} experimentos`;
+  $("lesson-progress-label").textContent = tr("lesson.progress", { completed, total: LESSON_STEPS.length });
   $("lesson-progress-percent").textContent = `${pctDone}%`;
   $("lesson-progress-bar").style.width = `${pctDone}%`;
 }
@@ -1758,10 +2614,21 @@ function finishLesson() {
   const baseline = lessonState.results["risk-low"]?.summary;
   const high = lessonState.results["risk-high"]?.summary;
   const prop = lessonState.results["prop-firm"];
-  let summary = "<p>Você concluiu todos os experimentos.</p>";
+  const score = Object.values(lessonState.predictions).filter((item) => item.correct).length;
+  let summary = `<p><span class="lesson-prediction-score">${escapeHtml(tr("lesson.predictionScore", { score, total: LESSON_STEPS.length }))}</span></p>`;
+
+  summary += langPick(
+    "<p>Você concluiu todos os experimentos.</p>",
+    "<p>You completed all experiments.</p>",
+    "<p>Completaste todos los experimentos.</p>"
+  );
 
   if (baseline && high) {
-    summary += `<p>Na sua execução, elevar o risco de <strong>0,5% para 2%</strong> levou o P95 do drawdown de <strong>${pct(baseline.maxDrawdownPct.p95)}</strong> para <strong>${pct(high.maxDrawdownPct.p95)}</strong>, sem alterar o edge da estratégia.</p>`;
+    summary += langPick(
+      `<p>Na sua execução, elevar o risco de <strong>0,5% para 2%</strong> levou o P95 do drawdown de <strong>${pct(baseline.maxDrawdownPct.p95)}</strong> para <strong>${pct(high.maxDrawdownPct.p95)}</strong>, sem alterar o edge da estratégia.</p>`,
+      `<p>In your run, increasing risk from <strong>0.5% to 2%</strong> moved P95 drawdown from <strong>${pct(baseline.maxDrawdownPct.p95)}</strong> to <strong>${pct(high.maxDrawdownPct.p95)}</strong>, without changing the strategy's edge.</p>`,
+      `<p>En tu ejecución, aumentar el riesgo de <strong>0,5% a 2%</strong> llevó el P95 del drawdown de <strong>${pct(baseline.maxDrawdownPct.p95)}</strong> a <strong>${pct(high.maxDrawdownPct.p95)}</strong>, sin cambiar el edge de la estrategia.</p>`
+    );
   }
   if (prop?.comparisons) {
     const rows = prop.comparisons.map(({ risk, result }) => ({
@@ -1769,21 +2636,29 @@ function finishLesson() {
       success: result.summary.probabilityTargetBeforeBreachPct,
     }));
     const top = [...rows].sort((a, b) => b.success - a.success)[0];
-    summary += `<p>No experimento de prop firm, o maior percentual de meta antes da violação nesta simulação apareceu com <strong>${pct(top.risk)} de risco</strong> (${pct(top.success)}). Isso é um resultado deste conjunto de hipóteses, não uma recomendação universal.</p>`;
+    summary += langPick(
+      `<p>No experimento de prop firm, o maior percentual de meta antes da violação nesta simulação apareceu com <strong>${pct(top.risk)} de risco</strong> (${pct(top.success)}). Isso é um resultado deste conjunto de hipóteses, não uma recomendação universal.</p>`,
+      `<p>In the prop-firm experiment, the highest target-before-breach percentage in this simulation appeared at <strong>${pct(top.risk)} risk</strong> (${pct(top.success)}). This is a result of these assumptions, not a universal recommendation.</p>`,
+      `<p>En el experimento de prop firm, el mayor porcentaje de meta antes del incumplimiento apareció con <strong>${pct(top.risk)} de riesgo</strong> (${pct(top.success)}). Es un resultado de estas hipótesis, no una recomendación universal.</p>`
+    );
   }
 
   $("lesson-final-summary").innerHTML = summary;
   $("lesson-workspace").classList.add("hidden");
   $("lesson-finish").classList.remove("hidden");
   $("lesson-status").className = "lesson-status done";
-  $("lesson-status").textContent = "Concluída";
+  $("lesson-status").textContent = tr("lesson.completed");
   updateLessonProgress();
   $("aula-guiada").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function numValue(id) {
   const value = Number($(id).value);
-  if (!Number.isFinite(value)) throw new Error(`Valor inválido em ${id}.`);
+  if (!Number.isFinite(value)) throw new Error(langPick(
+    `Valor inválido em ${id}.`,
+    `Invalid value in ${id}.`,
+    `Valor inválido en ${id}.`
+  ));
   return value;
 }
 
@@ -1806,76 +2681,83 @@ function setBusy(button, busy, text) {
 function updateTradeStatus() {
   const trades = parsePnlText($("trade-data").value);
   if (!trades.length) {
-    $("trade-data-status").textContent = "Aceita um número por linha ou CSV delimitado por vírgula, ponto e vírgula ou tabulação.";
+    $("trade-data-status").textContent = tr("trade.empty");
     return;
   }
   const wins = trades.filter((x) => x > 0).length;
   const losses = trades.filter((x) => x < 0).length;
-  $("trade-data-status").textContent = `${trades.length} trades detectados · ${wins} ganhos · ${losses} perdas · média ${money(trades.reduce((a,b) => a+b,0)/trades.length)}`;
+  $("trade-data-status").textContent = tr("trade.detected", {
+    count: trades.length,
+    wins,
+    losses,
+    avg: money(trades.reduce((a,b) => a+b,0)/trades.length),
+  });
 }
 
 function renderTradeResults(result, options = {}) {
   const s = result.summary;
-  $("results-title").textContent = "Distribuição da estratégia";
-  $("run-meta").textContent = `${number(s.simulations, 0)} simulações · semente ${result.config.seed}`;
+  $("results-title").textContent = tr("results.strategy");
+  $("run-meta").textContent = tr("results.meta", { sims: number(s.simulations, 0), seed: result.config.seed });
   $("metric-cards").innerHTML = [
-    card("Prob. de lucro", pct(s.probabilityProfitPct), "terminou acima do capital inicial"),
-    card("Risco de violação", pct(s.probabilityBreachPct), "ruína, perda máx. ou perda diária"),
-    card("Meta antes da violação", pct(s.probabilityTargetBeforeBreachPct), "atingiu a meta primeiro"),
-    card("Saldo mediano", money(s.finalBalance.p50), `P5 ${money(s.finalBalance.p05)} · P95 ${money(s.finalBalance.p95)}`),
-    card("Drawdown mediano", pct(s.maxDrawdownPct.p50), `P95 ${pct(s.maxDrawdownPct.p95)}`),
-    card("Pior DD observado", pct(s.maxDrawdownPct.max), "máximo entre as simulações"),
-    card("Seq. perdas P95", number(s.losingStreak.p95, 0), `máximo ${number(s.losingStreak.max, 0)}`),
+    card(tr("results.profitProb"), pct(s.probabilityProfitPct), tr("results.profitProbSub")),
+    card(tr("results.breach"), pct(s.probabilityBreachPct), tr("results.breachSub")),
+    card(tr("results.targetBefore"), pct(s.probabilityTargetBeforeBreachPct), tr("results.targetBeforeSub")),
+    card(tr("results.medianBalance"), money(s.finalBalance.p50), `P5 ${money(s.finalBalance.p05)} · P95 ${money(s.finalBalance.p95)}`),
+    card(tr("results.medianDd"), pct(s.maxDrawdownPct.p50), `P95 ${pct(s.maxDrawdownPct.p95)}`),
+    card(tr("results.worstDd"), pct(s.maxDrawdownPct.max), tr("results.maxAmong")),
+    card(tr("results.lossStreak"), number(s.losingStreak.p95, 0), `${langPick("máximo", "maximum", "máximo")} ${number(s.losingStreak.max, 0)}`),
     result.config.mode === "historical"
-      ? card("Win rate da amostra", pct(s.inputWinRatePct), `PF ${Number.isFinite(s.inputProfitFactor) ? number(s.inputProfitFactor) : "∞"}`)
-      : card("Expectância", `${number(s.expectedRPerTrade, 3)}R`, `Kelly ${pct(s.kellyFraction * 100)}`),
+      ? card(tr("results.winRateSample"), pct(s.inputWinRatePct), `PF ${Number.isFinite(s.inputProfitFactor) ? number(s.inputProfitFactor) : "∞"}`)
+      : card(tr("results.expectancy"), `${number(s.expectedRPerTrade, 3)}R`, `Kelly ${pct(s.kellyFraction * 100)}`),
   ].join("");
 
   drawPaths($("paths-chart"), result.samplePaths.map((p) => p.equity), { baseline: result.config.startingCapital, yFormatter: compactCurrency });
-  $("hist-title").textContent = "Distribuição do saldo final";
+  $("hist-title").textContent = tr("results.finalBalanceDistribution");
   drawHistogram($("hist-chart"), result.distributions.finalBalances, compactCurrency);
 
   $("percentile-table-wrap").innerHTML = percentileTable(
-    "Saldo final",
+    tr("results.finalBalance"),
     ["P5", "P25", "P50", "P75", "P95"],
     [s.finalBalance.p05, s.finalBalance.p25, s.finalBalance.p50, s.finalBalance.p75, s.finalBalance.p95].map(money)
   );
 
-  const ddMessage = s.maxDrawdownPct.p95 > 30
-    ? "O P95 de drawdown é elevado; o dimensionamento merece atenção."
-    : "O P95 de drawdown está abaixo de 30% nesta configuração, mas ainda depende das hipóteses da amostra.";
-  $("interpretation-text").textContent =
-    `Em 95% das simulações, o drawdown máximo ficou em até aproximadamente ${pct(s.maxDrawdownPct.p95)}. ` +
-    `O saldo final P5 foi ${money(s.finalBalance.p05)} e o P95 foi ${money(s.finalBalance.p95)}. ${ddMessage} ` +
-    "Use esses percentis como faixa de stress test, não como promessa de resultado.";
+  const ddMessage = s.maxDrawdownPct.p95 > 30 ? tr("results.ddHigh") : tr("results.ddLow");
+  $("interpretation-text").textContent = tr("results.interpretTrade", {
+    dd: pct(s.maxDrawdownPct.p95),
+    p5: money(s.finalBalance.p05),
+    p95: money(s.finalBalance.p95),
+    ddMessage,
+  });
 
   revealResults(options.scroll !== false);
 }
 
-function renderGbmResults(result) {
+function renderGbmResults(result, options = {}) {
   const s = result.summary;
-  $("results-title").textContent = "Distribuição de preço — GBM";
-  $("run-meta").textContent = `${number(s.simulations, 0)} simulações · semente ${result.config.seed}`;
+  $("results-title").textContent = tr("results.gbm");
+  $("run-meta").textContent = tr("results.meta", { sims: number(s.simulations, 0), seed: result.config.seed });
   $("metric-cards").innerHTML = [
-    card("Preço mediano", number(s.finalPrice.p50), `retorno ${pct(s.medianReturnPct)}`),
-    card("Preço P5", number(s.finalPrice.p05), `retorno ${pct(s.p05ReturnPct)}`),
-    card("Preço P95", number(s.finalPrice.p95), `retorno ${pct(s.p95ReturnPct)}`),
-    card("Prob. acima do início", pct(s.probabilityAboveStartPct), "preço final > preço inicial"),
-    card("VaR empírico 95%", number(s.empiricalVaR95Amount), pct(s.empiricalVaR95Pct)),
+    card(tr("results.priceMedian"), number(s.finalPrice.p50), `${langPick("retorno", "return", "retorno")} ${pct(s.medianReturnPct)}`),
+    card(tr("results.priceP5"), number(s.finalPrice.p05), `${langPick("retorno", "return", "retorno")} ${pct(s.p05ReturnPct)}`),
+    card(tr("results.priceP95"), number(s.finalPrice.p95), `${langPick("retorno", "return", "retorno")} ${pct(s.p95ReturnPct)}`),
+    card(tr("results.aboveStart"), pct(s.probabilityAboveStartPct), tr("results.aboveStartSub")),
+    card(tr("results.var"), number(s.empiricalVaR95Amount), pct(s.empiricalVaR95Pct)),
   ].join("");
 
   drawPaths($("paths-chart"), result.samplePaths, { baseline: result.config.startPrice, yFormatter: compactNumber });
-  $("hist-title").textContent = "Distribuição do preço final";
+  $("hist-title").textContent = tr("results.finalPriceDistribution");
   drawHistogram($("hist-chart"), result.distributions.finalPrices, compactNumber);
   $("percentile-table-wrap").innerHTML = percentileTable(
-    "Preço final",
+    tr("results.finalPrice"),
     ["P5", "P25", "P50", "P75", "P95"],
     [s.finalPrice.p05, s.finalPrice.p25, s.finalPrice.p50, s.finalPrice.p75, s.finalPrice.p95].map((x) => number(x))
   );
-  $("interpretation-text").textContent =
-    `Sob as hipóteses de retorno e volatilidade fornecidas, metade das simulações terminou abaixo de ${number(s.finalPrice.p50)} e metade acima. ` +
-    `A faixa P5–P95 foi de ${number(s.finalPrice.p05)} a ${number(s.finalPrice.p95)}. GBM não modela saltos, volatilidade variável nem regimes.`;
-  revealResults();
+  $("interpretation-text").textContent = tr("results.gbmInterpret", {
+    median: number(s.finalPrice.p50),
+    p5: number(s.finalPrice.p05),
+    p95: number(s.finalPrice.p95),
+  });
+  revealResults(options.scroll !== false);
 }
 
 function revealResults(shouldScroll = true) {
@@ -1888,7 +2770,7 @@ function card(label, value, sub = "") {
 }
 
 function percentileTable(label, headers, values) {
-  return `<table><thead><tr><th>${escapeHtml(label)}</th>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody><tr><td>Distribuição</td>${values.map((v) => `<td>${escapeHtml(v)}</td>`).join("")}</tr></tbody></table>`;
+  return `<table><thead><tr><th>${escapeHtml(label)}</th>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody><tr><td>${escapeHtml(tr("results.distribution"))}</td>${values.map((v) => `<td>${escapeHtml(v)}</td>`).join("")}</tr></tbody></table>`;
 }
 
 function escapeHtml(value) {
@@ -1896,11 +2778,11 @@ function escapeHtml(value) {
 }
 
 function compactCurrency(value) {
-  return new Intl.NumberFormat("pt-BR", { notation: "compact", style: "currency", currency: "BRL", maximumFractionDigits: 1 }).format(value);
+  return new Intl.NumberFormat(currentLocale(), { notation: "compact", style: "currency", currency: "BRL", maximumFractionDigits: 1 }).format(value);
 }
 
 function compactNumber(value) {
-  return new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+  return new Intl.NumberFormat(currentLocale(), { notation: "compact", maximumFractionDigits: 1 }).format(value);
 }
 
 function prepCanvas(canvas) {
