@@ -6,14 +6,173 @@ const number = (value, digits = 2) => new Intl.NumberFormat("pt-BR", { maximumFr
 const pct = (value, digits = 1) => `${number(value, digits)}%`;
 let lastResult = null;
 
+const DEMO_TRADES = [
+  185,-110,240,95,-135,310,-105,160,-125,275,-90,205,-145,120,355,-100,
+  -115,225,80,-130,290,-95,140,-155,260,105,-120,195,-85,330,-140,175,
+  -100,215,-125,300,90,-150,245,-110,155,-95,280,-135,125,340,-105,190,
+  -120,235,-90,145,-160,315,-100,180,-115,265,75,-130,220,-105,295,-145
+];
+
+const LESSON_BASE_RULES = {
+  targetPct: 0,
+  maxLossPct: 0,
+  dailyLossPct: 0,
+  ruinThresholdPct: 0,
+  tradesPerDay: 5,
+  trailingMode: "none",
+};
+
+const lessonParamConfig = (riskPct, rules = LESSON_BASE_RULES) => ({
+  mode: "parameters",
+  startingCapital: 10000,
+  winRatePct: 45,
+  rewardRisk: 1.5,
+  riskPct,
+  positionSizing: "fixed",
+  costPerTrade: 0,
+  tradesPerSimulation: 200,
+  simulations: 2500,
+  seed: 2026,
+  rules: { ...rules },
+});
+
+const LESSON_STEPS = [
+  {
+    id: "risk-low",
+    tag: "Risco por trade",
+    title: "Crie uma referência com risco baixo",
+    objective: "Vamos começar com uma estratégia hipotética de expectância positiva e arriscar apenas 0,5% do capital por operação. Este resultado será nossa referência para os próximos experimentos.",
+    question: "Se o edge da estratégia é positivo, isso significa que a curva de capital será sempre tranquila?",
+    controlled: [
+      "Taxa de acerto: 45%",
+      "Reward:Risk: 1,5 : 1",
+      "200 trades por caminho",
+      "2.500 simulações com a mesma semente",
+      "Sem limites de prop firm neste primeiro experimento",
+    ],
+    watch: ["P95 do drawdown", "P5 do saldo final", "Sequência de perdas P95"],
+    preview: ["Risco: 0,5%", "Win rate: 45%", "R:R: 1,5", "Sizing: fixo", "Regras: desativadas"],
+    config: lessonParamConfig(0.5),
+    focusId: "risk-pct",
+  },
+  {
+    id: "risk-medium",
+    tag: "Risco por trade",
+    title: "Dobre o risco sem mudar a estratégia",
+    objective: "Agora mudaremos somente o risco por trade de 0,5% para 1%. A taxa de acerto, o payoff, a quantidade de trades e a sequência pseudoaleatória permanecerão iguais.",
+    question: "Dobrar o risco deveria melhorar a vantagem estatística da estratégia — ou apenas ampliar seus resultados?",
+    controlled: [
+      "Mesmo win rate de 45%",
+      "Mesmo Reward:Risk de 1,5 : 1",
+      "Mesmos 200 trades e mesma semente",
+      "Somente o risco muda: 0,5% → 1%",
+    ],
+    watch: ["Mudança no P95 do drawdown", "Mudança no P5 do saldo", "Probabilidade de terminar no lucro"],
+    preview: ["Risco: 1%", "Edge: inalterado", "Sizing: fixo", "Regras: desativadas"],
+    config: lessonParamConfig(1),
+    focusId: "risk-pct",
+  },
+  {
+    id: "risk-high",
+    tag: "Dimensionamento",
+    title: "Veja o que acontece com 2% de risco",
+    objective: "O terceiro experimento mantém exatamente a mesma estratégia e eleva o risco para 2% por trade. Este é o teste mais importante da aula sobre position sizing.",
+    question: "Uma estratégia pode continuar tendo expectância positiva e, mesmo assim, ficar desconfortável ou impraticável por causa do tamanho da posição?",
+    controlled: [
+      "Mesmo edge dos experimentos anteriores",
+      "Mesma semente e mesmo número de trades",
+      "Risco agora é quatro vezes o da referência inicial",
+    ],
+    watch: ["P95 do drawdown", "Pior drawdown observado", "Amplitude entre cenários bons e ruins"],
+    preview: ["Risco: 2%", "Edge: inalterado", "Sizing: fixo", "Regras: desativadas"],
+    config: lessonParamConfig(2),
+    focusId: "risk-pct",
+  },
+  {
+    id: "reshuffle",
+    tag: "Ordem dos trades",
+    title: "Os mesmos trades, em ordens diferentes",
+    objective: "Agora abandonamos a hipótese paramétrica e usamos um histórico demonstrativo. O método Reshuffle mantém exatamente os mesmos trades em cada caminho e altera apenas sua ordem.",
+    question: "Se todos os caminhos contêm exatamente os mesmos ganhos e perdas, o saldo final muda? E o drawdown?",
+    controlled: [
+      "Mesmos 64 trades em todos os caminhos",
+      "Nenhum trade é criado ou removido",
+      "Somente a ordem é embaralhada",
+      "Sem regras de prop firm",
+    ],
+    watch: ["Dispersão do saldo final", "P50 e P95 do drawdown", "Sequências de perdas"],
+    preview: ["Método: Reshuffle", "Trades: 64", "Amostra: fixa", "Ordem: aleatória"],
+    config: {
+      mode: "historical",
+      trades: DEMO_TRADES,
+      startingCapital: 10000,
+      method: "reshuffle",
+      blockSize: 5,
+      historicalScale: 1,
+      costPerTrade: 0,
+      tradesPerSimulation: DEMO_TRADES.length,
+      simulations: 2500,
+      seed: 2026,
+      rules: { ...LESSON_BASE_RULES },
+    },
+    focusId: "historical-method",
+  },
+  {
+    id: "bootstrap",
+    tag: "Incerteza da amostra",
+    title: "Agora permita que a composição também mude",
+    objective: "No Bootstrap, cada trade é sorteado com reposição. Um resultado histórico pode aparecer várias vezes ou não aparecer. Agora variam tanto a ordem quanto a composição da amostra.",
+    question: "Por que a distribuição do saldo final deve ficar mais larga do que no Reshuffle?",
+    controlled: [
+      "Mesmo histórico demonstrativo",
+      "Mesmo número de trades por caminho",
+      "Método muda de Reshuffle para Bootstrap",
+    ],
+    watch: ["Faixa P5–P95 do saldo", "P95 do drawdown", "Diferença em relação ao Reshuffle"],
+    preview: ["Método: Bootstrap", "Trades: 64", "Com reposição", "Composição: variável"],
+    config: {
+      mode: "historical",
+      trades: DEMO_TRADES,
+      startingCapital: 10000,
+      method: "bootstrap",
+      blockSize: 5,
+      historicalScale: 1,
+      costPerTrade: 0,
+      tradesPerSimulation: DEMO_TRADES.length,
+      simulations: 2500,
+      seed: 2026,
+      rules: { ...LESSON_BASE_RULES },
+    },
+    focusId: "historical-method",
+  },
+  {
+    id: "prop-firm",
+    tag: "Sobrevivência",
+    title: "Meta versus limites de uma prop firm",
+    objective: "No último experimento, aplicamos uma meta de 8%, perda máxima de 10% e perda diária de 4%. A aula compara automaticamente riscos de 0,5%, 1% e 2% com o mesmo edge.",
+    question: "Mais risco sempre aumenta a chance de passar uma avaliação — ou pode elevar a chance de violar regras antes de chegar à meta?",
+    controlled: [
+      "Win rate: 45% e Reward:Risk: 1,5 : 1",
+      "Meta: +8%",
+      "Perda máxima: 10%",
+      "Perda diária: 4%",
+      "Mesma semente para os três níveis de risco",
+    ],
+    watch: ["Meta antes da violação", "Risco de violação", "Trade-off entre velocidade e sobrevivência"],
+    preview: ["Comparação: 0,5% × 1% × 2%", "Meta: 8%", "Max loss: 10%", "Daily loss: 4%"],
+    type: "prop-comparison",
+    focusId: "target-pct",
+  },
+];
+
+const lessonState = {
+  started: false,
+  index: 0,
+  results: {},
+};
+
 document.querySelectorAll(".mode-btn").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".mode-btn").forEach((b) => b.classList.toggle("active", b === button));
-    const mode = button.dataset.mode;
-    $("trades-panel").classList.toggle("hidden", mode !== "trades");
-    $("gbm-panel").classList.toggle("hidden", mode !== "gbm");
-    $("results").classList.add("hidden");
-  });
+  button.addEventListener("click", () => activateMode(button.dataset.mode));
 });
 
 document.querySelectorAll('input[name="trade-source"]').forEach((radio) => {
@@ -32,17 +191,11 @@ $("historical-method").addEventListener("change", () => {
 $("historical-method").dispatchEvent(new Event("change"));
 
 $("load-sample").addEventListener("click", () => {
-  const sample = [
-    185,-110,240,95,-135,310,-105,160,-125,275,-90,205,-145,120,355,-100,
-    -115,225,80,-130,290,-95,140,-155,260,105,-120,195,-85,330,-140,175,
-    -100,215,-125,300,90,-150,245,-110,155,-95,280,-135,125,340,-105,190,
-    -120,235,-90,145,-160,315,-100,180,-115,265,75,-130,220,-105,295,-145
-  ];
   const radio = document.querySelector('input[name="trade-source"][value="historical"]');
   radio.checked = true;
   radio.dispatchEvent(new Event("change"));
-  $("trade-data").value = "pnl\n" + sample.join("\n");
-  $("trades-count").value = sample.length;
+  $("trade-data").value = "pnl\n" + DEMO_TRADES.join("\n");
+  $("trades-count").value = DEMO_TRADES.length;
   updateTradeStatus();
 });
 
@@ -134,6 +287,356 @@ $("export-results").addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
+
+$("lesson-start").addEventListener("click", startLesson);
+$("lesson-run").addEventListener("click", runLessonExperiment);
+$("lesson-prev").addEventListener("click", () => moveLesson(-1));
+$("lesson-next").addEventListener("click", () => moveLesson(1));
+$("lesson-exit").addEventListener("click", resetLesson);
+$("lesson-restart").addEventListener("click", startLesson);
+
+function activateMode(mode, hideResults = true) {
+  document.querySelectorAll(".mode-btn").forEach((button) => {
+    button.classList.toggle("active", button.dataset.mode === mode);
+  });
+  $("trades-panel").classList.toggle("hidden", mode !== "trades");
+  $("gbm-panel").classList.toggle("hidden", mode !== "gbm");
+  if (hideResults) $("results").classList.add("hidden");
+}
+
+function startLesson() {
+  lessonState.started = true;
+  lessonState.index = 0;
+  lessonState.results = {};
+  $("lesson-intro").classList.add("hidden");
+  $("lesson-start-wrap").classList.add("hidden");
+  $("lesson-finish").classList.add("hidden");
+  $("lesson-workspace").classList.remove("hidden");
+  $("lesson-status").className = "lesson-status active";
+  renderLessonStep();
+  updateLessonProgress();
+  $("aula-guiada").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function resetLesson() {
+  lessonState.started = false;
+  lessonState.index = 0;
+  lessonState.results = {};
+  $("lesson-workspace").classList.add("hidden");
+  $("lesson-finish").classList.add("hidden");
+  $("lesson-intro").classList.remove("hidden");
+  $("lesson-start-wrap").classList.remove("hidden");
+  $("lesson-status").className = "lesson-status";
+  $("lesson-status").textContent = "Não iniciada";
+  clearLessonHighlights();
+  updateLessonProgress();
+}
+
+function moveLesson(delta) {
+  const next = lessonState.index + delta;
+  if (next < 0) return;
+  if (next >= LESSON_STEPS.length) {
+    finishLesson();
+    return;
+  }
+  lessonState.index = next;
+  renderLessonStep();
+  $("aula-guiada").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderLessonStep() {
+  const step = LESSON_STEPS[lessonState.index];
+  const existing = lessonState.results[step.id];
+
+  $("lesson-status").textContent = `Experimento ${lessonState.index + 1} de ${LESSON_STEPS.length}`;
+  $("lesson-step-kicker").textContent = `Experimento ${lessonState.index + 1}`;
+  $("lesson-step-title").textContent = step.title;
+  $("lesson-step-tag").textContent = step.tag;
+  $("lesson-step-objective").textContent = step.objective;
+  $("lesson-question").textContent = step.question;
+  $("lesson-controlled").innerHTML = lessonList(step.controlled);
+  $("lesson-watch").innerHTML = lessonList(step.watch);
+  $("lesson-config-preview").innerHTML = step.preview
+    .map((item) => `<span class="lesson-chip">${escapeHtml(item)}</span>`)
+    .join("");
+
+  $("lesson-prev").disabled = lessonState.index === 0;
+  $("lesson-next").disabled = !existing;
+  $("lesson-next").textContent = lessonState.index === LESSON_STEPS.length - 1
+    ? "Concluir aula →"
+    : "Próximo experimento →";
+  $("lesson-run").textContent = existing
+    ? "Executar novamente"
+    : step.type === "prop-comparison"
+      ? "Executar comparação de riscos"
+      : "Aplicar configuração e simular";
+
+  if (existing) {
+    renderLessonAnalysis(step, existing, false);
+  } else {
+    $("lesson-analysis").classList.add("hidden");
+  }
+
+  applyLessonConfig(step, false);
+  updateLessonProgress();
+}
+
+function lessonList(items) {
+  return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+}
+
+function applyLessonConfig(step, highlight = true) {
+  activateMode("trades", false);
+  const config = step.type === "prop-comparison"
+    ? lessonParamConfig(1, {
+        targetPct: 8,
+        maxLossPct: 10,
+        dailyLossPct: 4,
+        ruinThresholdPct: 0,
+        tradesPerDay: 5,
+        trailingMode: "static",
+      })
+    : step.config;
+
+  if (config.mode === "historical") {
+    const radio = document.querySelector('input[name="trade-source"][value="historical"]');
+    radio.checked = true;
+    radio.dispatchEvent(new Event("change"));
+    $("historical-starting-capital").value = config.startingCapital;
+    $("historical-method").value = config.method;
+    $("historical-method").dispatchEvent(new Event("change"));
+    $("block-size").value = config.blockSize;
+    $("historical-scale").value = config.historicalScale;
+    $("historical-cost").value = config.costPerTrade;
+    $("trade-data").value = "pnl\n" + config.trades.join("\n");
+    updateTradeStatus();
+  } else {
+    const radio = document.querySelector('input[name="trade-source"][value="parameters"]');
+    radio.checked = true;
+    radio.dispatchEvent(new Event("change"));
+    $("starting-capital").value = config.startingCapital;
+    $("win-rate").value = config.winRatePct;
+    $("reward-risk").value = config.rewardRisk;
+    $("risk-pct").value = config.riskPct;
+    $("position-sizing").value = config.positionSizing;
+    $("cost-per-trade").value = config.costPerTrade;
+  }
+
+  $("trades-count").value = config.tradesPerSimulation;
+  $("simulations").value = config.simulations;
+  $("seed").value = config.seed;
+  $("target-pct").value = config.rules.targetPct;
+  $("max-loss-pct").value = config.rules.maxLossPct;
+  $("daily-loss-pct").value = config.rules.dailyLossPct;
+  $("ruin-threshold-pct").value = config.rules.ruinThresholdPct;
+  $("trades-per-day").value = config.rules.tradesPerDay;
+  $("trailing-mode").value = config.rules.trailingMode;
+  document.querySelector(".rules").open = config.rules.targetPct > 0 || config.rules.maxLossPct > 0 || config.rules.dailyLossPct > 0;
+
+  clearLessonHighlights();
+  if (highlight && step.focusId) {
+    const target = $(step.focusId);
+    const box = target?.closest("label") || target;
+    box?.classList.add("lesson-highlight");
+    window.setTimeout(() => box?.classList.remove("lesson-highlight"), 2200);
+  }
+}
+
+function clearLessonHighlights() {
+  document.querySelectorAll(".lesson-highlight").forEach((element) => element.classList.remove("lesson-highlight"));
+}
+
+function runLessonExperiment() {
+  const step = LESSON_STEPS[lessonState.index];
+  try {
+    setBusy($("lesson-run"), true, "Simulando...");
+    applyLessonConfig(step, true);
+
+    let payload;
+    if (step.type === "prop-comparison") {
+      const propRules = {
+        targetPct: 8,
+        maxLossPct: 10,
+        dailyLossPct: 4,
+        ruinThresholdPct: 0,
+        tradesPerDay: 5,
+        trailingMode: "static",
+      };
+      const comparisons = [0.5, 1, 2].map((risk) => ({
+        risk,
+        result: runTradeMonteCarlo(lessonParamConfig(risk, propRules)),
+      }));
+      const main = comparisons.find((item) => item.risk === 1).result;
+      payload = { main, comparisons };
+      lastResult = main;
+      renderTradeResults(main, { scroll: false });
+    } else {
+      const result = runTradeMonteCarlo(step.config);
+      payload = result;
+      lastResult = result;
+      renderTradeResults(result, { scroll: false });
+    }
+
+    lessonState.results[step.id] = payload;
+    $("export-results").disabled = false;
+    renderLessonAnalysis(step, payload, true);
+    $("lesson-next").disabled = false;
+    $("lesson-run").textContent = step.type === "prop-comparison"
+      ? "Executar comparação novamente"
+      : "Executar novamente";
+    updateLessonProgress();
+  } catch (error) {
+    alert(error?.message || String(error));
+  } finally {
+    setBusy($("lesson-run"), false, lessonState.results[step.id]
+      ? (step.type === "prop-comparison" ? "Executar comparação novamente" : "Executar novamente")
+      : "Aplicar configuração e simular");
+  }
+}
+
+function renderLessonAnalysis(step, payload, shouldScroll = true) {
+  const analysis = lessonAnalysisFor(step, payload);
+  $("lesson-analysis-title").textContent = analysis.title;
+  $("lesson-analysis-metrics").innerHTML = analysis.metrics
+    .map((item) => `<div class="lesson-analysis-metric"><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.value)}</strong></div>`)
+    .join("");
+  $("lesson-analysis-text").innerHTML = analysis.html;
+  $("lesson-analysis").classList.remove("hidden");
+  if (shouldScroll) $("lesson-analysis").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function lessonAnalysisFor(step, payload) {
+  if (step.id === "risk-low") {
+    const s = payload.summary;
+    return {
+      title: "A referência já mostra que edge positivo não elimina períodos difíceis",
+      metrics: [
+        { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
+        { label: "Saldo P5", value: money(s.finalBalance.p05) },
+        { label: "Seq. perdas P95", value: number(s.losingStreak.p95, 0) },
+        { label: "Prob. lucro", value: pct(s.probabilityProfitPct) },
+      ],
+      html: `<p>Com apenas <strong>0,5% de risco por trade</strong>, já existe uma distribuição de drawdowns e sequências de perdas. Isso é normal: expectância positiva descreve uma média de longo prazo, não uma trajetória lisa.</p><p>Guarde o <strong>P95 de drawdown de ${pct(s.maxDrawdownPct.p95)}</strong>. Ele será nossa referência quando aumentarmos o tamanho da posição.</p>`,
+    };
+  }
+
+  if (step.id === "risk-medium" || step.id === "risk-high") {
+    const s = payload.summary;
+    const baseline = lessonState.results["risk-low"]?.summary;
+    const prior = step.id === "risk-high" ? lessonState.results["risk-medium"]?.summary : baseline;
+    const risk = step.config.riskPct;
+    const baselineRatio = baseline ? s.maxDrawdownPct.p95 / Math.max(0.0001, baseline.maxDrawdownPct.p95) : NaN;
+    const priorDelta = prior ? s.maxDrawdownPct.p95 - prior.maxDrawdownPct.p95 : NaN;
+    return {
+      title: step.id === "risk-medium"
+        ? "O edge ficou igual; o caminho ficou mais agressivo"
+        : "Position sizing pode transformar a experiência sem alterar a estratégia",
+      metrics: [
+        { label: "Risco por trade", value: pct(risk) },
+        { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
+        { label: "Aumento vs. etapa anterior", value: Number.isFinite(priorDelta) ? `+${pct(priorDelta)}` : "—" },
+        { label: "Saldo P5", value: money(s.finalBalance.p05) },
+      ],
+      html: `<p>A taxa de acerto e o Reward:Risk não mudaram. Portanto, <strong>a vantagem estatística teórica é a mesma</strong>. O que mudou foi o tamanho financeiro de cada acerto e de cada erro.</p>
+      <p>O P95 de drawdown agora é <strong>${pct(s.maxDrawdownPct.p95)}</strong>${Number.isFinite(baselineRatio) ? `, cerca de ${number(baselineRatio, 2)}× o valor da referência de 0,5%` : ""}. A probabilidade de lucro pode permanecer semelhante enquanto a experiência de risco se torna muito mais severa.</p>`,
+    };
+  }
+
+  if (step.id === "reshuffle") {
+    const s = payload.summary;
+    const spread = s.finalBalance.p95 - s.finalBalance.p05;
+    return {
+      title: "O saldo final quase não muda, mas o caminho até ele muda muito",
+      metrics: [
+        { label: "Faixa P5–P95 saldo", value: money(spread) },
+        { label: "Drawdown P50", value: pct(s.maxDrawdownPct.p50) },
+        { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
+        { label: "Seq. perdas P95", value: number(s.losingStreak.p95, 0) },
+      ],
+      html: `<p>No Reshuffle, cada caminho contém <strong>os mesmos trades</strong>. Por isso o saldo final é praticamente o mesmo em todas as simulações — a faixa P5–P95 ficou em ${money(spread)}.</p><p>Mas os drawdowns não são iguais. Esta é a demonstração de <strong>sequence risk</strong>: a ordem dos mesmos resultados altera a pressão sobre a conta e sobre o trader.</p>`,
+    };
+  }
+
+  if (step.id === "bootstrap") {
+    const s = payload.summary;
+    const reshuffle = lessonState.results["reshuffle"]?.summary;
+    const spread = s.finalBalance.p95 - s.finalBalance.p05;
+    const reshuffleSpread = reshuffle ? reshuffle.finalBalance.p95 - reshuffle.finalBalance.p05 : 0;
+    return {
+      title: "Bootstrap adiciona incerteza sobre quais resultados voltarão a aparecer",
+      metrics: [
+        { label: "Faixa P5–P95 saldo", value: money(spread) },
+        { label: "Faixa no Reshuffle", value: money(reshuffleSpread) },
+        { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
+        { label: "Saldo P5", value: money(s.finalBalance.p05) },
+      ],
+      html: `<p>Agora não mudamos apenas a ordem. Como o sorteio é com reposição, alguns trades aparecem várias vezes e outros desaparecem. Por isso o saldo final passa a formar uma distribuição muito mais ampla.</p><p>Reshuffle estuda principalmente <strong>risco de sequência</strong>; Bootstrap adiciona <strong>incerteza de amostragem</strong>. Eles respondem perguntas diferentes e não devem ser confundidos.</p>`,
+    };
+  }
+
+  if (step.id === "prop-firm") {
+    const rows = payload.comparisons.map(({ risk, result }) => ({
+      risk,
+      success: result.summary.probabilityTargetBeforeBreachPct,
+      breach: result.summary.probabilityBreachPct,
+      dd: result.summary.maxDrawdownPct.p95,
+    }));
+    const bestSuccess = Math.max(...rows.map((row) => row.success));
+    const table = `<table class="lesson-comparison"><thead><tr><th>Risco</th><th>Meta antes da violação</th><th>Violação</th><th>DD P95</th></tr></thead><tbody>${rows.map((row) =>
+      `<tr><td>${pct(row.risk)}</td><td class="${row.success === bestSuccess ? "best" : ""}">${pct(row.success)}</td><td>${pct(row.breach)}</td><td>${pct(row.dd)}</td></tr>`
+    ).join("")}</tbody></table>`;
+    const low = rows[0];
+    const high = rows[rows.length - 1];
+    return {
+      title: "Em contas com regras, retorno e sobrevivência precisam ser analisados juntos",
+      metrics: [
+        { label: "Sucesso 0,5%", value: pct(low.success) },
+        { label: "Sucesso 2%", value: pct(high.success) },
+        { label: "Violação 0,5%", value: pct(low.breach) },
+        { label: "Violação 2%", value: pct(high.breach) },
+      ],
+      html: `<p>Quando há meta e limites, a pergunta profissional muda: não basta saber se a estratégia tende a ganhar. Precisamos saber se ela consegue <strong>chegar à meta antes de quebrar uma regra</strong>.</p>${table}<p>Não trate o maior percentual da tabela como uma recomendação automática. O objetivo é enxergar o trade-off: mais risco pode acelerar a chegada à meta, mas também pode aumentar a chance de violação.</p>`,
+    };
+  }
+
+  return { title: "Experimento concluído", metrics: [], html: "" };
+}
+
+function updateLessonProgress() {
+  const completed = Object.keys(lessonState.results).length;
+  const pctDone = Math.round(completed / LESSON_STEPS.length * 100);
+  $("lesson-progress-label").textContent = `${completed} de ${LESSON_STEPS.length} experimentos`;
+  $("lesson-progress-percent").textContent = `${pctDone}%`;
+  $("lesson-progress-bar").style.width = `${pctDone}%`;
+}
+
+function finishLesson() {
+  const baseline = lessonState.results["risk-low"]?.summary;
+  const high = lessonState.results["risk-high"]?.summary;
+  const prop = lessonState.results["prop-firm"];
+  let summary = "<p>Você concluiu todos os experimentos.</p>";
+
+  if (baseline && high) {
+    summary += `<p>Na sua execução, elevar o risco de <strong>0,5% para 2%</strong> levou o P95 do drawdown de <strong>${pct(baseline.maxDrawdownPct.p95)}</strong> para <strong>${pct(high.maxDrawdownPct.p95)}</strong>, sem alterar o edge da estratégia.</p>`;
+  }
+  if (prop?.comparisons) {
+    const rows = prop.comparisons.map(({ risk, result }) => ({
+      risk,
+      success: result.summary.probabilityTargetBeforeBreachPct,
+    }));
+    const top = [...rows].sort((a, b) => b.success - a.success)[0];
+    summary += `<p>No experimento de prop firm, o maior percentual de meta antes da violação nesta simulação apareceu com <strong>${pct(top.risk)} de risco</strong> (${pct(top.success)}). Isso é um resultado deste conjunto de hipóteses, não uma recomendação universal.</p>`;
+  }
+
+  $("lesson-final-summary").innerHTML = summary;
+  $("lesson-workspace").classList.add("hidden");
+  $("lesson-finish").classList.remove("hidden");
+  $("lesson-status").className = "lesson-status done";
+  $("lesson-status").textContent = "Concluída";
+  updateLessonProgress();
+  $("aula-guiada").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function numValue(id) {
   const value = Number($(id).value);
   if (!Number.isFinite(value)) throw new Error(`Valor inválido em ${id}.`);
@@ -167,7 +670,7 @@ function updateTradeStatus() {
   $("trade-data-status").textContent = `${trades.length} trades detectados · ${wins} ganhos · ${losses} perdas · média ${money(trades.reduce((a,b) => a+b,0)/trades.length)}`;
 }
 
-function renderTradeResults(result) {
+function renderTradeResults(result, options = {}) {
   const s = result.summary;
   $("results-title").textContent = "Distribuição da estratégia";
   $("run-meta").textContent = `${number(s.simulations, 0)} simulações · semente ${result.config.seed}`;
@@ -202,7 +705,7 @@ function renderTradeResults(result) {
     `O saldo final P5 foi ${money(s.finalBalance.p05)} e o P95 foi ${money(s.finalBalance.p95)}. ${ddMessage} ` +
     "Use esses percentis como faixa de stress test, não como promessa de resultado.";
 
-  revealResults();
+  revealResults(options.scroll !== false);
 }
 
 function renderGbmResults(result) {
@@ -231,9 +734,9 @@ function renderGbmResults(result) {
   revealResults();
 }
 
-function revealResults() {
+function revealResults(shouldScroll = true) {
   $("results").classList.remove("hidden");
-  $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (shouldScroll) $("results").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function card(label, value, sub = "") {
