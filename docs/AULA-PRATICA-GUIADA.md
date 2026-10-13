@@ -130,3 +130,29 @@ Esses valores são instrumentos do experimento.
 A conclusão correta é:
 
 > **o risco adequado depende da distribuição da estratégia, do capital, dos limites, da tolerância ao drawdown e da qualidade dos dados.**
+
+
+## Desafios de previsão
+
+Os seis experimentos agora incluem uma previsão obrigatória antes da simulação.
+
+Os desafios abordam:
+
+1. se edge positivo implica uma curva suave;
+2. o que acontece com o drawdown ao dobrar o risco;
+3. se position sizing altera o edge;
+4. o que muda mais em um Reshuffle;
+5. como Bootstrap altera a dispersão;
+6. se aumentar risco sempre melhora a chance de passar uma avaliação de prop firm.
+
+Ao final da aula, a interface informa a pontuação dos desafios, mas a pontuação não é o objetivo principal. O objetivo é fazer o aluno **formular uma hipótese antes de ver os dados**.
+
+## Idiomas da aula
+
+A aula completa, incluindo perguntas, previsões, feedbacks e análises, pode ser usada em:
+
+- Português (Brasil);
+- English;
+- Español.
+
+A troca de idioma não reinicia os experimentos já concluídos.
