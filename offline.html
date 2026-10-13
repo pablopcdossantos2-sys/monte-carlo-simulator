@@ -1,0 +1,1330 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Simulador de Monte Carlo para trading, drawdown, risco de ruína, prop firms e trajetórias GBM." />
+  <title>Monte Carlo Trading Simulator — Offline</title>
+  <style>
+:root{
+  color-scheme:dark;
+  --bg:#0a0d12;--panel:#111722;--panel2:#151d2a;--text:#eef3fb;--muted:#9aa7b8;
+  --line:#263244;--accent:#6ee7b7;--accent2:#60a5fa;--danger:#fb7185;--warning:#fbbf24;
+  --shadow:0 20px 60px rgba(0,0,0,.28);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#132037 0,#0a0d12 42%);color:var(--text);line-height:1.55}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:var(--accent2)}
+.hero{padding:56px 20px 34px;border-bottom:1px solid var(--line)}
+.hero__inner{max-width:1180px;margin:auto;display:flex;justify-content:space-between;gap:28px;align-items:end}
+.hero h1{font-size:clamp(2.2rem,6vw,4.7rem);line-height:.98;margin:.15rem 0 1rem;letter-spacing:-.045em}
+.hero__copy{max-width:780px;font-size:1.08rem;color:var(--muted)}
+.hero__badge{border:1px solid var(--line);padding:16px 18px;border-radius:18px;background:rgba(17,23,34,.75);min-width:210px;text-align:center;color:var(--accent)}
+.hero__badge span{color:var(--muted);font-size:.83rem}
+.shell{max-width:1180px;margin:auto;padding:28px 20px 64px}
+.eyebrow{font-size:.76rem;font-weight:800;letter-spacing:.15em;color:var(--accent);margin:0 0 8px}
+.mode-switch{display:inline-flex;padding:5px;background:#0e141d;border:1px solid var(--line);border-radius:14px;margin-bottom:18px}
+.mode-btn{border:0;background:transparent;color:var(--muted);padding:10px 16px;border-radius:10px;font-weight:700}
+.mode-btn.active{background:var(--panel2);color:var(--text)}
+.panel,.results{background:linear-gradient(180deg,rgba(21,29,42,.96),rgba(17,23,34,.96));border:1px solid var(--line);border-radius:22px;padding:24px;margin-bottom:22px;box-shadow:var(--shadow)}
+.panel.compact{padding:24px 28px}
+.panel__header,.results__header{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:18px}
+h2,h3{letter-spacing:-.025em}
+h2{margin:.1rem 0;font-size:1.6rem}
+h3{margin:.1rem 0 14px;font-size:1.05rem}
+.source-switch{display:flex;gap:18px;flex-wrap:wrap;margin:8px 0 20px;color:var(--muted)}
+.source-switch label{display:flex;gap:8px;align-items:center}
+.grid{display:grid;gap:14px}
+.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+label{font-size:.86rem;color:var(--muted);display:flex;flex-direction:column;gap:7px}
+input,select,textarea{width:100%;border:1px solid var(--line);background:#0b1018;color:var(--text);border-radius:11px;padding:11px 12px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(96,165,250,.11)}
+textarea{resize:vertical;min-height:160px}
+.full{margin-top:14px}
+.hidden{display:none!important}
+.divider{height:1px;background:var(--line);margin:22px 0}
+.rules{margin-top:22px;border:1px solid var(--line);border-radius:16px;padding:0 16px 16px}
+.rules summary{padding:15px 0;font-weight:800;cursor:pointer}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.primary,.secondary{border-radius:12px;padding:11px 16px;font-weight:800}
+.primary{border:0;background:var(--accent);color:#082018}
+.secondary{border:1px solid var(--line);background:#111923;color:var(--text)}
+.secondary:disabled{opacity:.45;cursor:not-allowed}
+.hint{color:var(--muted);font-size:.84rem}
+.warning{color:#d7b866}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.metric{background:#0c121b;border:1px solid var(--line);border-radius:16px;padding:16px}
+.metric__label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.metric__value{font-size:1.55rem;font-weight:850;margin-top:5px}
+.metric__sub{font-size:.78rem;color:var(--muted);margin-top:3px}
+.charts{display:grid;gap:14px;margin-top:16px}
+.chart-card{border:1px solid var(--line);border-radius:17px;padding:16px;background:#0c121b;overflow:hidden}
+canvas{display:block;width:100%;height:auto;max-height:430px}
+table{width:100%;border-collapse:collapse;margin-top:16px;background:#0c121b;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+th,td{padding:12px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{font-size:.78rem;color:var(--muted)}
+.interpretation{margin-top:16px;border-left:3px solid var(--accent2);padding:12px 16px;background:rgba(96,165,250,.06)}
+footer{max-width:1180px;margin:auto;padding:0 20px 42px;color:var(--muted);font-size:.82rem}
+@media(max-width:850px){
+  .hero__inner,.panel__header,.results__header{display:block}
+  .hero__badge{margin-top:18px;text-align:left}
+  .cols-3,.cols-4,.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  .shell{padding-inline:12px}.hero{padding-inline:16px}.panel,.results{padding:17px;border-radius:17px}
+  .cols-3,.cols-4,.metrics{grid-template-columns:1fr}
+  .mode-switch{display:flex}.mode-btn{flex:1}
+}
+.hero__nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.hero__nav a{border:1px solid var(--line);background:rgba(17,23,34,.72);padding:8px 11px;border-radius:10px;text-decoration:none;font-size:.84rem;font-weight:750}
+.hero__nav a:hover{border-color:var(--accent2)}
+.learning-hero__title{max-width:900px}
+.learning-hero__title>p:last-child,.section-explain{color:var(--muted);max-width:900px}
+.concept-grid,.professional-grid,.glossary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px}
+.concept-card,.glossary-grid article{background:#0c121b;border:1px solid var(--line);border-radius:16px;padding:17px}
+.concept-card p,.glossary-grid p{color:var(--muted);margin-bottom:0}
+.concept-number{display:inline-flex;width:32px;height:32px;align-items:center;justify-content:center;border-radius:10px;background:rgba(110,231,183,.1);color:var(--accent);font-size:.78rem;font-weight:850;margin-bottom:12px}
+.lesson-callout{margin-top:18px;padding:15px 17px;border-left:3px solid var(--accent);background:rgba(110,231,183,.06);border-radius:0 12px 12px 0;color:#dfe9e6}
+.lesson-callout.small{font-size:.9rem}
+.learning-steps{margin-top:24px}
+.learning-steps ol{margin:10px 0 0;padding-left:22px}
+.learning-steps li{padding:6px 0;color:var(--muted)}
+.learning-steps strong{color:var(--text)}
+.professional-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.professional-grid>div,.mode-explainer>div{display:flex;flex-direction:column;gap:5px;background:#0c121b;border:1px solid var(--line);border-radius:14px;padding:15px}
+.professional-grid span,.mode-explainer span{color:var(--muted);font-size:.9rem}
+.mode-explainer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:15px}
+.learn-box{margin:16px 0 20px;border:1px solid var(--line);border-radius:15px;background:rgba(11,16,24,.55);padding:0 15px 14px}
+.learn-box summary{cursor:pointer;padding:14px 0;font-weight:800;color:var(--accent2)}
+.learn-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.learn-grid p{margin:0;border-top:1px solid var(--line);padding-top:11px;display:flex;flex-direction:column;gap:4px}
+.learn-grid span{font-size:.84rem;color:var(--muted)}
+.glossary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.glossary-grid article strong{color:var(--accent)}
+.glossary-grid article p{font-size:.88rem}
+@media(max-width:850px){
+  .concept-grid,.glossary-grid,.learn-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .professional-grid,.mode-explainer{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .concept-grid,.glossary-grid,.learn-grid{grid-template-columns:1fr}
+}
+
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__inner">
+      <div>
+        <p class="eyebrow">MONTE CARLO · TRADING · RISCO</p>
+        <h1>Simulador de Monte Carlo</h1>
+        <p class="hero__copy">Uma ferramenta educacional para aprender a pensar em <strong>probabilidades</strong>, e não em uma única curva de resultados. Teste milhares de futuros possíveis para uma estratégia, estime drawdowns, sequências de perdas, risco de violação e probabilidade de atingir metas.</p>
+        <nav class="hero__nav" aria-label="Atalhos">
+          <a href="#aprender">Entender primeiro</a>
+          <a href="#simulador">Ir ao simulador</a>
+          <a href="#glossario">Glossário</a>
+        </nav>
+      </div>
+      <div class="hero__badge">VERSÃO OFFLINE<br><span>abra este arquivo com duplo clique</span></div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="aprender" class="learning-hero panel">
+      <div class="learning-hero__title">
+        <p class="eyebrow">ANTES DE SIMULAR</p>
+        <h2>Por que Monte Carlo importa para um trader?</h2>
+        <p>Um backtest mostra <strong>uma sequência histórica</strong>. O problema é que duas estratégias com a mesma média de ganhos podem produzir experiências muito diferentes quando a ordem dos ganhos e perdas muda. Monte Carlo cria muitas sequências plausíveis para revelar essa incerteza.</p>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <span class="concept-number">01</span>
+          <h3>O backtest é só um caminho</h3>
+          <p>A curva que aconteceu no passado não é a única curva compatível com aquela taxa de acerto, payoff e distribuição de trades.</p>
+        </article>
+        <article class="concept-card">
+          <span class="concept-number">02</span>
+          <h3>O risco está na sequência</h3>
+          <p>Uma sequência desfavorável pode produzir um drawdown grande mesmo quando a estratégia tem expectância positiva.</p>
+        </article>
+        <article class="concept-card">
+          <span class="concept-number">03</span>
+          <h3>Profissional pensa em sobrevivência</h3>
+          <p>O objetivo não é descobrir “quanto vou ganhar”, mas avaliar quanto risco a estratégia pode exigir antes que sua vantagem estatística tenha tempo de aparecer.</p>
+        </article>
+      </div>
+
+      <div class="lesson-callout">
+        <strong>Ideia central:</strong> Monte Carlo não prevê o próximo trade. Ele ajuda a responder perguntas como “Que drawdown preciso estar preparado para suportar?”, “Qual sequência de perdas é plausível?” e “Meu risco por operação é compatível com os limites da conta?”.
+      </div>
+
+      <div class="learning-steps">
+        <h3>Primeiro contato: use nesta ordem</h3>
+        <ol>
+          <li><strong>Carregue o exemplo didático.</strong> Veja como a ferramenta funciona sem precisar ter um histórico próprio.</li>
+          <li><strong>Observe o P50 e o P95 de drawdown.</strong> A mediana mostra um cenário típico; o P95 é um cenário de stress muito mais exigente.</li>
+          <li><strong>Mude apenas o risco por trade.</strong> Compare 0,5%, 1% e 2% e veja como o risco muda sem alterar o “edge”.</li>
+          <li><strong>Só depois use seus próprios trades.</strong> O histórico precisa representar a estratégia que você realmente executa.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="panel compact professional-use">
+      <p class="eyebrow">USO PROFISSIONAL</p>
+      <h2>O que um trader pode aprender com a ferramenta</h2>
+      <div class="professional-grid">
+        <div><strong>Dimensionamento</strong><span>Descobrir se o risco por trade transforma uma estratégia razoável em uma trajetória difícil de sobreviver.</span></div>
+        <div><strong>Expectativas realistas</strong><span>Entender que períodos ruins e sequências de perdas podem ser normais, sem concluir cedo demais que o método “parou de funcionar”.</span></div>
+        <div><strong>Planejamento de drawdown</strong><span>Comparar o capital disponível e os limites da conta com drawdowns plausíveis, não apenas com o pior drawdown já observado.</span></div>
+        <div><strong>Prop firms</strong><span>Estimar a chance de atingir uma meta antes de tocar perda diária, perda máxima ou trailing drawdown.</span></div>
+        <div><strong>Disciplina</strong><span>Preparar-se antecipadamente para variabilidade estatística reduz a tentação de aumentar risco depois de perdas ou abandonar uma estratégia por uma sequência normal.</span></div>
+        <div><strong>Validação</strong><span>Usar Monte Carlo como uma camada de stress test — nunca como substituto de backtest, out-of-sample, custos e análise de regime.</span></div>
+      </div>
+    </section>
+
+    <section id="simulador" class="mode-intro panel compact">
+      <p class="eyebrow">ESCOLHA O EXPERIMENTO</p>
+      <h2>Dois simuladores, duas perguntas diferentes</h2>
+      <div class="mode-explainer">
+        <div><strong>Estratégia / Trades</strong><span>Use para estudar a robustez de uma estratégia, equity, drawdown, risco de ruína e regras de conta.</span></div>
+        <div><strong>Preço / GBM</strong><span>Use para aprender como retorno e volatilidade geram diferentes trajetórias possíveis de preço. É didático, não um modelo de previsão.</span></div>
+      </div>
+    </section>
+
+    <section class="mode-switch" aria-label="Modo do simulador">
+      <button class="mode-btn active" data-mode="trades">Estratégia / Trades</button>
+      <button class="mode-btn" data-mode="gbm">Preço / GBM</button>
+    </section>
+
+    <section id="trades-panel" class="panel">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">ROBUSTEZ DA ESTRATÉGIA</p>
+          <h2>Monte Carlo de operações</h2>
+        </div>
+        <button id="load-sample" class="secondary">Carregar exemplo didático</button>
+      </div>
+
+      <p class="section-explain">Neste modo, você pode começar por uma hipótese simples de estratégia ou usar resultados reais de operações passadas. Para aprender, comece por <strong>Parâmetros</strong>; para analisar uma estratégia existente, prefira <strong>Histórico de trades</strong>.</p>
+
+      <details class="learn-box">
+        <summary>O que significam estes campos?</summary>
+        <div class="learn-grid">
+          <p><strong>Capital inicial</strong><span>É o ponto de partida da equity. Ele serve de referência para risco, metas e limites.</span></p>
+          <p><strong>Taxa de acerto</strong><span>Percentual de trades vencedores. Sozinha, ela não diz se uma estratégia é boa.</span></p>
+          <p><strong>Reward : Risk</strong><span>Quanto se ganha, em média, para cada unidade arriscada. Ex.: 1,5 significa ganhar 1,5R quando acerta e perder 1R quando erra.</span></p>
+          <p><strong>Risco por trade</strong><span>Percentual do capital exposto em cada operação. Pequenas mudanças aqui podem alterar muito o drawdown.</span></p>
+          <p><strong>Position sizing</strong><span>No composto, o tamanho acompanha a equity; no fixo, o risco monetário parte sempre do capital inicial.</span></p>
+          <p><strong>Custo por trade</strong><span>Corretagem, taxas e outros custos. Ignorar custos costuma superestimar o desempenho.</span></p>
+        </div>
+      </details>
+
+      <div class="source-switch">
+        <label><input type="radio" name="trade-source" value="parameters" checked> Parâmetros</label>
+        <label><input type="radio" name="trade-source" value="historical"> Histórico de trades</label>
+      </div>
+
+      <div id="parameter-fields" class="grid cols-3">
+        <label>Capital inicial
+          <input id="starting-capital" type="number" min="1" step="100" value="10000">
+        </label>
+        <label>Taxa de acerto (%)
+          <input id="win-rate" type="number" min="0" max="100" step="0.1" value="55">
+        </label>
+        <label>Reward : Risk
+          <input id="reward-risk" type="number" min="0" step="0.1" value="1.5">
+        </label>
+        <label>Risco por trade (%)
+          <input id="risk-pct" type="number" min="0" max="100" step="0.1" value="1">
+        </label>
+        <label>Position sizing
+          <select id="position-sizing">
+            <option value="compound">Composto (% da equity)</option>
+            <option value="fixed">Fixo (% do capital inicial)</option>
+          </select>
+        </label>
+        <label>Custo por trade
+          <input id="cost-per-trade" type="number" min="0" step="0.01" value="0">
+        </label>
+      </div>
+
+      <div id="historical-fields" class="hidden">
+        <div class="grid cols-3">
+          <label>Capital inicial
+            <input id="historical-starting-capital" type="number" min="1" step="100" value="10000">
+          </label>
+          <label>Método
+            <select id="historical-method">
+              <option value="bootstrap">Bootstrap com reposição</option>
+              <option value="reshuffle">Reshuffle / permutação</option>
+              <option value="block">Block bootstrap</option>
+            </select>
+          </label>
+          <label>Tamanho do bloco
+            <input id="block-size" type="number" min="1" step="1" value="5">
+          </label>
+          <label>Multiplicador do P&amp;L
+            <input id="historical-scale" type="number" min="0.0001" step="0.1" value="1">
+          </label>
+          <label>Custo adicional por trade
+            <input id="historical-cost" type="number" min="0" step="0.01" value="0">
+          </label>
+        </div>
+        <label class="full">Cole o P&amp;L dos trades ou um CSV
+          <textarea id="trade-data" rows="8" placeholder="pnl&#10;250&#10;-120&#10;410&#10;-95"></textarea>
+        </label>
+        <p id="trade-data-status" class="hint">Aceita um número por linha ou CSV delimitado por vírgula, ponto e vírgula ou tabulação.</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="grid cols-4">
+        <label>Trades por simulação
+          <input id="trades-count" type="number" min="1" max="10000" step="1" value="200">
+        </label>
+        <label>Simulações
+          <input id="simulations" type="number" min="10" max="50000" step="100" value="2000">
+        </label>
+        <label>Semente
+          <input id="seed" type="number" step="1" value="42">
+        </label>
+        <label>Trades por dia
+          <input id="trades-per-day" type="number" min="1" step="1" value="5">
+        </label>
+      </div>
+
+      <details class="rules">
+        <summary>Regras de risco / Prop Firm</summary>
+        <p class="section-explain">Use esta seção quando quiser descobrir não apenas se a estratégia ganha dinheiro, mas se ela consegue <strong>sobreviver às regras da conta</strong> até chegar à meta.</p>
+        <div class="grid cols-4">
+          <label>Meta de lucro (%)
+            <input id="target-pct" type="number" min="0" step="0.1" value="8">
+          </label>
+          <label>Perda máxima (%)
+            <input id="max-loss-pct" type="number" min="0" step="0.1" value="10">
+          </label>
+          <label>Perda diária (%)
+            <input id="daily-loss-pct" type="number" min="0" step="0.1" value="4">
+          </label>
+          <label>Ruin threshold (%)
+            <input id="ruin-threshold-pct" type="number" min="0" max="100" step="1" value="50">
+          </label>
+          <label>Regra de drawdown
+            <select id="trailing-mode">
+              <option value="static">Estático</option>
+              <option value="none">Desativado</option>
+              <option value="intraday">Trailing intraday</option>
+              <option value="eod">Trailing EOD</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint">As regras são genéricas. Confira a metodologia e adapte os valores às regras reais da firma que deseja estudar.</p>
+      </details>
+
+      <div class="actions">
+        <button id="run-trades" class="primary">Executar simulação</button>
+        <button id="export-results" class="secondary" disabled>Exportar resumo JSON</button>
+      </div>
+    </section>
+
+    <section id="gbm-panel" class="panel hidden">
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">TRAJETÓRIAS DE PREÇO</p>
+          <h2>Movimento Browniano Geométrico</h2>
+        </div>
+      </div>
+      <div class="grid cols-4">
+        <label>Preço inicial
+          <input id="gbm-start" type="number" min="0.0001" step="0.01" value="100">
+        </label>
+        <label>Retorno anual esperado (%)
+          <input id="gbm-return" type="number" step="0.1" value="8">
+        </label>
+        <label>Volatilidade anual (%)
+          <input id="gbm-vol" type="number" min="0" step="0.1" value="25">
+        </label>
+        <label>Passos
+          <input id="gbm-steps" type="number" min="1" max="5000" step="1" value="252">
+        </label>
+        <label>Passos por ano
+          <input id="gbm-steps-year" type="number" min="1" step="1" value="252">
+        </label>
+        <label>Simulações
+          <input id="gbm-simulations" type="number" min="10" max="50000" step="100" value="2000">
+        </label>
+        <label>Semente
+          <input id="gbm-seed" type="number" step="1" value="42">
+        </label>
+      </div>
+      <div class="actions">
+        <button id="run-gbm" class="primary">Executar GBM</button>
+      </div>
+      <div class="lesson-callout small">
+        <strong>Como pensar neste módulo:</strong> ele mostra por que dois ativos com o mesmo retorno esperado podem terminar em lugares muito diferentes quando a volatilidade muda.
+      </div>
+      <p class="hint warning">GBM é um modelo didático: assume retorno lognormal com volatilidade constante e não captura saltos, caudas pesadas ou mudanças de regime. Não use este módulo como previsão de preço.</p>
+    </section>
+
+    <section id="results" class="results hidden">
+      <div class="results__header">
+        <div>
+          <p class="eyebrow">RESULTADOS</p>
+          <h2 id="results-title">Distribuição simulada</h2>
+        </div>
+        <p id="run-meta" class="hint"></p>
+      </div>
+      <div id="metric-cards" class="metrics"></div>
+      <div class="charts">
+        <article class="chart-card">
+          <h3>Trajetórias</h3>
+          <canvas id="paths-chart" width="1100" height="430"></canvas>
+        </article>
+        <article class="chart-card">
+          <h3 id="hist-title">Distribuição final</h3>
+          <canvas id="hist-chart" width="1100" height="340"></canvas>
+        </article>
+      </div>
+      <div id="percentile-table-wrap"></div>
+      <div class="interpretation">
+        <h3>Como interpretar</h3>
+        <p id="interpretation-text"></p>
+      </div>
+    </section>
+
+    <section id="glossario" class="panel compact glossary">
+      <p class="eyebrow">GLOSSÁRIO DO RESULTADO</p>
+      <h2>Como ler as principais métricas</h2>
+      <div class="glossary-grid">
+        <article><strong>P5 do saldo</strong><p>Um cenário de cauda negativa: apenas cerca de 5% das simulações terminaram abaixo desse valor.</p></article>
+        <article><strong>P50 / Mediana</strong><p>Metade das simulações ficou abaixo e metade acima. É um centro da distribuição, não uma previsão.</p></article>
+        <article><strong>P95 de drawdown</strong><p>Em aproximadamente 95% das simulações o drawdown máximo ficou até esse valor. É útil como cenário de stress.</p></article>
+        <article><strong>Risco de violação</strong><p>Percentual de caminhos que tocaram algum limite configurado, como ruína, perda diária ou perda máxima.</p></article>
+        <article><strong>Meta antes da violação</strong><p>Mais útil em prop firms: mede quantos caminhos chegaram à meta antes de quebrar alguma regra.</p></article>
+        <article><strong>Sequência de perdas</strong><p>Ajuda a preparar risco e comportamento. Uma estratégia lucrativa pode atravessar várias perdas consecutivas.</p></article>
+      </div>
+    </section>
+
+    <section class="panel compact">
+      <h2>O que este simulador responde — e o que não responde</h2>
+      <p>Ele mede a variabilidade dos resultados sob as hipóteses fornecidas. Não prova que uma estratégia continuará tendo edge, não corrige overfitting e não substitui validação fora da amostra, custos realistas, slippage, liquidez e testes por regime.</p>
+      <p><a href="docs/METHODOLOGY.md">Leia a metodologia completa →</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Ferramenta educacional. Resultados simulados não garantem desempenho futuro.</p>
+  </footer>
+
+
+  <script>
+function mulberry32(seed = 123456789) {
+  let a = Number(seed) >>> 0;
+  return function rng() {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function normalRandom(rng = Math.random) {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = rng();
+  while (v === 0) v = rng();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+function mean(values) {
+  if (!values.length) return NaN;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function stdDev(values, sample = false) {
+  if (!values.length || (sample && values.length < 2)) return NaN;
+  const m = mean(values);
+  const divisor = sample ? values.length - 1 : values.length;
+  return Math.sqrt(values.reduce((sum, value) => sum + (value - m) ** 2, 0) / divisor);
+}
+
+function percentile(values, p) {
+  if (!values.length) return NaN;
+  const sorted = [...values].sort((a, b) => a - b);
+  const clamped = Math.min(1, Math.max(0, p));
+  const index = (sorted.length - 1) * clamped;
+  const lo = Math.floor(index);
+  const hi = Math.ceil(index);
+  if (lo === hi) return sorted[lo];
+  const weight = index - lo;
+  return sorted[lo] * (1 - weight) + sorted[hi] * weight;
+}
+
+function fisherYates(values, rng = Math.random) {
+  const out = [...values];
+  for (let i = out.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rng() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+function maxDrawdown(equity) {
+  if (!equity.length) return { amount: 0, percent: 0, peakIndex: 0, troughIndex: 0 };
+  let peak = equity[0];
+  let peakIndex = 0;
+  let bestPeakIndex = 0;
+  let troughIndex = 0;
+  let maxAmount = 0;
+  let maxPercent = 0;
+
+  for (let i = 1; i < equity.length; i += 1) {
+    const value = equity[i];
+    if (value > peak) {
+      peak = value;
+      peakIndex = i;
+    }
+    const amount = Math.max(0, peak - value);
+    const percent = peak > 0 ? amount / peak : 0;
+    if (percent > maxPercent) {
+      maxPercent = percent;
+      maxAmount = amount;
+      bestPeakIndex = peakIndex;
+      troughIndex = i;
+    }
+  }
+
+  return {
+    amount: maxAmount,
+    percent: maxPercent,
+    peakIndex: bestPeakIndex,
+    troughIndex,
+  };
+}
+
+function longestLosingStreak(pnls) {
+  let current = 0;
+  let longest = 0;
+  for (const pnl of pnls) {
+    if (pnl < 0) {
+      current += 1;
+      longest = Math.max(longest, current);
+    } else {
+      current = 0;
+    }
+  }
+  return longest;
+}
+
+function sampleHistoricalTrades(trades, method, count, rng, blockSize = 5) {
+  if (!Array.isArray(trades) || trades.length === 0) {
+    throw new Error("É necessário fornecer ao menos um trade histórico.");
+  }
+  const n = Math.max(1, Math.floor(count));
+
+  if (method === "bootstrap") {
+    return Array.from({ length: n }, () => trades[Math.floor(rng() * trades.length)]);
+  }
+
+  if (method === "block") {
+    const result = [];
+    const block = Math.max(1, Math.min(trades.length, Math.floor(blockSize)));
+    while (result.length < n) {
+      const start = Math.floor(rng() * trades.length);
+      for (let offset = 0; offset < block && result.length < n; offset += 1) {
+        result.push(trades[(start + offset) % trades.length]);
+      }
+    }
+    return result;
+  }
+
+  const result = [];
+  while (result.length < n) {
+    const shuffled = fisherYates(trades, rng);
+    const remaining = n - result.length;
+    result.push(...shuffled.slice(0, remaining));
+  }
+  return result;
+}
+
+function normalizeRiskRules(rules = {}, startingCapital = 10000) {
+  const maxLossPct = Math.max(0, Number(rules.maxLossPct) || 0);
+  const dailyLossPct = Math.max(0, Number(rules.dailyLossPct) || 0);
+  const targetPct = Math.max(0, Number(rules.targetPct) || 0);
+  const ruinThresholdPct = Math.max(0, Number(rules.ruinThresholdPct) || 0);
+  const tradesPerDay = Math.max(1, Math.floor(Number(rules.tradesPerDay) || 1));
+  const trailingMode = ["none", "static", "intraday", "eod"].includes(rules.trailingMode)
+    ? rules.trailingMode
+    : "none";
+
+  return {
+    maxLossPct,
+    dailyLossPct,
+    targetPct,
+    ruinThresholdPct,
+    tradesPerDay,
+    trailingMode,
+    maxLossAmount: startingCapital * maxLossPct / 100,
+    dailyLossAmount: startingCapital * dailyLossPct / 100,
+    targetBalance: targetPct > 0 ? startingCapital * (1 + targetPct / 100) : Infinity,
+    ruinBalance: ruinThresholdPct > 0 ? startingCapital * (1 - ruinThresholdPct / 100) : -Infinity,
+  };
+}
+
+function assessPathStep(state, equity, tradeNumber, rules, startingCapital) {
+  state.peakIntraday = Math.max(state.peakIntraday, equity);
+
+  if (rules.targetPct > 0 && state.targetHitTrade == null && equity >= rules.targetBalance) {
+    state.targetHitTrade = tradeNumber;
+  }
+
+  if (rules.ruinThresholdPct > 0 && state.ruinHitTrade == null && equity <= rules.ruinBalance) {
+    state.ruinHitTrade = tradeNumber;
+    state.breachReason = state.breachReason || "ruin";
+  }
+
+  if (rules.maxLossPct > 0) {
+    let floor = startingCapital - rules.maxLossAmount;
+
+    if (rules.trailingMode === "intraday") {
+      floor = Math.max(floor, state.peakIntraday - rules.maxLossAmount);
+    } else if (rules.trailingMode === "eod") {
+      floor = Math.max(floor, state.peakEod - rules.maxLossAmount);
+    }
+
+    if (equity <= floor && state.lossLimitHitTrade == null) {
+      state.lossLimitHitTrade = tradeNumber;
+      state.breachReason = state.breachReason || "max-loss";
+    }
+  }
+
+  if (rules.dailyLossPct > 0 && equity <= state.dayStartEquity - rules.dailyLossAmount && state.dailyLossHitTrade == null) {
+    state.dailyLossHitTrade = tradeNumber;
+    state.breachReason = state.breachReason || "daily-loss";
+  }
+
+  const endOfDay = tradeNumber % rules.tradesPerDay === 0;
+  if (endOfDay) {
+    state.peakEod = Math.max(state.peakEod, equity);
+    state.dayStartEquity = equity;
+  }
+}
+
+function finalizePath(equity, pnls, state, startingCapital) {
+  const dd = maxDrawdown(equity);
+  const breached = state.ruinHitTrade != null || state.lossLimitHitTrade != null || state.dailyLossHitTrade != null;
+  const targetHit = state.targetHitTrade != null;
+  const targetBeforeBreach = targetHit && (!breached || state.targetHitTrade < Math.min(
+    state.ruinHitTrade ?? Infinity,
+    state.lossLimitHitTrade ?? Infinity,
+    state.dailyLossHitTrade ?? Infinity,
+  ));
+
+  return {
+    equity,
+    pnls,
+    finalBalance: equity[equity.length - 1],
+    returnPct: ((equity[equity.length - 1] / startingCapital) - 1) * 100,
+    maxDrawdownAmount: dd.amount,
+    maxDrawdownPct: dd.percent * 100,
+    longestLosingStreak: longestLosingStreak(pnls),
+    targetHit,
+    breached,
+    targetBeforeBreach,
+    targetHitTrade: state.targetHitTrade,
+    ruinHitTrade: state.ruinHitTrade,
+    lossLimitHitTrade: state.lossLimitHitTrade,
+    dailyLossHitTrade: state.dailyLossHitTrade,
+    breachReason: state.breachReason,
+  };
+}
+
+function simulateTradePath(config, rng) {
+  const startingCapital = Math.max(0.01, Number(config.startingCapital) || 10000);
+  const count = Math.max(1, Math.floor(Number(config.tradesPerSimulation) || 100));
+  const rules = normalizeRiskRules(config.rules, startingCapital);
+  const equity = [startingCapital];
+  const pnls = [];
+  const state = {
+    targetHitTrade: null,
+    ruinHitTrade: null,
+    lossLimitHitTrade: null,
+    dailyLossHitTrade: null,
+    breachReason: null,
+    peakIntraday: startingCapital,
+    peakEod: startingCapital,
+    dayStartEquity: startingCapital,
+  };
+
+  let historicalSequence = null;
+  if (config.mode === "historical") {
+    historicalSequence = sampleHistoricalTrades(
+      config.trades,
+      config.method || "bootstrap",
+      count,
+      rng,
+      config.blockSize || 5,
+    );
+  }
+
+  for (let i = 0; i < count; i += 1) {
+    const currentEquity = equity[equity.length - 1];
+    let pnl;
+
+    if (config.mode === "historical") {
+      pnl = Number(historicalSequence[i]) || 0;
+      const scale = Number(config.historicalScale);
+      if (Number.isFinite(scale) && scale > 0) pnl *= scale;
+      pnl -= Math.max(0, Number(config.costPerTrade) || 0);
+    } else {
+      const winRate = Math.min(1, Math.max(0, (Number(config.winRatePct) || 0) / 100));
+      const rewardRisk = Math.max(0, Number(config.rewardRisk) || 0);
+      const riskPct = Math.max(0, Number(config.riskPct) || 0) / 100;
+      const riskBase = config.positionSizing === "fixed"
+        ? startingCapital
+        : Math.max(0, currentEquity);
+      const riskAmount = riskBase * riskPct;
+      const gross = rng() < winRate ? riskAmount * rewardRisk : -riskAmount;
+      pnl = gross - Math.max(0, Number(config.costPerTrade) || 0);
+    }
+
+    let nextEquity = currentEquity + pnl;
+    if (!Number.isFinite(nextEquity)) nextEquity = 0;
+    nextEquity = Math.max(0, nextEquity);
+    pnl = nextEquity - currentEquity;
+
+    pnls.push(pnl);
+    equity.push(nextEquity);
+    assessPathStep(state, nextEquity, i + 1, rules, startingCapital);
+
+    if (nextEquity <= 0) {
+      if (state.ruinHitTrade == null) state.ruinHitTrade = i + 1;
+      state.breachReason = state.breachReason || "account-zero";
+      for (let j = i + 1; j < count; j += 1) {
+        pnls.push(0);
+        equity.push(0);
+      }
+      break;
+    }
+  }
+
+  return finalizePath(equity, pnls, state, startingCapital);
+}
+
+function buildTradeSummary(paths, config) {
+  const finals = paths.map((path) => path.finalBalance);
+  const returns = paths.map((path) => path.returnPct);
+  const dds = paths.map((path) => path.maxDrawdownPct);
+  const streaks = paths.map((path) => path.longestLosingStreak);
+  const start = Number(config.startingCapital) || 10000;
+
+  const summary = {
+    simulations: paths.length,
+    probabilityProfitPct: 100 * paths.filter((p) => p.finalBalance > start).length / paths.length,
+    probabilityBreachPct: 100 * paths.filter((p) => p.breached).length / paths.length,
+    probabilityTargetPct: 100 * paths.filter((p) => p.targetHit).length / paths.length,
+    probabilityTargetBeforeBreachPct: 100 * paths.filter((p) => p.targetBeforeBreach).length / paths.length,
+    finalBalance: {
+      p05: percentile(finals, 0.05),
+      p25: percentile(finals, 0.25),
+      p50: percentile(finals, 0.50),
+      p75: percentile(finals, 0.75),
+      p95: percentile(finals, 0.95),
+      min: Math.min(...finals),
+      max: Math.max(...finals),
+      mean: mean(finals),
+    },
+    returnPct: {
+      p05: percentile(returns, 0.05),
+      p50: percentile(returns, 0.50),
+      p95: percentile(returns, 0.95),
+      mean: mean(returns),
+    },
+    maxDrawdownPct: {
+      p50: percentile(dds, 0.50),
+      p90: percentile(dds, 0.90),
+      p95: percentile(dds, 0.95),
+      max: Math.max(...dds),
+    },
+    losingStreak: {
+      p50: percentile(streaks, 0.50),
+      p90: percentile(streaks, 0.90),
+      p95: percentile(streaks, 0.95),
+      max: Math.max(...streaks),
+    },
+  };
+
+  if (config.mode === "historical") {
+    summary.inputExpectancy = mean(config.trades);
+    summary.inputStdDev = stdDev(config.trades, true);
+    const grossProfit = config.trades.filter((x) => x > 0).reduce((a, b) => a + b, 0);
+    const grossLoss = Math.abs(config.trades.filter((x) => x < 0).reduce((a, b) => a + b, 0));
+    summary.inputProfitFactor = grossLoss > 0 ? grossProfit / grossLoss : Infinity;
+    summary.inputWinRatePct = 100 * config.trades.filter((x) => x > 0).length / config.trades.length;
+  } else {
+    const wr = Math.min(1, Math.max(0, (Number(config.winRatePct) || 0) / 100));
+    const rr = Math.max(0, Number(config.rewardRisk) || 0);
+    summary.expectedRPerTrade = wr * rr - (1 - wr);
+    summary.kellyFraction = rr > 0 ? Math.max(0, wr - (1 - wr) / rr) : 0;
+  }
+
+  return summary;
+}
+
+function runTradeMonteCarlo(config) {
+  const simulations = Math.max(1, Math.min(50000, Math.floor(Number(config.simulations) || 1000)));
+  const seed = Number.isFinite(Number(config.seed)) ? Number(config.seed) : 42;
+  const rng = mulberry32(seed);
+  const paths = [];
+  for (let i = 0; i < simulations; i += 1) {
+    paths.push(simulateTradePath(config, rng));
+  }
+
+  const summary = buildTradeSummary(paths, config);
+  const byFinal = [...paths].sort((a, b) => a.finalBalance - b.finalBalance);
+  const sampleCount = Math.min(60, paths.length);
+  const samplePaths = [];
+  if (sampleCount === 1) {
+    samplePaths.push(byFinal[0]);
+  } else {
+    for (let i = 0; i < sampleCount; i += 1) {
+      const idx = Math.round(i * (byFinal.length - 1) / (sampleCount - 1));
+      samplePaths.push(byFinal[idx]);
+    }
+  }
+
+  return {
+    type: "trades",
+    config: structuredCloneSafe(config),
+    summary,
+    distributions: {
+      finalBalances: paths.map((p) => p.finalBalance),
+      maxDrawdownsPct: paths.map((p) => p.maxDrawdownPct),
+      losingStreaks: paths.map((p) => p.longestLosingStreak),
+    },
+    samplePaths,
+  };
+}
+
+function simulateGbmPath(config, rng) {
+  const startPrice = Math.max(0.0000001, Number(config.startPrice) || 100);
+  const annualReturn = (Number(config.annualReturnPct) || 0) / 100;
+  const annualVol = Math.max(0, Number(config.annualVolPct) || 0) / 100;
+  const steps = Math.max(1, Math.floor(Number(config.steps) || 252));
+  const stepsPerYear = Math.max(1, Number(config.stepsPerYear) || 252);
+  const dt = 1 / stepsPerYear;
+  const path = [startPrice];
+  let price = startPrice;
+
+  for (let i = 0; i < steps; i += 1) {
+    const shock = normalRandom(rng);
+    price *= Math.exp((annualReturn - 0.5 * annualVol ** 2) * dt + annualVol * Math.sqrt(dt) * shock);
+    path.push(price);
+  }
+  return path;
+}
+
+function runGbmMonteCarlo(config) {
+  const simulations = Math.max(1, Math.min(50000, Math.floor(Number(config.simulations) || 1000)));
+  const seed = Number.isFinite(Number(config.seed)) ? Number(config.seed) : 42;
+  const rng = mulberry32(seed);
+  const startPrice = Math.max(0.0000001, Number(config.startPrice) || 100);
+  const paths = [];
+  const finals = [];
+
+  for (let i = 0; i < simulations; i += 1) {
+    const path = simulateGbmPath(config, rng);
+    paths.push(path);
+    finals.push(path[path.length - 1]);
+  }
+
+  const sorted = [...paths].sort((a, b) => a[a.length - 1] - b[b.length - 1]);
+  const sampleCount = Math.min(60, sorted.length);
+  const samplePaths = [];
+  if (sampleCount === 1) {
+    samplePaths.push(sorted[0]);
+  } else {
+    for (let i = 0; i < sampleCount; i += 1) {
+      const idx = Math.round(i * (sorted.length - 1) / (sampleCount - 1));
+      samplePaths.push(sorted[idx]);
+    }
+  }
+
+  const p05 = percentile(finals, 0.05);
+  const p50 = percentile(finals, 0.50);
+  const p95 = percentile(finals, 0.95);
+
+  return {
+    type: "gbm",
+    config: structuredCloneSafe(config),
+    summary: {
+      simulations,
+      probabilityAboveStartPct: 100 * finals.filter((x) => x > startPrice).length / finals.length,
+      finalPrice: {
+        p05,
+        p25: percentile(finals, 0.25),
+        p50,
+        p75: percentile(finals, 0.75),
+        p95,
+        min: Math.min(...finals),
+        max: Math.max(...finals),
+        mean: mean(finals),
+      },
+      empiricalVaR95Amount: Math.max(0, startPrice - p05),
+      empiricalVaR95Pct: Math.max(0, (1 - p05 / startPrice) * 100),
+      medianReturnPct: (p50 / startPrice - 1) * 100,
+      p05ReturnPct: (p05 / startPrice - 1) * 100,
+      p95ReturnPct: (p95 / startPrice - 1) * 100,
+    },
+    distributions: {
+      finalPrices: finals,
+    },
+    samplePaths,
+  };
+}
+
+function parsePnlText(text) {
+  const raw = String(text || "").trim();
+  if (!raw) return [];
+
+  const lines = raw.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  if (lines.length === 0) return [];
+
+  const looksLikeSingleBrazilianNumbers =
+    !/[A-Za-zÀ-ÿ]/.test(lines[0]) &&
+    lines.every((line) => /^[-+]?\\s*(?:R\\$\\s*)?\\d{1,3}(?:\\.\\d{3})*,\\d+\\s*$|^[-+]?\\s*(?:R\\$\\s*)?\\d+,\\d+\\s*$/.test(line));
+
+  let delimiter = null;
+  if (!looksLikeSingleBrazilianNumbers) {
+    if (lines[0].includes(";")) delimiter = ";";
+    else if (lines[0].includes("\\t")) delimiter = "\\t";
+    else if (lines[0].includes(",")) delimiter = ",";
+    else {
+      const delimiters = [",", ";", "\\t"];
+      const scoreDelimiter = (candidate) => lines.slice(0, 5).reduce((score, line) => score + (line.split(candidate).length - 1), 0);
+      delimiter = delimiters.sort((a, b) => scoreDelimiter(b) - scoreDelimiter(a))[0];
+      if (scoreDelimiter(delimiter) === 0) delimiter = null;
+    }
+  }
+
+  const normalizedNumber = (value) => {
+    let s = String(value).trim().replace(/[R$€£%\s]/g, "");
+    const negativeByParens = /^\(.*\)$/.test(s);
+    s = s.replace(/[()]/g, "");
+    if (s.includes(",") && s.includes(".")) {
+      if (s.lastIndexOf(",") > s.lastIndexOf(".")) {
+        s = s.replace(/\./g, "").replace(",", ".");
+      } else {
+        s = s.replace(/,/g, "");
+      }
+    } else if (s.includes(",") && !s.includes(".")) {
+      const parts = s.split(",");
+      s = parts.length === 2 && parts[1].length <= 2 ? parts.join(".") : parts.join("");
+    }
+    const n = Number(s);
+    return Number.isFinite(n) ? (negativeByParens ? -Math.abs(n) : n) : NaN;
+  };
+
+  if (!delimiter) {
+    return lines.map(normalizedNumber).filter(Number.isFinite);
+  }
+
+  const rows = lines.map((line) => line.split(delimiter).map((cell) => cell.trim()));
+  const header = rows[0].map((cell) => cell.toLowerCase());
+  const aliases = ["pnl", "p&l", "profit", "net profit", "netprofit", "resultado", "lucro", "result", "pl"];
+  let column = header.findIndex((cell) => aliases.some((alias) => cell === alias || cell.includes(alias)));
+  let startRow = column >= 0 ? 1 : 0;
+
+  if (column < 0) {
+    const width = Math.max(...rows.map((row) => row.length));
+    let bestColumn = 0;
+    let bestCount = -1;
+    for (let c = 0; c < width; c += 1) {
+      const count = rows.reduce((acc, row) => acc + (Number.isFinite(normalizedNumber(row[c] ?? "")) ? 1 : 0), 0);
+      if (count > bestCount || (count === bestCount && c > bestColumn)) {
+        bestCount = count;
+        bestColumn = c;
+      }
+    }
+    column = bestColumn;
+  }
+
+  return rows.slice(startRow)
+    .map((row) => normalizedNumber(row[column] ?? ""))
+    .filter(Number.isFinite);
+}
+
+function structuredCloneSafe(value) {
+  if (typeof structuredClone === "function") return structuredClone(value);
+  return JSON.parse(JSON.stringify(value));
+}
+
+
+const $ = (id) => document.getElementById(id);
+const money = (value) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 }).format(value);
+const number = (value, digits = 2) => new Intl.NumberFormat("pt-BR", { maximumFractionDigits: digits }).format(value);
+const pct = (value, digits = 1) => `${number(value, digits)}%`;
+let lastResult = null;
+
+document.querySelectorAll(".mode-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".mode-btn").forEach((b) => b.classList.toggle("active", b === button));
+    const mode = button.dataset.mode;
+    $("trades-panel").classList.toggle("hidden", mode !== "trades");
+    $("gbm-panel").classList.toggle("hidden", mode !== "gbm");
+    $("results").classList.add("hidden");
+  });
+});
+
+document.querySelectorAll('input[name="trade-source"]').forEach((radio) => {
+  radio.addEventListener("change", () => {
+    const historical = document.querySelector('input[name="trade-source"]:checked').value === "historical";
+    $("parameter-fields").classList.toggle("hidden", historical);
+    $("historical-fields").classList.toggle("hidden", !historical);
+    updateTradeStatus();
+  });
+});
+
+$("trade-data").addEventListener("input", updateTradeStatus);
+$("historical-method").addEventListener("change", () => {
+  $("block-size").disabled = $("historical-method").value !== "block";
+});
+$("historical-method").dispatchEvent(new Event("change"));
+
+$("load-sample").addEventListener("click", () => {
+  const sample = [
+    185,-110,240,95,-135,310,-105,160,-125,275,-90,205,-145,120,355,-100,
+    -115,225,80,-130,290,-95,140,-155,260,105,-120,195,-85,330,-140,175,
+    -100,215,-125,300,90,-150,245,-110,155,-95,280,-135,125,340,-105,190,
+    -120,235,-90,145,-160,315,-100,180,-115,265,75,-130,220,-105,295,-145
+  ];
+  const radio = document.querySelector('input[name="trade-source"][value="historical"]');
+  radio.checked = true;
+  radio.dispatchEvent(new Event("change"));
+  $("trade-data").value = "pnl\n" + sample.join("\n");
+  $("trades-count").value = sample.length;
+  updateTradeStatus();
+});
+
+$("run-trades").addEventListener("click", () => {
+  try {
+    setBusy($("run-trades"), true, "Simulando...");
+    const mode = document.querySelector('input[name="trade-source"]:checked').value;
+    let config;
+    if (mode === "historical") {
+      const trades = parsePnlText($("trade-data").value);
+      if (trades.length < 2) throw new Error("Cole pelo menos dois resultados de trades válidos.");
+      config = {
+        mode: "historical",
+        trades,
+        startingCapital: numValue("historical-starting-capital"),
+        method: $("historical-method").value,
+        blockSize: numValue("block-size"),
+        historicalScale: numValue("historical-scale"),
+        costPerTrade: numValue("historical-cost"),
+        tradesPerSimulation: numValue("trades-count"),
+        simulations: numValue("simulations"),
+        seed: numValue("seed"),
+        rules: getRules(),
+      };
+    } else {
+      config = {
+        mode: "parameters",
+        startingCapital: numValue("starting-capital"),
+        winRatePct: numValue("win-rate"),
+        rewardRisk: numValue("reward-risk"),
+        riskPct: numValue("risk-pct"),
+        positionSizing: $("position-sizing").value,
+        costPerTrade: numValue("cost-per-trade"),
+        tradesPerSimulation: numValue("trades-count"),
+        simulations: numValue("simulations"),
+        seed: numValue("seed"),
+        rules: getRules(),
+      };
+    }
+
+    lastResult = runTradeMonteCarlo(config);
+    renderTradeResults(lastResult);
+    $("export-results").disabled = false;
+  } catch (error) {
+    alert(error?.message || String(error));
+  } finally {
+    setBusy($("run-trades"), false, "Executar simulação");
+  }
+});
+
+$("run-gbm").addEventListener("click", () => {
+  try {
+    setBusy($("run-gbm"), true, "Simulando...");
+    const config = {
+      startPrice: numValue("gbm-start"),
+      annualReturnPct: numValue("gbm-return"),
+      annualVolPct: numValue("gbm-vol"),
+      steps: numValue("gbm-steps"),
+      stepsPerYear: numValue("gbm-steps-year"),
+      simulations: numValue("gbm-simulations"),
+      seed: numValue("gbm-seed"),
+    };
+    lastResult = runGbmMonteCarlo(config);
+    renderGbmResults(lastResult);
+    $("export-results").disabled = false;
+  } catch (error) {
+    alert(error?.message || String(error));
+  } finally {
+    setBusy($("run-gbm"), false, "Executar GBM");
+  }
+});
+
+$("export-results").addEventListener("click", () => {
+  if (!lastResult) return;
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    type: lastResult.type,
+    config: lastResult.config,
+    summary: lastResult.summary,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `monte-carlo-${lastResult.type}-${Date.now()}.json`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+});
+
+function numValue(id) {
+  const value = Number($(id).value);
+  if (!Number.isFinite(value)) throw new Error(`Valor inválido em ${id}.`);
+  return value;
+}
+
+function getRules() {
+  return {
+    targetPct: numValue("target-pct"),
+    maxLossPct: numValue("max-loss-pct"),
+    dailyLossPct: numValue("daily-loss-pct"),
+    ruinThresholdPct: numValue("ruin-threshold-pct"),
+    tradesPerDay: numValue("trades-per-day"),
+    trailingMode: $("trailing-mode").value,
+  };
+}
+
+function setBusy(button, busy, text) {
+  button.disabled = busy;
+  button.textContent = text;
+}
+
+function updateTradeStatus() {
+  const trades = parsePnlText($("trade-data").value);
+  if (!trades.length) {
+    $("trade-data-status").textContent = "Aceita um número por linha ou CSV delimitado por vírgula, ponto e vírgula ou tabulação.";
+    return;
+  }
+  const wins = trades.filter((x) => x > 0).length;
+  const losses = trades.filter((x) => x < 0).length;
+  $("trade-data-status").textContent = `${trades.length} trades detectados · ${wins} ganhos · ${losses} perdas · média ${money(trades.reduce((a,b) => a+b,0)/trades.length)}`;
+}
+
+function renderTradeResults(result) {
+  const s = result.summary;
+  $("results-title").textContent = "Distribuição da estratégia";
+  $("run-meta").textContent = `${number(s.simulations, 0)} simulações · semente ${result.config.seed}`;
+  $("metric-cards").innerHTML = [
+    card("Prob. de lucro", pct(s.probabilityProfitPct), "terminou acima do capital inicial"),
+    card("Risco de violação", pct(s.probabilityBreachPct), "ruína, perda máx. ou perda diária"),
+    card("Meta antes da violação", pct(s.probabilityTargetBeforeBreachPct), "atingiu a meta primeiro"),
+    card("Saldo mediano", money(s.finalBalance.p50), `P5 ${money(s.finalBalance.p05)} · P95 ${money(s.finalBalance.p95)}`),
+    card("Drawdown mediano", pct(s.maxDrawdownPct.p50), `P95 ${pct(s.maxDrawdownPct.p95)}`),
+    card("Pior DD observado", pct(s.maxDrawdownPct.max), "máximo entre as simulações"),
+    card("Seq. perdas P95", number(s.losingStreak.p95, 0), `máximo ${number(s.losingStreak.max, 0)}`),
+    result.config.mode === "historical"
+      ? card("Win rate da amostra", pct(s.inputWinRatePct), `PF ${Number.isFinite(s.inputProfitFactor) ? number(s.inputProfitFactor) : "∞"}`)
+      : card("Expectância", `${number(s.expectedRPerTrade, 3)}R`, `Kelly ${pct(s.kellyFraction * 100)}`),
+  ].join("");
+
+  drawPaths($("paths-chart"), result.samplePaths.map((p) => p.equity), { baseline: result.config.startingCapital, yFormatter: compactCurrency });
+  $("hist-title").textContent = "Distribuição do saldo final";
+  drawHistogram($("hist-chart"), result.distributions.finalBalances, compactCurrency);
+
+  $("percentile-table-wrap").innerHTML = percentileTable(
+    "Saldo final",
+    ["P5", "P25", "P50", "P75", "P95"],
+    [s.finalBalance.p05, s.finalBalance.p25, s.finalBalance.p50, s.finalBalance.p75, s.finalBalance.p95].map(money)
+  );
+
+  const ddMessage = s.maxDrawdownPct.p95 > 30
+    ? "O P95 de drawdown é elevado; o dimensionamento merece atenção."
+    : "O P95 de drawdown está abaixo de 30% nesta configuração, mas ainda depende das hipóteses da amostra.";
+  $("interpretation-text").textContent =
+    `Em 95% das simulações, o drawdown máximo ficou em até aproximadamente ${pct(s.maxDrawdownPct.p95)}. ` +
+    `O saldo final P5 foi ${money(s.finalBalance.p05)} e o P95 foi ${money(s.finalBalance.p95)}. ${ddMessage} ` +
+    "Use esses percentis como faixa de stress test, não como promessa de resultado.";
+
+  revealResults();
+}
+
+function renderGbmResults(result) {
+  const s = result.summary;
+  $("results-title").textContent = "Distribuição de preço — GBM";
+  $("run-meta").textContent = `${number(s.simulations, 0)} simulações · semente ${result.config.seed}`;
+  $("metric-cards").innerHTML = [
+    card("Preço mediano", number(s.finalPrice.p50), `retorno ${pct(s.medianReturnPct)}`),
+    card("Preço P5", number(s.finalPrice.p05), `retorno ${pct(s.p05ReturnPct)}`),
+    card("Preço P95", number(s.finalPrice.p95), `retorno ${pct(s.p95ReturnPct)}`),
+    card("Prob. acima do início", pct(s.probabilityAboveStartPct), "preço final > preço inicial"),
+    card("VaR empírico 95%", number(s.empiricalVaR95Amount), pct(s.empiricalVaR95Pct)),
+  ].join("");
+
+  drawPaths($("paths-chart"), result.samplePaths, { baseline: result.config.startPrice, yFormatter: compactNumber });
+  $("hist-title").textContent = "Distribuição do preço final";
+  drawHistogram($("hist-chart"), result.distributions.finalPrices, compactNumber);
+  $("percentile-table-wrap").innerHTML = percentileTable(
+    "Preço final",
+    ["P5", "P25", "P50", "P75", "P95"],
+    [s.finalPrice.p05, s.finalPrice.p25, s.finalPrice.p50, s.finalPrice.p75, s.finalPrice.p95].map((x) => number(x))
+  );
+  $("interpretation-text").textContent =
+    `Sob as hipóteses de retorno e volatilidade fornecidas, metade das simulações terminou abaixo de ${number(s.finalPrice.p50)} e metade acima. ` +
+    `A faixa P5–P95 foi de ${number(s.finalPrice.p05)} a ${number(s.finalPrice.p95)}. GBM não modela saltos, volatilidade variável nem regimes.`;
+  revealResults();
+}
+
+function revealResults() {
+  $("results").classList.remove("hidden");
+  $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function card(label, value, sub = "") {
+  return `<article class="metric"><div class="metric__label">${escapeHtml(label)}</div><div class="metric__value">${escapeHtml(value)}</div><div class="metric__sub">${escapeHtml(sub)}</div></article>`;
+}
+
+function percentileTable(label, headers, values) {
+  return `<table><thead><tr><th>${escapeHtml(label)}</th>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody><tr><td>Distribuição</td>${values.map((v) => `<td>${escapeHtml(v)}</td>`).join("")}</tr></tbody></table>`;
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[char]));
+}
+
+function compactCurrency(value) {
+  return new Intl.NumberFormat("pt-BR", { notation: "compact", style: "currency", currency: "BRL", maximumFractionDigits: 1 }).format(value);
+}
+
+function compactNumber(value) {
+  return new Intl.NumberFormat("pt-BR", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+}
+
+function prepCanvas(canvas) {
+  const ratio = window.devicePixelRatio || 1;
+  const cssWidth = Math.max(300, canvas.clientWidth || 900);
+  const cssHeight = Math.max(240, Number(canvas.getAttribute("height")) || 340);
+  canvas.width = Math.floor(cssWidth * ratio);
+  canvas.height = Math.floor(cssHeight * ratio);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  return { ctx, width: cssWidth, height: cssHeight };
+}
+
+function drawPaths(canvas, paths, options = {}) {
+  const { ctx, width, height } = prepCanvas(canvas);
+  ctx.clearRect(0, 0, width, height);
+  if (!paths.length) return;
+
+  const pad = { left: 64, right: 16, top: 18, bottom: 34 };
+  const values = paths.flat();
+  let min = Math.min(...values);
+  let max = Math.max(...values);
+  if (min === max) { min -= 1; max += 1; }
+  const steps = Math.max(...paths.map((p) => p.length)) - 1;
+  const x = (i) => pad.left + (i / Math.max(1, steps)) * (width - pad.left - pad.right);
+  const y = (v) => pad.top + (max - v) / (max - min) * (height - pad.top - pad.bottom);
+
+  ctx.strokeStyle = "#263244";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let g = 0; g <= 4; g += 1) {
+    const gy = pad.top + g * (height - pad.top - pad.bottom) / 4;
+    ctx.moveTo(pad.left, gy); ctx.lineTo(width - pad.right, gy);
+  }
+  ctx.stroke();
+
+  paths.forEach((path, idx) => {
+    const edge = idx === 0 || idx === paths.length - 1;
+    const median = idx === Math.floor(paths.length / 2);
+    ctx.strokeStyle = median ? "#6ee7b7" : edge ? "#fb7185" : "rgba(96,165,250,.16)";
+    ctx.lineWidth = median ? 2.4 : edge ? 1.5 : 1;
+    ctx.beginPath();
+    path.forEach((value, i) => {
+      const px = x(i);
+      const py = y(value);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+  });
+
+  if (Number.isFinite(options.baseline)) {
+    ctx.setLineDash([6, 5]);
+    ctx.strokeStyle = "rgba(238,243,251,.45)";
+    ctx.beginPath(); ctx.moveTo(pad.left, y(options.baseline)); ctx.lineTo(width - pad.right, y(options.baseline)); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.fillStyle = "#9aa7b8";
+  ctx.font = "12px system-ui";
+  ctx.textAlign = "right";
+  for (let g = 0; g <= 4; g += 1) {
+    const value = max - g * (max - min) / 4;
+    const gy = pad.top + g * (height - pad.top - pad.bottom) / 4;
+    ctx.fillText((options.yFormatter || compactNumber)(value), pad.left - 8, gy + 4);
+  }
+  ctx.textAlign = "center";
+  ctx.fillText("0", pad.left, height - 10);
+  ctx.fillText(String(steps), width - pad.right, height - 10);
+}
+
+function drawHistogram(canvas, values, formatter = compactNumber) {
+  const { ctx, width, height } = prepCanvas(canvas);
+  ctx.clearRect(0, 0, width, height);
+  if (!values.length) return;
+
+  const pad = { left: 64, right: 16, top: 18, bottom: 42 };
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const binsCount = Math.min(35, Math.max(10, Math.round(Math.sqrt(values.length))));
+  const span = max - min || 1;
+  const bins = Array.from({ length: binsCount }, () => 0);
+  values.forEach((value) => {
+    const idx = Math.min(binsCount - 1, Math.floor((value - min) / span * binsCount));
+    bins[idx] += 1;
+  });
+  const maxCount = Math.max(...bins);
+  const chartW = width - pad.left - pad.right;
+  const chartH = height - pad.top - pad.bottom;
+  const barW = chartW / binsCount;
+
+  ctx.fillStyle = "rgba(96,165,250,.62)";
+  bins.forEach((count, i) => {
+    const h = count / maxCount * chartH;
+    ctx.fillRect(pad.left + i * barW + 1, pad.top + chartH - h, Math.max(1, barW - 2), h);
+  });
+
+  ctx.strokeStyle = "#263244";
+  ctx.strokeRect(pad.left, pad.top, chartW, chartH);
+  ctx.fillStyle = "#9aa7b8";
+  ctx.font = "12px system-ui";
+  ctx.textAlign = "left";
+  ctx.fillText(formatter(min), pad.left, height - 14);
+  ctx.textAlign = "right";
+  ctx.fillText(formatter(max), width - pad.right, height - 14);
+}
+
+  </script>
+</body>
+</html>
