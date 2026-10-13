@@ -45,11 +45,25 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
 
 ## Uso rápido
 
-Abra index.html diretamente no navegador ou publique o repositório com GitHub Pages.
+### Opção 1 — GitHub Pages
+
+Publique o repositório com GitHub Pages e abra a URL gerada pelo GitHub.
+
+### Opção 2 — Uso local
+
+Como a interface usa módulos JavaScript, sirva a pasta por HTTP. Com Python 3 instalado:
+
+    python -m http.server 8000
+
+Depois abra no navegador:
+
+    http://localhost:8000
 
 Para testes locais com Node.js 20+:
 
     npm test
+
+Há também um CSV de exemplo em examples/trades.csv.
 
 ## Estrutura
 
