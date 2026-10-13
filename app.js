@@ -606,6 +606,7 @@ function startLesson() {
   lessonState.started = true;
   lessonState.index = 0;
   lessonState.results = {};
+  lessonState.predictions = {};
   $("lesson-intro").classList.add("hidden");
   $("lesson-start-wrap").classList.add("hidden");
   $("lesson-finish").classList.add("hidden");
@@ -620,12 +621,13 @@ function resetLesson() {
   lessonState.started = false;
   lessonState.index = 0;
   lessonState.results = {};
+  lessonState.predictions = {};
   $("lesson-workspace").classList.add("hidden");
   $("lesson-finish").classList.add("hidden");
   $("lesson-intro").classList.remove("hidden");
   $("lesson-start-wrap").classList.remove("hidden");
   $("lesson-status").className = "lesson-status";
-  $("lesson-status").textContent = "Não iniciada";
+  $("lesson-status").textContent = trText("Não iniciada");
   clearLessonHighlights();
   updateLessonProgress();
 }
@@ -643,11 +645,13 @@ function moveLesson(delta) {
 }
 
 function renderLessonStep() {
-  const step = LESSON_STEPS[lessonState.index];
-  const existing = lessonState.results[step.id];
+  const baseStep = LESSON_STEPS[lessonState.index];
+  const step = localizedStep(baseStep);
+  const existing = lessonState.results[baseStep.id];
+  const prediction = lessonState.predictions[baseStep.id];
 
-  $("lesson-status").textContent = `Experimento ${lessonState.index + 1} de ${LESSON_STEPS.length}`;
-  $("lesson-step-kicker").textContent = `Experimento ${lessonState.index + 1}`;
+  $("lesson-status").textContent = tr("lesson.experiment", { current: lessonState.index + 1, total: LESSON_STEPS.length });
+  $("lesson-step-kicker").textContent = tr("lesson.kicker", { n: lessonState.index + 1 });
   $("lesson-step-title").textContent = step.title;
   $("lesson-step-tag").textContent = step.tag;
   $("lesson-step-objective").textContent = step.objective;
@@ -658,29 +662,75 @@ function renderLessonStep() {
     .map((item) => `<span class="lesson-chip">${escapeHtml(item)}</span>`)
     .join("");
 
+  renderPrediction(baseStep, step, Boolean(existing));
+
   $("lesson-prev").disabled = lessonState.index === 0;
   $("lesson-next").disabled = !existing;
   $("lesson-next").textContent = lessonState.index === LESSON_STEPS.length - 1
-    ? "Concluir aula →"
-    : "Próximo experimento →";
+    ? tr("lesson.finish")
+    : trText("Próximo experimento →");
   $("lesson-run").textContent = existing
-    ? "Executar novamente"
-    : step.type === "prop-comparison"
-      ? "Executar comparação de riscos"
-      : "Aplicar configuração e simular";
+    ? (baseStep.type === "prop-comparison" ? tr("lesson.compareAgain") : tr("lesson.rerun"))
+    : baseStep.type === "prop-comparison"
+      ? tr("lesson.runComparison")
+      : trText("Aplicar configuração e simular");
+  $("lesson-run").disabled = !prediction;
 
   if (existing) {
-    renderLessonAnalysis(step, existing, false);
+    renderLessonAnalysis(baseStep, existing, false);
   } else {
     $("lesson-analysis").classList.add("hidden");
   }
 
-  applyLessonConfig(step, false);
+  applyLessonConfig(baseStep, false);
   updateLessonProgress();
 }
 
 function lessonList(items) {
   return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+}
+
+function renderPrediction(baseStep, step, hasResult) {
+  const selected = lessonState.predictions[baseStep.id];
+  $("lesson-prediction-question").textContent = step.prediction.prompt;
+  $("lesson-prediction-options").innerHTML = step.prediction.choices.map((choice) =>
+    `<button type="button" class="prediction-option ${selected?.choice === choice.id ? "selected" : ""}" data-prediction="${escapeHtml(choice.id)}" ${hasResult ? "disabled" : ""}>${escapeHtml(choice.label)}</button>`
+  ).join("");
+
+  $("lesson-prediction-options").querySelectorAll(".prediction-option").forEach((button) => {
+    button.addEventListener("click", () => choosePrediction(baseStep, button.dataset.prediction));
+  });
+
+  if (hasResult && selected) {
+    renderPredictionFeedback(baseStep, step);
+  } else {
+    $("lesson-prediction-feedback").className = "lesson-prediction-feedback hidden";
+    $("lesson-prediction-feedback").innerHTML = selected
+      ? `<strong>${escapeHtml(trText("Previsão registrada. Agora execute a simulação."))}</strong>`
+      : "";
+  }
+}
+
+function choosePrediction(baseStep, choice) {
+  if (lessonState.results[baseStep.id]) return;
+  lessonState.predictions[baseStep.id] = {
+    choice,
+    correct: choice === baseStep.prediction.correct,
+  };
+  const step = localizedStep(baseStep);
+  renderPrediction(baseStep, step, false);
+  $("lesson-run").disabled = false;
+  $("lesson-prediction-feedback").className = "lesson-prediction-feedback";
+  $("lesson-prediction-feedback").innerHTML = `<strong>${escapeHtml(trText("Previsão registrada. Agora execute a simulação."))}</strong>`;
+}
+
+function renderPredictionFeedback(baseStep, step) {
+  const prediction = lessonState.predictions[baseStep.id];
+  if (!prediction) return;
+  const correct = prediction.correct;
+  $("lesson-prediction-feedback").className = `lesson-prediction-feedback ${correct ? "correct" : "incorrect"}`;
+  $("lesson-prediction-feedback").innerHTML =
+    `<strong>${escapeHtml(trText(correct ? "Acertou a previsão." : "Sua previsão não se confirmou."))}</strong><span>${escapeHtml(step.prediction.explanation)}</span>`;
 }
 
 function applyLessonConfig(step, highlight = true) {
