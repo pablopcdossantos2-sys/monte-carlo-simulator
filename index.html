@@ -22,7 +22,17 @@
           <a href="offline.html" download>Baixar versão offline</a>
         </nav>
       </div>
-      <div class="hero__badge">100% no navegador<br><span>seus dados não são enviados</span></div>
+      <div class="hero__aside">
+        <div class="language-picker">
+          <label for="language-selector">Idioma / Language / Idioma</label>
+          <select id="language-selector" aria-label="Idioma / Language / Idioma">
+            <option value="pt-BR">Português (Brasil)</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+          </select>
+        </div>
+        <div class="hero__badge">100% no navegador<br><span>seus dados não são enviados</span></div>
+      </div>
     </div>
   </header>
 
@@ -143,6 +153,14 @@
           </article>
         </div>
 
+        <div id="lesson-prediction" class="lesson-prediction">
+          <p class="eyebrow">DESAFIO DE PREVISÃO</p>
+          <h4>Escolha sua previsão antes de simular</h4>
+          <p id="lesson-prediction-question"></p>
+          <div id="lesson-prediction-options" class="lesson-prediction-options" role="group" aria-label="Sua previsão"></div>
+          <div id="lesson-prediction-feedback" class="lesson-prediction-feedback hidden" aria-live="polite"></div>
+        </div>
+
         <div id="lesson-config-preview" class="lesson-config-preview"></div>
 
         <div id="lesson-analysis" class="lesson-analysis hidden">
@@ -180,7 +198,7 @@
 
       <div id="lesson-start-wrap" class="actions">
         <button id="lesson-start" class="primary">Iniciar aula prática</button>
-        <span class="hint">Leva apenas alguns experimentos; não há respostas certas ou erradas.</span>
+        <span class="hint">Antes de cada simulação, faça uma previsão. O objetivo é comparar sua intuição com o comportamento estatístico observado.</span>
       </div>
     </section>
 
@@ -432,6 +450,7 @@
     <p>Ferramenta educacional. Resultados simulados não garantem desempenho futuro.</p>
   </footer>
 
+  <script src="i18n.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>
