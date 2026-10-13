@@ -193,6 +193,32 @@
     "Ver gráficos e distribuição completos ↓": { en: "View full charts and distribution ↓", es: "Ver gráficos y distribución completos ↓" }
   };
 
+  Object.assign(phraseTranslations, {
+    "Uma ferramenta educacional para aprender a pensar em": { en: "An educational tool for learning to think in", es: "Una herramienta educativa para aprender a pensar en" },
+    "probabilidades": { en: "probabilities", es: "probabilidades" },
+    ", e não em uma única curva de resultados. Teste milhares de futuros possíveis para uma estratégia, estime drawdowns, sequências de perdas, risco de violação e probabilidade de atingir metas.": { en: ", not in a single equity curve. Test thousands of possible futures for a strategy and estimate drawdowns, losing streaks, breach risk and target probabilities.", es: ", y no en una sola curva de resultados. Prueba miles de futuros posibles para una estrategia y estima drawdowns, rachas de pérdidas, riesgo de incumplimiento y probabilidades de alcanzar metas." },
+    "Um backtest mostra": { en: "A backtest shows", es: "Un backtest muestra" },
+    "uma sequência histórica": { en: "one historical sequence", es: "una secuencia histórica" },
+    ". O problema é que duas estratégias com a mesma média de ganhos podem produzir experiências muito diferentes quando a ordem dos ganhos e perdas muda. Monte Carlo cria muitas sequências plausíveis para revelar essa incerteza.": { en: ". The problem is that two strategies with the same average results can create very different experiences when the order of wins and losses changes. Monte Carlo creates many plausible sequences to reveal that uncertainty.", es: ". El problema es que dos estrategias con los mismos resultados medios pueden producir experiencias muy distintas cuando cambia el orden de ganancias y pérdidas. Monte Carlo crea muchas secuencias plausibles para revelar esa incertidumbre." },
+    "Neste modo, você pode começar por uma hipótese simples de estratégia ou usar resultados reais de operações passadas. Para aprender, comece por": { en: "In this mode you can start from a simple strategy hypothesis or use real past trade results. To learn, start with", es: "En este modo puedes comenzar con una hipótesis simple de estrategia o usar resultados reales de operaciones pasadas. Para aprender, comienza con" },
+    "; para analisar uma estratégia existente, prefira": { en: "; to analyze an existing strategy, prefer", es: "; para analizar una estrategia existente, usa" },
+    ".": { en: ".", es: "." },
+    "Use esta seção quando quiser descobrir não apenas se a estratégia ganha dinheiro, mas se ela consegue": { en: "Use this section when you want to know not only whether the strategy makes money, but whether it can", es: "Usa esta sección cuando quieras saber no solo si la estrategia gana dinero, sino si puede" },
+    "sobreviver às regras da conta": { en: "survive the account rules", es: "sobrevivir a las reglas de la cuenta" },
+    "até chegar à meta.": { en: "until reaching the target.", es: "hasta alcanzar la meta." },
+    "Taxa de acerto (%)": { en: "Win rate (%)", es: "Tasa de acierto (%)" },
+    "Risco por trade (%)": { en: "Risk per trade (%)", es: "Riesgo por trade (%)" },
+    "Custo por trade": { en: "Cost per trade", es: "Coste por trade" },
+    "Aceita um número por linha ou CSV delimitado por vírgula, ponto e vírgula ou tabulação.": { en: "Accepts one number per line or CSV delimited by comma, semicolon or tab.", es: "Acepta un número por línea o CSV delimitado por coma, punto y coma o tabulación." },
+    "Antes de cada simulação, faça uma previsão. O objetivo é comparar sua intuição com o comportamento estatístico observado.": { en: "Before each simulation, make a prediction. The goal is to compare your intuition with the statistical behavior you observe.", es: "Antes de cada simulación, haz una predicción. El objetivo es comparar tu intuición con el comportamiento estadístico observado." },
+    "Preço / GBM": { en: "Price / GBM", es: "Precio / GBM" },
+    "P5 do saldo final": { en: "P5 final balance", es: "P5 del saldo final" },
+    "Sequência de perdas P95": { en: "P95 losing streak", es: "Racha de pérdidas P95" },
+    "Pior drawdown observado": { en: "Worst observed drawdown", es: "Peor drawdown observado" },
+    "Amplitude entre cenários bons e ruins": { en: "Spread between good and bad scenarios", es: "Amplitud entre escenarios buenos y malos" },
+    "Simulando...": { en: "Simulating...", es: "Simulando..." }
+  });
+
   const messages = {
     "lesson.experiment": { pt: "Experimento {current} de {total}", en: "Experiment {current} of {total}", es: "Experimento {current} de {total}" },
     "lesson.progress": { pt: "{completed} de {total} experimentos", en: "{completed} of {total} experiments", es: "{completed} de {total} experimentos" },
