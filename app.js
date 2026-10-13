@@ -1004,7 +1004,7 @@ function lessonAnalysisFor(step, payload) {
 function updateLessonProgress() {
   const completed = Object.keys(lessonState.results).length;
   const pctDone = Math.round(completed / LESSON_STEPS.length * 100);
-  $("lesson-progress-label").textContent = `${completed} de ${LESSON_STEPS.length} experimentos`;
+  $("lesson-progress-label").textContent = tr("lesson.progress", { completed, total: LESSON_STEPS.length });
   $("lesson-progress-percent").textContent = `${pctDone}%`;
   $("lesson-progress-bar").style.width = `${pctDone}%`;
 }
@@ -1013,10 +1013,21 @@ function finishLesson() {
   const baseline = lessonState.results["risk-low"]?.summary;
   const high = lessonState.results["risk-high"]?.summary;
   const prop = lessonState.results["prop-firm"];
-  let summary = "<p>Você concluiu todos os experimentos.</p>";
+  const score = Object.values(lessonState.predictions).filter((item) => item.correct).length;
+  let summary = `<p><span class="lesson-prediction-score">${escapeHtml(tr("lesson.predictionScore", { score, total: LESSON_STEPS.length }))}</span></p>`;
+
+  summary += langPick(
+    "<p>Você concluiu todos os experimentos.</p>",
+    "<p>You completed all experiments.</p>",
+    "<p>Completaste todos los experimentos.</p>"
+  );
 
   if (baseline && high) {
-    summary += `<p>Na sua execução, elevar o risco de <strong>0,5% para 2%</strong> levou o P95 do drawdown de <strong>${pct(baseline.maxDrawdownPct.p95)}</strong> para <strong>${pct(high.maxDrawdownPct.p95)}</strong>, sem alterar o edge da estratégia.</p>`;
+    summary += langPick(
+      `<p>Na sua execução, elevar o risco de <strong>0,5% para 2%</strong> levou o P95 do drawdown de <strong>${pct(baseline.maxDrawdownPct.p95)}</strong> para <strong>${pct(high.maxDrawdownPct.p95)}</strong>, sem alterar o edge da estratégia.</p>`,
+      `<p>In your run, increasing risk from <strong>0.5% to 2%</strong> moved P95 drawdown from <strong>${pct(baseline.maxDrawdownPct.p95)}</strong> to <strong>${pct(high.maxDrawdownPct.p95)}</strong>, without changing the strategy's edge.</p>`,
+      `<p>En tu ejecución, aumentar el riesgo de <strong>0,5% a 2%</strong> llevó el P95 del drawdown de <strong>${pct(baseline.maxDrawdownPct.p95)}</strong> a <strong>${pct(high.maxDrawdownPct.p95)}</strong>, sin cambiar el edge de la estrategia.</p>`
+    );
   }
   if (prop?.comparisons) {
     const rows = prop.comparisons.map(({ risk, result }) => ({
@@ -1024,14 +1035,18 @@ function finishLesson() {
       success: result.summary.probabilityTargetBeforeBreachPct,
     }));
     const top = [...rows].sort((a, b) => b.success - a.success)[0];
-    summary += `<p>No experimento de prop firm, o maior percentual de meta antes da violação nesta simulação apareceu com <strong>${pct(top.risk)} de risco</strong> (${pct(top.success)}). Isso é um resultado deste conjunto de hipóteses, não uma recomendação universal.</p>`;
+    summary += langPick(
+      `<p>No experimento de prop firm, o maior percentual de meta antes da violação nesta simulação apareceu com <strong>${pct(top.risk)} de risco</strong> (${pct(top.success)}). Isso é um resultado deste conjunto de hipóteses, não uma recomendação universal.</p>`,
+      `<p>In the prop-firm experiment, the highest target-before-breach percentage in this simulation appeared at <strong>${pct(top.risk)} risk</strong> (${pct(top.success)}). This is a result of these assumptions, not a universal recommendation.</p>`,
+      `<p>En el experimento de prop firm, el mayor porcentaje de meta antes del incumplimiento apareció con <strong>${pct(top.risk)} de riesgo</strong> (${pct(top.success)}). Es un resultado de estas hipótesis, no una recomendación universal.</p>`
+    );
   }
 
   $("lesson-final-summary").innerHTML = summary;
   $("lesson-workspace").classList.add("hidden");
   $("lesson-finish").classList.remove("hidden");
   $("lesson-status").className = "lesson-status done";
-  $("lesson-status").textContent = "Concluída";
+  $("lesson-status").textContent = tr("lesson.completed");
   updateLessonProgress();
   $("aula-guiada").scrollIntoView({ behavior: "smooth", block: "start" });
 }
