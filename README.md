@@ -25,6 +25,8 @@ O principal aprendizado é:
 
 Para uma introdução passo a passo, veja [docs/GUIA-DIDATICO.md](docs/GUIA-DIDATICO.md).
 
+A própria interface também possui uma **Aula prática guiada** com seis experimentos interativos. Ela altera uma variável de cada vez, executa o motor Monte Carlo e explica automaticamente os resultados calculados. O roteiro pedagógico está em [docs/AULA-PRATICA-GUIADA.md](docs/AULA-PRATICA-GUIADA.md).
+
 ## Objetivos
 
 O projeto combina duas famílias de uso de Monte Carlo:
@@ -62,6 +64,13 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
 - RNG com semente para resultados reproduzíveis.
 - Exportação de resumo em JSON.
 - Interface responsiva, adequada para GitHub Pages.
+- Aula prática guiada com seis experimentos:
+  - referência com risco de 0,5%;
+  - comparação com 1% e 2%;
+  - Reshuffle para demonstrar risco de sequência;
+  - Bootstrap para demonstrar incerteza de amostragem;
+  - comparação de 0,5%, 1% e 2% sob regras de prop firm.
+- Interpretações didáticas geradas com os números reais de cada simulação.
 - Testes automatizados do motor matemático.
 
 ## Uso rápido
@@ -102,6 +111,7 @@ Há também um CSV de exemplo em examples/trades.csv.
 - tests/core.test.mjs — testes do motor.
 - docs/METHODOLOGY.md — metodologia, premissas, limitações e referências.
 - docs/GUIA-DIDATICO.md — introdução para traders que nunca usaram Monte Carlo.
+- docs/AULA-PRATICA-GUIADA.md — roteiro dos seis experimentos e orientação para instrutores.
 - docs/USO-LOCAL.md — instruções locais para usuários sem familiaridade com terminal.
 - .github/workflows/tests.yml — CI.
 - package.json — comandos de teste.
