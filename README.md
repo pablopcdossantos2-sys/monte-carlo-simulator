@@ -150,18 +150,6 @@ O repositório público do T58 informa que o motor real é proprietário; por is
 
 Consulte docs/METHODOLOGY.md para a matriz completa de referências.
 
-## Publicação no GitHub Pages
-
-O repositório já inclui `.github/workflows/pages.yml`.
-
-Faça apenas a ativação inicial em **Settings → Pages → Source → GitHub Actions**. Depois disso, pushes para `main` publicam automaticamente a versão mais recente.
-
-URL esperada:
-
-    https://pablopcdossantos2-sys.github.io/monte-carlo-simulator/
-
-Tutorial completo: [docs/GITHUB-PAGES.md](docs/GITHUB-PAGES.md).
-
 ## Aviso
 
 Resultados de backtests e Monte Carlo dependem da qualidade e representatividade dos dados de entrada. Um Monte Carlo não corrige overfitting, viés de seleção, custos omitidos, mudanças de regime, problemas de execução ou erros no backtest original.
