@@ -130,7 +130,7 @@ test("web interface includes the six-step guided lesson", () => {
   assert.match(html, /id="lesson-analysis"/);
   assert.match(app, /const LESSON_STEPS = \[/);
   assert.match(app, /id: "prop-firm"/);
-  assert.match(app, /riskPct: 0\.5/);
+  assert.match(app, /lessonParamConfig\\(0\\.5\\)/);
 });
 
 test("offline build is self-contained and includes educational onboarding", () => {
