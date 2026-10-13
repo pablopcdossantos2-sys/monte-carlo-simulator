@@ -866,14 +866,22 @@ function lessonAnalysisFor(step, payload) {
   if (step.id === "risk-low") {
     const s = payload.summary;
     return {
-      title: "A referência já mostra que edge positivo não elimina períodos difíceis",
+      title: langPick(
+        "A referência já mostra que edge positivo não elimina períodos difíceis",
+        "The baseline already shows that positive edge does not eliminate difficult periods",
+        "La referencia ya muestra que un edge positivo no elimina períodos difíciles"
+      ),
       metrics: [
         { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
-        { label: "Saldo P5", value: money(s.finalBalance.p05) },
-        { label: "Seq. perdas P95", value: number(s.losingStreak.p95, 0) },
-        { label: "Prob. lucro", value: pct(s.probabilityProfitPct) },
+        { label: langPick("Saldo P5", "P5 balance", "Saldo P5"), value: money(s.finalBalance.p05) },
+        { label: langPick("Seq. perdas P95", "P95 losing streak", "Racha de pérdidas P95"), value: number(s.losingStreak.p95, 0) },
+        { label: langPick("Prob. lucro", "Profit probability", "Prob. beneficio"), value: pct(s.probabilityProfitPct) },
       ],
-      html: `<p>Com apenas <strong>0,5% de risco por trade</strong>, já existe uma distribuição de drawdowns e sequências de perdas. Isso é normal: expectância positiva descreve uma média de longo prazo, não uma trajetória lisa.</p><p>Guarde o <strong>P95 de drawdown de ${pct(s.maxDrawdownPct.p95)}</strong>. Ele será nossa referência quando aumentarmos o tamanho da posição.</p>`,
+      html: langPick(
+        `<p>Com apenas <strong>0,5% de risco por trade</strong>, já existe uma distribuição de drawdowns e sequências de perdas. Expectância positiva descreve uma média de longo prazo, não uma trajetória lisa.</p><p>Guarde o <strong>P95 de drawdown de ${pct(s.maxDrawdownPct.p95)}</strong>. Ele será nossa referência quando aumentarmos o tamanho da posição.</p>`,
+        `<p>Even with only <strong>0.5% risk per trade</strong>, there is already a distribution of drawdowns and losing streaks. Positive expectancy describes a long-run average, not a smooth path.</p><p>Remember the <strong>P95 drawdown of ${pct(s.maxDrawdownPct.p95)}</strong>. It will be our baseline when position size increases.</p>`,
+        `<p>Incluso con solo <strong>0,5% de riesgo por trade</strong>, ya existe una distribución de drawdowns y rachas de pérdidas. La expectativa positiva describe una media de largo plazo, no una trayectoria suave.</p><p>Guarda el <strong>P95 de drawdown de ${pct(s.maxDrawdownPct.p95)}</strong>. Será nuestra referencia al aumentar el tamaño de la posición.</p>`
+      ),
     };
   }
 
@@ -884,18 +892,28 @@ function lessonAnalysisFor(step, payload) {
     const risk = step.config.riskPct;
     const baselineRatio = baseline ? s.maxDrawdownPct.p95 / Math.max(0.0001, baseline.maxDrawdownPct.p95) : NaN;
     const priorDelta = prior ? s.maxDrawdownPct.p95 - prior.maxDrawdownPct.p95 : NaN;
+    const ratioText = Number.isFinite(baselineRatio)
+      ? langPick(
+          `, cerca de ${number(baselineRatio, 2)}× o valor da referência de 0,5%`,
+          `, about ${number(baselineRatio, 2)}× the 0.5% baseline`,
+          `, cerca de ${number(baselineRatio, 2)}× el valor de la referencia de 0,5%`
+        )
+      : "";
     return {
       title: step.id === "risk-medium"
-        ? "O edge ficou igual; o caminho ficou mais agressivo"
-        : "Position sizing pode transformar a experiência sem alterar a estratégia",
+        ? langPick("O edge ficou igual; o caminho ficou mais agressivo", "The edge stayed the same; the path became more aggressive", "El edge quedó igual; la trayectoria se volvió más agresiva")
+        : langPick("Position sizing pode transformar a experiência sem alterar a estratégia", "Position sizing can transform the experience without changing the strategy", "El position sizing puede transformar la experiencia sin cambiar la estrategia"),
       metrics: [
-        { label: "Risco por trade", value: pct(risk) },
+        { label: langPick("Risco por trade", "Risk per trade", "Riesgo por trade"), value: pct(risk) },
         { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
-        { label: "Aumento vs. etapa anterior", value: Number.isFinite(priorDelta) ? `+${pct(priorDelta)}` : "—" },
-        { label: "Saldo P5", value: money(s.finalBalance.p05) },
+        { label: langPick("Aumento vs. etapa anterior", "Increase vs. previous step", "Aumento vs. etapa anterior"), value: Number.isFinite(priorDelta) ? `+${pct(priorDelta)}` : "—" },
+        { label: langPick("Saldo P5", "P5 balance", "Saldo P5"), value: money(s.finalBalance.p05) },
       ],
-      html: `<p>A taxa de acerto e o Reward:Risk não mudaram. Portanto, <strong>a vantagem estatística teórica é a mesma</strong>. O que mudou foi o tamanho financeiro de cada acerto e de cada erro.</p>
-      <p>O P95 de drawdown agora é <strong>${pct(s.maxDrawdownPct.p95)}</strong>${Number.isFinite(baselineRatio) ? `, cerca de ${number(baselineRatio, 2)}× o valor da referência de 0,5%` : ""}. A probabilidade de lucro pode permanecer semelhante enquanto a experiência de risco se torna muito mais severa.</p>`,
+      html: langPick(
+        `<p>A taxa de acerto e o Reward:Risk não mudaram. Portanto, <strong>a vantagem estatística teórica é a mesma</strong>. O que mudou foi o tamanho financeiro de cada acerto e de cada erro.</p><p>O P95 de drawdown agora é <strong>${pct(s.maxDrawdownPct.p95)}</strong>${ratioText}. A probabilidade de lucro pode permanecer semelhante enquanto a experiência de risco se torna muito mais severa.</p>`,
+        `<p>Win rate and Reward:Risk did not change. Therefore, <strong>the theoretical statistical edge is the same</strong>. What changed is the financial size of each win and loss.</p><p>P95 drawdown is now <strong>${pct(s.maxDrawdownPct.p95)}</strong>${ratioText}. Profit probability may remain similar while the risk experience becomes much more severe.</p>`,
+        `<p>La tasa de acierto y el Reward:Risk no cambiaron. Por tanto, <strong>la ventaja estadística teórica es la misma</strong>. Lo que cambió fue el tamaño financiero de cada acierto y error.</p><p>El P95 del drawdown ahora es <strong>${pct(s.maxDrawdownPct.p95)}</strong>${ratioText}. La probabilidad de beneficio puede seguir siendo similar mientras la experiencia de riesgo se vuelve mucho más severa.</p>`
+      ),
     };
   }
 
@@ -903,14 +921,22 @@ function lessonAnalysisFor(step, payload) {
     const s = payload.summary;
     const spread = s.finalBalance.p95 - s.finalBalance.p05;
     return {
-      title: "O saldo final quase não muda, mas o caminho até ele muda muito",
+      title: langPick(
+        "O saldo final quase não muda, mas o caminho até ele muda muito",
+        "Final balance barely changes, but the path to it changes a lot",
+        "El saldo final casi no cambia, pero la trayectoria cambia mucho"
+      ),
       metrics: [
-        { label: "Faixa P5–P95 saldo", value: money(spread) },
+        { label: langPick("Faixa P5–P95 saldo", "P5–P95 balance range", "Rango P5–P95 saldo"), value: money(spread) },
         { label: "Drawdown P50", value: pct(s.maxDrawdownPct.p50) },
         { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
-        { label: "Seq. perdas P95", value: number(s.losingStreak.p95, 0) },
+        { label: langPick("Seq. perdas P95", "P95 losing streak", "Racha pérdidas P95"), value: number(s.losingStreak.p95, 0) },
       ],
-      html: `<p>No Reshuffle, cada caminho contém <strong>os mesmos trades</strong>. Por isso o saldo final é praticamente o mesmo em todas as simulações — a faixa P5–P95 ficou em ${money(spread)}.</p><p>Mas os drawdowns não são iguais. Esta é a demonstração de <strong>sequence risk</strong>: a ordem dos mesmos resultados altera a pressão sobre a conta e sobre o trader.</p>`,
+      html: langPick(
+        `<p>No Reshuffle, cada caminho contém <strong>os mesmos trades</strong>. Por isso o saldo final é praticamente o mesmo em todas as simulações — a faixa P5–P95 ficou em ${money(spread)}.</p><p>Mas os drawdowns não são iguais. Esta é a demonstração de <strong>sequence risk</strong>: a ordem dos mesmos resultados altera a pressão sobre a conta e sobre o trader.</p>`,
+        `<p>Under Reshuffle, every path contains <strong>the same trades</strong>. Final balance is therefore virtually the same across simulations — the P5–P95 range was ${money(spread)}.</p><p>But drawdowns are not the same. This demonstrates <strong>sequence risk</strong>: the order of identical outcomes changes the pressure on the account and the trader.</p>`,
+        `<p>En Reshuffle, cada trayectoria contiene <strong>los mismos trades</strong>. Por eso el saldo final es prácticamente igual en todas las simulaciones — el rango P5–P95 fue de ${money(spread)}.</p><p>Pero los drawdowns no son iguales. Esta es una demostración de <strong>sequence risk</strong>: el orden de los mismos resultados cambia la presión sobre la cuenta y sobre el trader.</p>`
+      ),
     };
   }
 
@@ -920,14 +946,22 @@ function lessonAnalysisFor(step, payload) {
     const spread = s.finalBalance.p95 - s.finalBalance.p05;
     const reshuffleSpread = reshuffle ? reshuffle.finalBalance.p95 - reshuffle.finalBalance.p05 : 0;
     return {
-      title: "Bootstrap adiciona incerteza sobre quais resultados voltarão a aparecer",
+      title: langPick(
+        "Bootstrap adiciona incerteza sobre quais resultados voltarão a aparecer",
+        "Bootstrap adds uncertainty about which outcomes will appear again",
+        "Bootstrap añade incertidumbre sobre qué resultados volverán a aparecer"
+      ),
       metrics: [
-        { label: "Faixa P5–P95 saldo", value: money(spread) },
-        { label: "Faixa no Reshuffle", value: money(reshuffleSpread) },
+        { label: langPick("Faixa P5–P95 saldo", "P5–P95 balance range", "Rango P5–P95 saldo"), value: money(spread) },
+        { label: langPick("Faixa no Reshuffle", "Reshuffle range", "Rango en Reshuffle"), value: money(reshuffleSpread) },
         { label: "Drawdown P95", value: pct(s.maxDrawdownPct.p95) },
-        { label: "Saldo P5", value: money(s.finalBalance.p05) },
+        { label: langPick("Saldo P5", "P5 balance", "Saldo P5"), value: money(s.finalBalance.p05) },
       ],
-      html: `<p>Agora não mudamos apenas a ordem. Como o sorteio é com reposição, alguns trades aparecem várias vezes e outros desaparecem. Por isso o saldo final passa a formar uma distribuição muito mais ampla.</p><p>Reshuffle estuda principalmente <strong>risco de sequência</strong>; Bootstrap adiciona <strong>incerteza de amostragem</strong>. Eles respondem perguntas diferentes e não devem ser confundidos.</p>`,
+      html: langPick(
+        "<p>Agora não mudamos apenas a ordem. Como o sorteio é com reposição, alguns trades aparecem várias vezes e outros desaparecem. Por isso o saldo final passa a formar uma distribuição muito mais ampla.</p><p>Reshuffle estuda principalmente <strong>risco de sequência</strong>; Bootstrap adiciona <strong>incerteza de amostragem</strong>. Eles respondem perguntas diferentes.</p>",
+        "<p>Now we are changing more than order. Because sampling is with replacement, some trades appear several times and others disappear. Final balance therefore forms a much wider distribution.</p><p>Reshuffle mainly studies <strong>sequence risk</strong>; Bootstrap adds <strong>sampling uncertainty</strong>. They answer different questions.</p>",
+        "<p>Ahora no cambiamos solo el orden. Como el muestreo es con reposición, algunos trades aparecen varias veces y otros desaparecen. Por eso el saldo final forma una distribución mucho más amplia.</p><p>Reshuffle estudia principalmente <strong>riesgo de secuencia</strong>; Bootstrap añade <strong>incertidumbre de muestreo</strong>. Responden preguntas diferentes.</p>"
+      ),
     };
   }
 
@@ -939,24 +973,32 @@ function lessonAnalysisFor(step, payload) {
       dd: result.summary.maxDrawdownPct.p95,
     }));
     const bestSuccess = Math.max(...rows.map((row) => row.success));
-    const table = `<table class="lesson-comparison"><thead><tr><th>Risco</th><th>Meta antes da violação</th><th>Violação</th><th>DD P95</th></tr></thead><tbody>${rows.map((row) =>
+    const table = `<table class="lesson-comparison"><thead><tr><th>${escapeHtml(langPick("Risco", "Risk", "Riesgo"))}</th><th>${escapeHtml(langPick("Meta antes da violação", "Target before breach", "Meta antes del incumplimiento"))}</th><th>${escapeHtml(langPick("Violação", "Breach", "Incumplimiento"))}</th><th>DD P95</th></tr></thead><tbody>${rows.map((row) =>
       `<tr><td>${pct(row.risk)}</td><td class="${row.success === bestSuccess ? "best" : ""}">${pct(row.success)}</td><td>${pct(row.breach)}</td><td>${pct(row.dd)}</td></tr>`
     ).join("")}</tbody></table>`;
     const low = rows[0];
     const high = rows[rows.length - 1];
     return {
-      title: "Em contas com regras, retorno e sobrevivência precisam ser analisados juntos",
+      title: langPick(
+        "Em contas com regras, retorno e sobrevivência precisam ser analisados juntos",
+        "With account rules, return and survival must be analyzed together",
+        "Con reglas de cuenta, retorno y supervivencia deben analizarse juntos"
+      ),
       metrics: [
-        { label: "Sucesso 0,5%", value: pct(low.success) },
-        { label: "Sucesso 2%", value: pct(high.success) },
-        { label: "Violação 0,5%", value: pct(low.breach) },
-        { label: "Violação 2%", value: pct(high.breach) },
+        { label: langPick("Sucesso 0,5%", "Success 0.5%", "Éxito 0,5%"), value: pct(low.success) },
+        { label: langPick("Sucesso 2%", "Success 2%", "Éxito 2%"), value: pct(high.success) },
+        { label: langPick("Violação 0,5%", "Breach 0.5%", "Incumplimiento 0,5%"), value: pct(low.breach) },
+        { label: langPick("Violação 2%", "Breach 2%", "Incumplimiento 2%"), value: pct(high.breach) },
       ],
-      html: `<p>Quando há meta e limites, a pergunta profissional muda: não basta saber se a estratégia tende a ganhar. Precisamos saber se ela consegue <strong>chegar à meta antes de quebrar uma regra</strong>.</p>${table}<p>Não trate o maior percentual da tabela como uma recomendação automática. O objetivo é enxergar o trade-off: mais risco pode acelerar a chegada à meta, mas também pode aumentar a chance de violação.</p>`,
+      html: langPick(
+        `<p>Quando há meta e limites, a pergunta profissional muda: precisamos saber se a estratégia consegue <strong>chegar à meta antes de quebrar uma regra</strong>.</p>${table}<p>Não trate o maior percentual como uma recomendação automática. O objetivo é enxergar o trade-off entre velocidade e sobrevivência.</p>`,
+        `<p>When targets and limits exist, the professional question changes: we need to know whether the strategy can <strong>reach the target before breaking a rule</strong>.</p>${table}<p>Do not treat the highest percentage as an automatic recommendation. The goal is to see the trade-off between speed and survival.</p>`,
+        `<p>Cuando existen metas y límites, la pregunta profesional cambia: necesitamos saber si la estrategia puede <strong>alcanzar la meta antes de romper una regla</strong>.</p>${table}<p>No trates el porcentaje más alto como una recomendación automática. El objetivo es ver el trade-off entre velocidad y supervivencia.</p>`
+      ),
     };
   }
 
-  return { title: "Experimento concluído", metrics: [], html: "" };
+  return { title: langPick("Experimento concluído", "Experiment completed", "Experimento completado"), metrics: [], html: "" };
 }
 
 function updateLessonProgress() {
