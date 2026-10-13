@@ -7,6 +7,7 @@ const css = read("styles.css");
 const core = read("core.js");
 const i18n = read("i18n.js");
 const app = read("app.js");
+const intermediate = read("intermediate.js");
 
 html = html.replace(
   '  <link rel="stylesheet" href="styles.css" />',
@@ -15,16 +16,21 @@ html = html.replace(
 
 html = html.replace('  <script src="i18n.js"></script>', `  <script>\n${i18n}\n  </script>`);
 html = html.replace('  <script type="module" src="app.js"></script>', "");
+html = html.replace('  <script type="module" src="intermediate.js"></script>', "");
 
 const coreClassic = core.replace(/\bexport\s+(?=(function|const|let|class)\b)/g, "");
 const appClassic = app.replace(
   /^import\s+\{[^}]+\}\s+from\s+["']\.\/core\.js["'];\s*/m,
   ""
 );
+const intermediateClassic = intermediate.replace(
+  /^import\s+\{[^}]+\}\s+from\s+["']\.\/core\.js["'];\s*/m,
+  ""
+);
 
 html = html.replace(
   "</body>",
-  `  <script>\n${coreClassic}\n\n${appClassic}\n  </script>\n</body>`
+  `  <script>\n${coreClassic}\n\n${appClassic}\n\n${intermediateClassic}\n  </script>\n</body>`
 );
 
 html = html.replace(
