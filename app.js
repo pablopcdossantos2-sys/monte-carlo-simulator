@@ -500,7 +500,7 @@ function renderLessonAnalysis(step, payload, shouldScroll = true) {
   $("lesson-analysis-metrics").innerHTML = analysis.metrics
     .map((item) => `<div class="lesson-analysis-metric"><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.value)}</strong></div>`)
     .join("");
-  $("lesson-analysis-text").innerHTML = analysis.html;
+  $("lesson-analysis-text").innerHTML = analysis.html + '<p><a href="#results">Ver gráficos e distribuição completos ↓</a></p>';
   $("lesson-analysis").classList.remove("hidden");
   if (shouldScroll) $("lesson-analysis").scrollIntoView({ behavior: "smooth", block: "center" });
 }
