@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {
   longestLosingStreak,
   maxDrawdown,
@@ -118,4 +119,14 @@ test("GBM with zero volatility follows deterministic drift", () => {
   const expected = 100 * Math.exp(0.10);
   assert.ok(Math.abs(result.summary.finalPrice.p50 - expected) < 1e-9);
   assert.equal(result.summary.finalPrice.p05, result.summary.finalPrice.p95);
+});
+
+
+test("offline build is self-contained and includes educational onboarding", () => {
+  const html = fs.readFileSync("offline.html", "utf8");
+  assert.match(html, /VERSÃO OFFLINE/);
+  assert.match(html, /id="aprender"/);
+  assert.match(html, /id="trades-panel"/);
+  assert.doesNotMatch(html, /type="module"/);
+  assert.doesNotMatch(html, /from\s+["']\.\/core\.js["']/);
 });
