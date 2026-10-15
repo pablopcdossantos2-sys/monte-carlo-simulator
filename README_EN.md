@@ -125,7 +125,8 @@ The analysis hierarchy is:
   - MFE/MAE lab;
   - same-sequence comparison of no daily stop vs daily stop;
   - cost erosion calculator;
-  - bootstrap where each resampled unit is a full trading session.
+  - bootstrap where each resampled unit is a full trading session;
+  - **Heads or Tails: Stop, Gain and Expectancy** lab, which deliberately holds probability at 50/50 to separate uncontrollable next-outcome uncertainty from controllable risk, payoff, costs and execution structure.
 - Guided practical lesson with prediction challenges.
 - Intermediate lesson covering:
   - win rate versus payoff;
