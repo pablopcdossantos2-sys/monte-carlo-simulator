@@ -263,6 +263,10 @@
     "Estatística aplicada": { en: "Applied statistics", es: "Estadística aplicada" }
   });
 
+  Object.assign(phraseTranslations, {
+    "Distribuições e Bayes": { en: "Distributions and Bayes", es: "Distribuciones y Bayes" }
+  });
+
   const messages = {
     "lesson.experiment": { pt: "Experimento {current} de {total}", en: "Experiment {current} of {total}", es: "Experimento {current} de {total}" },
     "lesson.progress": { pt: "{completed} de {total} experimentos", en: "{completed} of {total} experiments", es: "{completed} de {total} experimentos" },
