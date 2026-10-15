@@ -255,6 +255,10 @@
     "Progresso da aula intermediária": { en: "Intermediate lesson progress", es: "Progreso de la clase intermedia" }
   });
 
+  Object.assign(phraseTranslations, {
+    "Probabilidade e Expectância": { en: "Probability and Expectancy", es: "Probabilidad y Expectativa" }
+  });
+
   const messages = {
     "lesson.experiment": { pt: "Experimento {current} de {total}", en: "Experiment {current} of {total}", es: "Experimento {current} de {total}" },
     "lesson.progress": { pt: "{completed} de {total} experimentos", en: "{completed} of {total} experiments", es: "{completed} de {total} experimentos" },
