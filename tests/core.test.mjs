@@ -186,3 +186,25 @@ test("offline build includes the intermediate lesson", () => {
   assert.match(html, /id: "kelly"/);
   assert.doesNotMatch(html, /src="intermediate\.js"/);
 });
+
+
+test("probability and expectancy learning lab is present", () => {
+  const html = fs.readFileSync("index.html", "utf8");
+  const education = fs.readFileSync("education.js", "utf8");
+  assert.match(html, /id="conceitos"/);
+  assert.match(html, /id="education-root"/);
+  assert.match(education, /Calculadora de Expectativa Matemática/);
+  assert.match(education, /Distribuição de Vitórias/);
+  assert.match(education, /Laboratório de Convergência/);
+  assert.match(education, /Da Expectância ao Monte Carlo/);
+  assert.match(education, /binomialDistribution/);
+  assert.match(education, /runTradeMonteCarlo/);
+});
+
+test("offline build includes probability and expectancy learning lab", () => {
+  const html = fs.readFileSync("offline.html", "utf8");
+  assert.match(html, /id="conceitos"/);
+  assert.match(html, /Calculadora de Expectativa Matemática/);
+  assert.match(html, /Da Expectância ao Monte Carlo/);
+  assert.doesNotMatch(html, /src="education\.js"/);
+});
