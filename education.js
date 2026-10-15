@@ -80,17 +80,20 @@ function articleProbability() {
       <p>Estamos descrevendo uma <strong>frequência de longo prazo sob determinadas condições</strong>. Em amostras pequenas, os resultados observados podem ficar bem distantes dessa taxa.</p>
       <div class="formula-box">P(vitória) = 0,45 &nbsp; e &nbsp; P(perda) = 0,55</div>
       <p>Se os trades forem tratados como independentes, cinco perdas consecutivas em uma posição específica da sequência têm probabilidade de <strong>0,55⁵ ≈ 5,0%</strong>. Isso não significa que a estratégia deixou de funcionar. Significa apenas que sequências são parte natural de processos probabilísticos.</p>
-      <p><strong>Aplicação no trading:</strong> pensar probabilisticamente reduz a tendência de interpretar cada trade isolado como prova de que uma estratégia é boa ou ruim.</p>`,
+      <p><strong>Aplicação no trading:</strong> pensar probabilisticamente reduz a tendência de interpretar cada trade isolado como prova de que uma estratégia é boa ou ruim.</p>
+      <p><strong>Importante:</strong> tratar trades como independentes e usar uma probabilidade fixa é um modelo didático. No mercado real, regime, horário, volatilidade e outras condições podem mudar a probabilidade e criar dependência entre resultados.</p>`,
       `<p>When we say a strategy has a <strong>45% win rate</strong>, we are not saying that exactly 45 out of every 100 trades will win, nor that after a few losses a win is “due”.</p>
       <p>We are describing a <strong>long-run frequency under certain conditions</strong>. In small samples, observed results can be far from that rate.</p>
       <div class="formula-box">P(win) = 0.45 &nbsp; and &nbsp; P(loss) = 0.55</div>
       <p>If trades are treated as independent, five consecutive losses at a specific position in a sequence have probability <strong>0.55⁵ ≈ 5.0%</strong>. That does not mean the strategy stopped working. Sequences are a natural part of probabilistic processes.</p>
-      <p><strong>Trading application:</strong> probabilistic thinking reduces the tendency to treat each individual trade as proof that a strategy is good or bad.</p>`,
+      <p><strong>Trading application:</strong> probabilistic thinking reduces the tendency to treat each individual trade as proof that a strategy is good or bad.</p>
+      <p><strong>Important:</strong> treating trades as independent with a fixed probability is an educational model. In real markets, regime, time of day, volatility and other conditions can change probability and create dependence between outcomes.</p>`,
       `<p>Cuando decimos que una estrategia tiene <strong>45% de tasa de acierto</strong>, no decimos que exactamente 45 de cada 100 trades serán ganadores, ni que después de varias pérdidas “ya toca” una ganancia.</p>
       <p>Describimos una <strong>frecuencia de largo plazo bajo determinadas condiciones</strong>. En muestras pequeñas, los resultados observados pueden quedar lejos de esa tasa.</p>
       <div class="formula-box">P(ganancia) = 0,45 &nbsp; y &nbsp; P(pérdida) = 0,55</div>
       <p>Si los trades se tratan como independientes, cinco pérdidas consecutivas en una posición específica de la secuencia tienen probabilidad <strong>0,55⁵ ≈ 5,0%</strong>. Eso no significa que la estrategia dejó de funcionar. Las secuencias son parte natural de los procesos probabilísticos.</p>
-      <p><strong>Aplicación al trading:</strong> pensar probabilísticamente reduce la tendencia a interpretar cada trade aislado como prueba de que una estrategia es buena o mala.</p>`
+      <p><strong>Aplicación al trading:</strong> pensar probabilísticamente reduce la tendencia a interpretar cada trade aislado como prueba de que una estrategia es buena o mala.</p>
+      <p><strong>Importante:</strong> tratar los trades como independientes y usar una probabilidad fija es un modelo didáctico. En el mercado real, régimen, horario, volatilidad y otras condiciones pueden cambiar la probabilidad y crear dependencia entre resultados.</p>`
     )
   );
 }
@@ -334,9 +337,9 @@ function updateBinomial() {
   }
   $e("edu-bin-chart").innerHTML=bars;
   $e("edu-bin-explain").textContent=pick(
-    `Mesmo com p = ${pctEdu(winRate)}, uma amostra de ${n} trades não precisa ter exatamente ${fmt(expected,1)} vitórias. A distribuição mostra a variedade de contagens plausíveis.`,
-    `Even with p = ${pctEdu(winRate)}, a ${n}-trade sample does not have to contain exactly ${fmt(expected,1)} wins. The distribution shows the range of plausible counts.`,
-    `Incluso con p = ${pctEdu(winRate)}, una muestra de ${n} trades no tiene que contener exactamente ${fmt(expected,1)} victorias. La distribución muestra la variedad de conteos plausibles.`
+    `Mesmo com p = ${pctEdu(winRate)}, uma amostra de ${n} trades não precisa ter exatamente ${fmt(expected,1)} vitórias. A distribuição mostra a variedade de contagens plausíveis. O modelo binomial usado aqui pressupõe probabilidade constante e independência entre trades.`,
+    `Even with p = ${pctEdu(winRate)}, a ${n}-trade sample does not have to contain exactly ${fmt(expected,1)} wins. The distribution shows the range of plausible counts. The binomial model used here assumes a constant probability and independent trades.`,
+    `Incluso con p = ${pctEdu(winRate)}, una muestra de ${n} trades no tiene que contener exactamente ${fmt(expected,1)} victorias. La distribución muestra la variedad de conteos plausibles. El modelo binomial usado aquí supone probabilidad constante e independencia entre trades.`
   );
 }
 
