@@ -81,6 +81,13 @@ La aplicación contiene dos recorridos educativos:
   - comparador de misma expectativa y distinta dispersión;
   - laboratorio de rachas con dependencia serial;
   - laboratorio de regresión a la media seleccionando la mejor entre muchas muestras idénticas.
+- Tercer laboratorio sobre **Distribuciones e Incertidumbre**:
+  - distribuciones de retornos en R;
+  - eventos raros y riesgo de cola;
+  - asimetría y dispersión;
+  - actualización bayesiana del win rate;
+  - distribución posterior e intervalo de credibilidad;
+  - Monte Carlo predictivo con incertidumbre de parámetro.
 - Clase práctica guiada con desafíos de predicción.
 - Clase intermedia sobre:
   - win rate versus payoff;
@@ -130,6 +137,7 @@ Hay un CSV de ejemplo en `examples/trades.csv`.
 - `intermediate.js` — clase intermedia.
 - `education.js` — artículos y herramientas interactivas sobre probabilidad, expectativa, muestreo y Monte Carlo.
 - `statistics.js` — laboratorio de estadística aplicada sobre contexto, dispersión, dependencia y regresión a la media.
+- `inference.js` — laboratorio de distribuciones, riesgo de cola y actualización bayesiana.
 - `core.js` — motor estadístico y Monte Carlo sin dependencia del DOM.
 - `tests/core.test.mjs` — tests automatizados.
 - `docs/METHODOLOGY.md` — metodología, hipótesis, limitaciones y referencias.
