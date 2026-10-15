@@ -259,6 +259,10 @@
     "Probabilidade e Expectância": { en: "Probability and Expectancy", es: "Probabilidad y Expectativa" }
   });
 
+  Object.assign(phraseTranslations, {
+    "Estatística aplicada": { en: "Applied statistics", es: "Estadística aplicada" }
+  });
+
   const messages = {
     "lesson.experiment": { pt: "Experimento {current} de {total}", en: "Experiment {current} of {total}", es: "Experimento {current} de {total}" },
     "lesson.progress": { pt: "{completed} de {total} experimentos", en: "{completed} of {total} experiments", es: "{completed} de {total} experimentos" },
