@@ -271,6 +271,16 @@
     "Validação de estratégias": { en: "Strategy validation", es: "Validación de estrategias" }
   });
 
+  Object.assign(phraseTranslations, {
+    "Sessão Day Trade": { en: "Day-Trading Session", es: "Sesión Day Trade" },
+    "MONTE CARLO · DAY TRADE · RISCO": { en: "MONTE CARLO · DAY TRADING · RISK", es: "MONTE CARLO · DAY TRADE · RIESGO" },
+    "Por que Monte Carlo importa para um day trader?": { en: "Why does Monte Carlo matter to a day trader?", es: "¿Por qué Monte Carlo es importante para un day trader?" },
+    "Uma ferramenta educacional voltada exclusivamente a day traders para aprender a pensar em probabilidades, sessões e distribuições — não em uma única curva de resultados. Todas as análises pressupõem operações abertas e encerradas no mesmo pregão.": {
+      en: "An educational tool built exclusively for day traders to learn to think in probabilities, sessions and distributions — not a single equity curve. All analyses assume positions are opened and closed within the same trading session.",
+      es: "Una herramienta educativa creada exclusivamente para day traders para aprender a pensar en probabilidades, sesiones y distribuciones, y no en una sola curva de resultados. Todos los análisis suponen operaciones abiertas y cerradas dentro de la misma sesión."
+    }
+  });
+
   const messages = {
     "lesson.experiment": { pt: "Experimento {current} de {total}", en: "Experiment {current} of {total}", es: "Experimento {current} de {total}" },
     "lesson.progress": { pt: "{completed} de {total} experimentos", en: "{completed} of {total} experiments", es: "{completed} de {total} experimentos" },
