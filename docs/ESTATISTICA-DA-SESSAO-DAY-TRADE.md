@@ -357,6 +357,145 @@ O projeto não foi desenhado para avaliar:
 
 Conceitos estatísticos gerais continuam válidos, mas todas as ferramentas e exemplos futuros deverão ser interpretados prioritariamente sob a perspectiva de operações intradiárias.
 
+## 15. Cara ou coroa: o que o trader controla?
+
+Uma analogia útil para ensinar gerenciamento de risco é imaginar que cada operação comece como um lançamento de moeda.
+
+A analogia não afirma que um trading system real possua 50% de chance de ganho.
+
+Ela serve para separar duas coisas:
+
+1. **o resultado do próximo evento é incerto**;
+2. **o trader consegue estruturar sua exposição a esse evento**.
+
+Num jogo didático com:
+
+    P(cara) = 50%
+    P(coroa) = 50%
+
+suponha:
+
+    cara  → +2R
+    coroa → -1R
+
+A expectativa bruta é:
+
+    E[R]
+    =
+    0,50 × 2R
+    − 0,50 × 1R
+
+    E[R] = +0,50R
+
+Agora mantenha exatamente a mesma moeda, mas use:
+
+    cara  → +1R
+    coroa → -1R
+
+A expectativa passa a ser:
+
+    E[R] = 0R
+
+E com:
+
+    cara  → +0,5R
+    coroa → -1R
+
+temos:
+
+    E[R] = -0,25R
+
+A moeda não mudou.
+
+O que mudou foi a assimetria entre ganho e perda.
+
+### O que o trader não controla
+
+O trader não controla:
+
+- o próximo movimento do mercado;
+- a ordem futura de gains e losses;
+- se o próximo trade será vencedor;
+- quando uma sequência negativa aparecerá.
+
+### O que o trader consegue estruturar
+
+O trader consegue estruturar:
+
+- stop;
+- tamanho da posição;
+- perda máxima aceitável;
+- regra de saída;
+- quanto espaço concede a um trade favorável;
+- custos que aceita;
+- quantidade máxima de operações;
+- stop diário;
+- disciplina para executar as regras.
+
+É nesse sentido que dizemos que o trader possui “controle”.
+
+**Controle não é controle sobre o mercado. É controle sobre exposição e execução.**
+
+### Custos
+
+Se existe um custo médio de 0,05R por tentativa:
+
+    E líquido[R]
+    =
+    P(win) × ganho
+    − P(loss) × perda
+    − custo
+
+No exemplo 50/50 com +2R / -1R:
+
+    E líquido
+    =
+    0,50 × 2
+    − 0,50 × 1
+    − 0,05
+
+    E líquido = +0,45R
+
+O laboratório calcula também o ganho necessário para break-even quando a probabilidade é mantida artificialmente em 50%.
+
+### Relação com “deixar o trade correr”
+
+A frase “cortar as perdas e deixar os ganhos correrem” descreve uma intenção de criar assimetria favorável.
+
+Mas existe uma limitação importante.
+
+No mercado real:
+
+- aumentar o alvo pode reduzir o win rate;
+- apertar o stop pode aumentar a frequência de stops;
+- trailing stops alteram a distribuição dos ganhos;
+- slippage altera perdas e ganhos reais;
+- diferentes contextos de mercado mudam as probabilidades.
+
+Portanto não é correto pegar uma taxa de acerto fixa e assumir que podemos aumentar indefinidamente o ganho médio sem modificar mais nada.
+
+A relação entre:
+
+    win rate
+    stop
+    payoff
+    MFE
+    MAE
+    custos
+    horário
+    contexto
+
+precisa ser validada empiricamente.
+
+### Função do laboratório
+
+O laboratório **Cara ou Coroa: Stop, Ganho e Expectativa** fixa deliberadamente a probabilidade em 50/50 para isolar uma única ideia:
+
+> mesmo quando você não controla qual será o próximo resultado, a estrutura de risco e payoff muda a expectativa e a distribuição dos caminhos.
+
+Depois dessa intuição, o trader deve voltar aos dados reais e verificar se a assimetria que deseja executar existe de fato em seu trading system.
+
+
 ## Aviso
 
 Nenhum limite de stop diário, quantidade de trades ou horário é recomendado universalmente.
