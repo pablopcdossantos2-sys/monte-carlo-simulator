@@ -312,3 +312,24 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b10
 @media(max-width:650px){
   #dt-time-results table{min-width:620px}
 }
+
+
+/* Coin-flip risk-control teaching lab */
+.dt-control-map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0 18px}
+.dt-control-map>div{display:grid;grid-template-columns:38px 1fr;column-gap:10px;align-items:start;border:1px solid var(--line);border-radius:15px;padding:13px;background:rgba(255,255,255,.02)}
+.dt-control-map>div>span{grid-row:1/3;font-size:1.45rem}
+.dt-control-map strong{font-size:.9rem}
+.dt-control-map small{color:var(--muted);line-height:1.4}
+.dt-coin-presets{margin-bottom:14px}
+.dt-coin-sequence-wrap{margin:16px 0}
+.dt-coin-sequence-wrap>strong{display:block;margin-bottom:9px}
+.dt-coin-sequence{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:5px}
+.dt-coin-sequence span{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.025)}
+.dt-coin-sequence span.heads{border-color:rgba(110,231,183,.35);background:rgba(110,231,183,.06)}
+.dt-coin-sequence span.tails{border-color:rgba(248,113,113,.32);background:rgba(248,113,113,.05)}
+.dt-coin-sequence b{font-size:.78rem}
+.dt-coin-sequence small{font-size:.66rem;color:var(--muted)}
+@media(max-width:650px){
+  .dt-control-map{grid-template-columns:1fr}
+  .dt-coin-sequence{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
