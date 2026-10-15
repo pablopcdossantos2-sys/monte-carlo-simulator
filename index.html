@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Simulador de Monte Carlo para trading, drawdown, risco de ruína, prop firms e trajetórias GBM." />
+  <meta name="description" content="Simulador educacional de Monte Carlo e estatística para day trade: P&L diário, drawdown, risco de ruína, prop firms, expectativa e validação." />
   <title>Monte Carlo Trading Simulator</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -11,15 +11,16 @@
   <header class="hero">
     <div class="hero__inner">
       <div>
-        <p class="eyebrow">MONTE CARLO · TRADING · RISCO</p>
+        <p class="eyebrow">MONTE CARLO · DAY TRADE · RISCO</p>
         <h1>Simulador de Monte Carlo</h1>
-        <p class="hero__copy">Uma ferramenta educacional para aprender a pensar em <strong>probabilidades</strong>, e não em uma única curva de resultados. Teste milhares de futuros possíveis para uma estratégia, estime drawdowns, sequências de perdas, risco de violação e probabilidade de atingir metas.</p>
+        <p class="hero__copy">Uma ferramenta educacional voltada <strong>exclusivamente a day traders</strong> para aprender a pensar em probabilidades, sessões e distribuições — não em uma única curva de resultados. Todas as análises pressupõem operações abertas e encerradas no mesmo pregão.</p>
         <nav class="hero__nav" aria-label="Atalhos">
           <a href="#aprender">Entender primeiro</a>
           <a href="#conceitos">Probabilidade e Expectância</a>
           <a href="#estatistica-aplicada">Estatística aplicada</a>
           <a href="#distribuicoes-incerteza">Distribuições e Bayes</a>
           <a href="#validacao-estrategias">Validação de estratégias</a>
+          <a href="#sessao-day-trade">Sessão Day Trade</a>
           <a href="#aula-guiada">Aula prática guiada</a>
           <a href="#aula-intermediaria">Aula intermediária</a>
           <a href="#simulador">Ir ao simulador</a>
@@ -45,7 +46,7 @@
     <section id="aprender" class="learning-hero panel">
       <div class="learning-hero__title">
         <p class="eyebrow">ANTES DE SIMULAR</p>
-        <h2>Por que Monte Carlo importa para um trader?</h2>
+        <h2>Por que Monte Carlo importa para um day trader?</h2>
         <p>Um backtest mostra <strong>uma sequência histórica</strong>. O problema é que duas estratégias com a mesma média de ganhos podem produzir experiências muito diferentes quando a ordem dos ganhos e perdas muda. Monte Carlo cria muitas sequências plausíveis para revelar essa incerteza.</p>
       </div>
       <div class="concept-grid">
@@ -108,6 +109,10 @@
 
     <section id="validacao-estrategias" class="education-lab panel">
       <div id="validation-root"></div>
+    </section>
+
+    <section id="sessao-day-trade" class="education-lab panel">
+      <div id="daytrade-root"></div>
     </section>
 
     <section id="aula-guiada" class="guided-lesson panel">
@@ -576,6 +581,7 @@
   <script type="module" src="statistics.js"></script>
   <script type="module" src="inference.js"></script>
   <script type="module" src="validation.js"></script>
+  <script type="module" src="daytrade.js"></script>
   <script type="module" src="intermediate.js"></script>
 </body>
 </html>
