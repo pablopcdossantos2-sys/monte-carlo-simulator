@@ -59,6 +59,16 @@ The application contains two educational tracks:
 - JSON summary export.
 - Responsive interface suitable for GitHub Pages.
 - Three-language interface: **Português (Brasil), English and Español**.
+- Learning lab on **Probability, Mathematical Expectancy and Monte Carlo**, with four integrated articles:
+  - probability in trading;
+  - mathematical expectancy in R;
+  - sample size, variance and convergence;
+  - the connection between expectancy and Monte Carlo simulation.
+- Interactive learning tools:
+  - expectancy and break-even win-rate calculator;
+  - binomial win distribution;
+  - visual win-rate convergence lab;
+  - mini Monte Carlo that turns theoretical expectancy into a distribution of outcomes.
 - Guided practical lesson with prediction challenges.
 - Intermediate lesson covering:
   - win rate versus payoff;
@@ -106,6 +116,7 @@ A sample CSV is available at `examples/trades.csv`.
 - `i18n.js` — PT-BR / English / Spanish localization.
 - `app.js` — main interface, charts and introductory lesson.
 - `intermediate.js` — intermediate lesson.
+- `education.js` — articles and interactive tools for probability, expectancy, sampling and Monte Carlo.
 - `core.js` — statistical and Monte Carlo engine with no DOM dependency.
 - `tests/core.test.mjs` — automated tests.
 - `docs/METHODOLOGY.md` — methodology, assumptions, limitations and references.
