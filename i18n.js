@@ -281,6 +281,10 @@
     }
   });
 
+  Object.assign(phraseTranslations, {
+    "Cara ou Coroa": { en: "Heads or Tails", es: "Cara o Cruz" }
+  });
+
   const messages = {
     "lesson.experiment": { pt: "Experimento {current} de {total}", en: "Experiment {current} of {total}", es: "Experimento {current} de {total}" },
     "lesson.progress": { pt: "{completed} de {total} experimentos", en: "{completed} of {total} experiments", es: "{completed} de {total} experimentos" },
