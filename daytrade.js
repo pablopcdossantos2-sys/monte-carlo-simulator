@@ -11,6 +11,7 @@ const dtState={
   stop:{winRate:45,rr:1.5,maxTrades:6,stopR:3,days:3000,seed:5321},
   costs:{winRate:48,rr:1.35,costR:.05,tradesDay:5,days:20},
   bootstrap:{days:60,sims:3000,seed:9127},
+  coin:{stopR:1,winR:2,costR:.05,trades:100,sims:3000,seed:5050},
 };
 
 const DT_SAMPLE_DAYS=[
@@ -86,6 +87,25 @@ function dtArticles(){
         `<p>No day trade, corretagem, emolumentos, spread e slippage são pagos repetidamente. Um custo aparentemente pequeno por operação pode consumir grande parte de uma expectância modesta.</p><div class="formula-box">E líquido[R] = E bruto[R] − custo médio[R/trade]</div><p>O custo também pode variar por horário e volatilidade; o valor fixo usado no laboratório é uma simplificação didática.</p>`,
         `<p>In day trading, commissions, fees, spread and slippage are paid repeatedly. A seemingly small per-trade cost can consume a large share of a modest edge.</p><div class="formula-box">net E[R] = gross E[R] − average cost[R/trade]</div><p>Costs can also vary by time and volatility; the fixed value used in the lab is an educational simplification.</p>`,
         `<p>En day trading, comisiones, tasas, spread y slippage se pagan repetidamente. Un coste aparentemente pequeño por operación puede consumir gran parte de un edge modesto.</p><div class="formula-box">E neta[R] = E bruta[R] − coste medio[R/trade]</div><p>El coste también puede variar por horario y volatilidad; el valor fijo usado en el laboratorio es una simplificación didáctica.</p>`
+      )),
+    dtArticle("22",dtPick("Cara ou coroa: o que o trader realmente controla?","Heads or tails: what does the trader actually control?","Cara o cruz: ¿qué controla realmente el trader?"),
+      dtPick("Você não controla o próximo resultado; controla a estrutura de risco e saída.","You do not control the next outcome; you control risk and exit structure.","No controlas el próximo resultado; controlas la estructura de riesgo y salida."),
+      dtPick(
+        `<p>Imagine, apenas como analogia, que cada operação começasse como um lançamento de moeda: você não sabe se o próximo movimento será favorável ou contrário.</p>
+        <p>O trader <strong>não controla qual lado da moeda aparecerá</strong>. Mas pode definir quanto aceita perder quando o cenário falha, quanto espaço concede a uma operação favorável, o tamanho da posição, os custos que tolera e se respeita a saída planejada.</p>
+        <div class="formula-box">resultado incerto + perda limitada + ganho assimétrico → expectativa diferente</div>
+        <p>Num jogo didático 50/50, perder 1R quando erra e ganhar 2R quando acerta produz expectativa bruta de +0,50R por tentativa. Ganhar e perder 1R produz expectativa bruta zero. A probabilidade do próximo lançamento continua exatamente 50/50.</p>
+        <p><strong>O ponto não é dizer que trading é literalmente uma moeda.</strong> No mercado real, win rate, stop, alvo, saída discricionária, slippage e contexto interagem. Aumentar o alvo, por exemplo, pode reduzir a frequência com que ele é atingido. A analogia serve para separar duas coisas: <em>incerteza do resultado</em> e <em>controle sobre risco/exposição</em>.</p>`,
+        `<p>Imagine, only as an analogy, that every trade began like a coin flip: you do not know whether the next move will be favorable or adverse.</p>
+        <p>The trader <strong>does not control which side appears</strong>. But the trader can define how much to lose when the idea fails, how much room to give a favorable trade, position size, tolerated costs and whether the planned exit is respected.</p>
+        <div class="formula-box">uncertain outcome + limited loss + asymmetric gain → different expectancy</div>
+        <p>In a 50/50 teaching game, losing 1R when wrong and earning 2R when right gives gross expectancy of +0.50R per attempt. Winning and losing 1R gives zero gross expectancy. The next flip is still exactly 50/50.</p>
+        <p><strong>The point is not that trading is literally a coin toss.</strong> In real markets, win rate, stops, targets, discretionary exits, slippage and context interact. Increasing the target, for example, may reduce how often it is reached. The analogy separates two ideas: <em>outcome uncertainty</em> and <em>control over risk/exposure</em>.</p>`,
+        `<p>Imagina, solo como analogía, que cada trade comenzara como un lanzamiento de moneda: no sabes si el próximo movimiento será favorable o adverso.</p>
+        <p>El trader <strong>no controla qué lado aparece</strong>. Pero puede definir cuánto perder cuando la idea falla, cuánto espacio conceder a una operación favorable, el tamaño de posición, los costes tolerados y si respeta la salida planificada.</p>
+        <div class="formula-box">resultado incierto + pérdida limitada + ganancia asimétrica → expectativa diferente</div>
+        <p>En un juego didáctico 50/50, perder 1R al fallar y ganar 2R al acertar produce una expectativa bruta de +0,50R por intento. Ganar y perder 1R produce expectativa bruta cero. El siguiente lanzamiento sigue siendo exactamente 50/50.</p>
+        <p><strong>La idea no es que el trading sea literalmente una moneda.</strong> En el mercado real, win rate, stop, objetivo, salidas discrecionales, slippage y contexto interactúan. Aumentar el objetivo, por ejemplo, puede reducir la frecuencia con que se alcanza. La analogía separa dos ideas: <em>incertidumbre del resultado</em> y <em>control sobre riesgo/exposición</em>.</p>`
       ))
   ].join("");
 }
@@ -187,10 +207,46 @@ function dtCostsTool(){
   </article>`;
 }
 
+function dtCoinTool(){
+  const s=dtState.coin;
+  return `<article class="edu-tool edu-tool--wide dt-coin-tool">
+    <div class="edu-tool__head"><span class="tool-number">23</span><div><h4>${dtEsc(dtPick("Cara ou Coroa: Stop, Ganho e Expectativa","Heads or Tails: Stop, Gain and Expectancy","Cara o Cruz: Stop, Ganancia y Expectativa"))}</h4><p>${dtEsc(dtPick("Mantenha a chance em 50/50 e altere apenas aquilo que o trader pode estruturar neste modelo didático.","Keep probability at 50/50 and change only what the trader can structure in this teaching model.","Mantén la probabilidad en 50/50 y cambia solo lo que el trader puede estructurar en este modelo didáctico."))}</p></div></div>
+    <div class="dt-control-map">
+      <div><span>🎲</span><strong>${dtEsc(dtPick("Você não controla","You do not control","No controlas"))}</strong><small>${dtEsc(dtPick("o próximo cara/coroa, nem o próximo movimento do mercado","the next heads/tails outcome or the market's next move","el próximo cara/cruz ni el próximo movimiento del mercado"))}</small></div>
+      <div><span>🎛️</span><strong>${dtEsc(dtPick("Você estrutura","You structure","Tú estructuras"))}</strong><small>${dtEsc(dtPick("stop, ganho permitido, tamanho, custos e disciplina de saída","stop, allowed gain, size, costs and exit discipline","stop, ganancia permitida, tamaño, costes y disciplina de salida"))}</small></div>
+    </div>
+    <div class="edu-form cols-3">
+      ${dtField("dt-coin-stop",dtPick("Perda quando dá errado (R)","Loss when wrong (R)","Pérdida cuando sale mal (R)"),s.stopR,.1,20,.1)}
+      ${dtField("dt-coin-win",dtPick("Ganho quando dá certo (R)","Gain when right (R)","Ganancia cuando sale bien (R)"),s.winR,.1,50,.1)}
+      ${dtField("dt-coin-cost",dtPick("Custo por tentativa (R)","Cost per attempt (R)","Coste por intento (R)"),s.costR,0,5,.01)}
+      ${dtField("dt-coin-trades",dtPick("Lançamentos / trades por caminho","Flips / trades per path","Lanzamientos / trades por trayectoria"),s.trades,10,1000,10)}
+      ${dtField("dt-coin-sims",dtPick("Caminhos Monte Carlo","Monte Carlo paths","Trayectorias Monte Carlo"),s.sims,200,10000,100)}
+      ${dtField("dt-coin-seed",dtPick("Semente","Seed","Semilla"),s.seed,1,999999999,1)}
+    </div>
+    <div class="actions dt-coin-presets">
+      <button type="button" class="secondary" data-coin-preset="1,1">${dtEsc(dtPick("Simétrico 1R / 1R","Symmetric 1R / 1R","Simétrico 1R / 1R"))}</button>
+      <button type="button" class="secondary" data-coin-preset="1,2">${dtEsc(dtPick("Corta em 1R / deixa 2R","Cut at 1R / allow 2R","Corta en 1R / deja 2R"))}</button>
+      <button type="button" class="secondary" data-coin-preset="1,.5">${dtEsc(dtPick("Perde 1R / ganha 0,5R","Lose 1R / gain 0.5R","Pierde 1R / gana 0,5R"))}</button>
+      <button id="dt-coin-run" type="button" class="primary">${dtEsc(dtPick("Lançar milhares de moedas","Flip thousands of coins","Lanzar miles de monedas"))}</button>
+    </div>
+    <div id="dt-coin-results" class="edu-results"></div>
+    <div class="dt-coin-sequence-wrap">
+      <strong>${dtEsc(dtPick("Um caminho possível — 40 primeiros resultados","One possible path — first 40 outcomes","Una trayectoria posible — primeros 40 resultados"))}</strong>
+      <div id="dt-coin-sequence" class="dt-coin-sequence"></div>
+    </div>
+    <div id="dt-coin-explain" class="edu-explain"></div>
+    <p class="hint warning">${dtEsc(dtPick(
+      "Limitação essencial: este laboratório mantém 50% fixos de propósito. Num trading system real, mudar stop ou alvo pode mudar também o win rate e a distribuição dos resultados; por isso a relação precisa ser validada com dados.",
+      "Essential limitation: this lab deliberately keeps probability fixed at 50%. In a real trading system, changing stop or target can also change win rate and the outcome distribution, so the relationship must be validated with data.",
+      "Limitación esencial: este laboratorio mantiene el 50% fijo a propósito. En un sistema real, cambiar stop u objetivo también puede cambiar el win rate y la distribución de resultados; la relación debe validarse con datos."
+    ))}</p>
+  </article>`;
+}
+
 function dtBootstrapTool(){
   const s=dtState.bootstrap;
   return `<article class="edu-tool edu-tool--wide">
-    <div class="edu-tool__head"><span class="tool-number">22</span><div><h4>${dtEsc(dtPick("Bootstrap de Pregões Históricos","Historical Session Bootstrap","Bootstrap de Sesiones Históricas"))}</h4><p>${dtEsc(dtPick("Cole o resultado diário em R. Cada valor representa um pregão inteiro e será reamostrado como unidade.","Paste daily P&L in R. Each value represents one whole session and is resampled as a unit.","Pega el resultado diario en R. Cada valor representa una sesión completa y se remuestrea como unidad."))}</p></div></div>
+    <div class="edu-tool__head"><span class="tool-number">24</span><div><h4>${dtEsc(dtPick("Bootstrap de Pregões Históricos","Historical Session Bootstrap","Bootstrap de Sesiones Históricas"))}</h4><p>${dtEsc(dtPick("Cole o resultado diário em R. Cada valor representa um pregão inteiro e será reamostrado como unidade.","Paste daily P&L in R. Each value represents one whole session and is resampled as a unit.","Pega el resultado diario en R. Cada valor representa una sesión completa y se remuestrea como unidad."))}</p></div></div>
     <label>${dtEsc(dtPick("P&L diário em R — separado por vírgula, espaço ou quebra de linha","Daily P&L in R — comma, space or newline separated","P&L diario en R — separado por coma, espacio o salto de línea"))}<textarea id="dt-boot-data">${DT_SAMPLE_DAYS.join(", ")}</textarea></label>
     <div class="edu-form cols-3">
       ${dtField("dt-boot-days",dtPick("Pregões futuros por caminho","Future sessions per path","Sesiones futuras por trayectoria"),s.days,10,500,10)}
@@ -227,6 +283,7 @@ function renderDayTradeLab(){
       ${dtMfeTool()}
       ${dtStopTool()}
       ${dtCostsTool()}
+      ${dtCoinTool()}
       ${dtBootstrapTool()}
     </div>
   `;
@@ -236,8 +293,14 @@ function renderDayTradeLab(){
   ["dt-mfe-mfe","dt-mfe-result","dt-mfe-mae"].forEach(id=>dt$(id)?.addEventListener("input",dtRunMfe));
   dt$("dt-stop-run")?.addEventListener("click",dtRunStop);
   ["dt-cost-rate","dt-cost-rr","dt-cost-r","dt-cost-trades","dt-cost-days"].forEach(id=>dt$(id)?.addEventListener("input",dtRunCosts));
+  dt$("dt-coin-run")?.addEventListener("click",dtRunCoin);
+  document.querySelectorAll("[data-coin-preset]").forEach(btn=>btn.addEventListener("click",()=>{
+    const [stop,win]=btn.dataset.coinPreset.split(",").map(Number);
+    dt$("dt-coin-stop").value=stop;dt$("dt-coin-win").value=win;dtRunCoin();
+  }));
+  ["dt-coin-stop","dt-coin-win","dt-coin-cost","dt-coin-trades","dt-coin-sims","dt-coin-seed"].forEach(id=>dt$(id)?.addEventListener("input",dtRunCoin));
   dt$("dt-boot-run")?.addEventListener("click",dtRunBootstrap);
-  dtRunSession();dtRunTime();dtRunOvertrade();dtRunMfe();dtRunStop();dtRunCosts();dtRunBootstrap();
+  dtRunSession();dtRunTime();dtRunOvertrade();dtRunMfe();dtRunStop();dtRunCosts();dtRunCoin();dtRunBootstrap();
 }
 
 function dtRunSession(){
@@ -364,6 +427,50 @@ function dtRunCosts(){
     `Um custo médio de <strong>${dtFmt(cost,3)}R por trade</strong> consome ${Number.isFinite(erosion)?dtPct(erosion*100,1):"—"} do tamanho da expectância bruta por operação. Em day trade, repetir esse custo ${trades} vezes por dia torna a modelagem de custos parte central da análise.`,
     `An average cost of <strong>${dtFmt(cost,3)}R per trade</strong> consumes ${Number.isFinite(erosion)?dtPct(erosion*100,1):"—"} of gross per-trade expectancy magnitude. In day trading, paying that cost ${trades} times per day makes cost modeling central to the analysis.`,
     `Un coste medio de <strong>${dtFmt(cost,3)}R por trade</strong> consume ${Number.isFinite(erosion)?dtPct(erosion*100,1):"—"} del tamaño de la expectativa bruta por operación. En day trade, repetir ese coste ${trades} veces por día hace que modelar costes sea central.`
+  );
+}
+
+function dtRunCoin(){
+  const loss=Math.max(.1,dtRead("dt-coin-stop",1));
+  const gain=Math.max(.1,dtRead("dt-coin-win",2));
+  const cost=Math.max(0,dtRead("dt-coin-cost",.05));
+  const trades=Math.min(1000,Math.max(10,Math.floor(dtRead("dt-coin-trades",100))));
+  const sims=Math.min(10000,Math.max(200,Math.floor(dtRead("dt-coin-sims",3000))));
+  const seed=Math.max(1,Math.floor(dtRead("dt-coin-seed",5050)));
+  const expectancy=.5*gain-.5*loss-cost;
+  const breakEvenWin=(loss+cost)/(gain+loss);
+  const breakEvenGain=loss+2*cost;
+  const rng=dtRng(seed),totals=[],dds=[];
+  let profitable=0,example=[];
+  for(let s=0;s<sims;s++){
+    let total=0,peak=0,worst=0;
+    const seq=[];
+    for(let i=0;i<trades;i++){
+      const heads=rng()<.5;
+      const result=(heads?gain:-loss)-cost;
+      total+=result;peak=Math.max(peak,total);worst=Math.max(worst,peak-total);
+      if(s===0 && i<40) seq.push({heads,result});
+    }
+    if(s===0) example=seq;
+    totals.push(total);dds.push(worst);if(total>0)profitable++;
+  }
+  dt$("dt-coin-results").innerHTML=dtMetric([
+    [dtPick("Probabilidade do resultado","Outcome probability","Probabilidad del resultado"),"50% / 50%"],
+    [dtPick("Expectância líquida/tentativa","Net expectancy/attempt","Expectativa neta/intento"),`${expectancy>=0?"+":""}${dtFmt(expectancy,3)}R`],
+    [dtPick("Win rate de equilíbrio","Break-even win rate","Win rate de equilibrio"),dtPct(breakEvenWin*100,1)],
+    [dtPick("Ganho necessário com p=50%","Required gain at p=50%","Ganancia necesaria con p=50%"),dtFmt(breakEvenGain,2)+"R"],
+    [dtPick("Caminhos positivos","Positive paths","Trayectorias positivas"),dtPct(profitable/sims*100,1)],
+    ["P5",dtFmt(dtQuantile(totals,.05),1)+"R"],
+    ["P50",dtFmt(dtQuantile(totals,.50),1)+"R"],
+    ["P95",dtFmt(dtQuantile(totals,.95),1)+"R"],
+    [dtPick("Drawdown P95","P95 drawdown","Drawdown P95"),dtFmt(dtQuantile(dds,.95),1)+"R"],
+  ]);
+  dt$("dt-coin-sequence").innerHTML=example.map((x,i)=>`<span class="${x.heads?"heads":"tails"}" title="${x.heads?dtPick("Cara / favorável","Heads / favorable","Cara / favorable"):dtPick("Coroa / contrário","Tails / adverse","Cruz / adverso")} · ${x.result>=0?"+":""}${dtFmt(x.result,2)}R"><b>${x.heads?"C":"K"}</b><small>${x.result>=0?"+":""}${dtFmt(x.result,1)}R</small></span>`).join("");
+  const status=expectancy>0?dtPick("positiva","positive","positiva"):expectancy<0?dtPick("negativa","negative","negativa"):dtPick("neutra","neutral","neutral");
+  dt$("dt-coin-explain").innerHTML=dtPick(
+    `A moeda continua <strong>50/50</strong>. O que mudou foi o contrato econômico do jogo: você aceita perder <strong>${dtFmt(loss,2)}R</strong> no lado desfavorável e permite <strong>${dtFmt(gain,2)}R</strong> no favorável, pagando ${dtFmt(cost,2)}R de custo por tentativa. A expectância fica <strong>${status}: ${expectancy>=0?"+":""}${dtFmt(expectancy,3)}R</strong>. É esta a mensagem didática: <strong>controle não significa controlar o mercado; significa controlar a exposição e executar uma assimetria que tenha sido validada.</strong>`,
+    `The coin remains <strong>50/50</strong>. What changed is the economics of the game: you accept a <strong>${dtFmt(loss,2)}R</strong> loss on the adverse side and allow <strong>${dtFmt(gain,2)}R</strong> on the favorable side, with ${dtFmt(cost,2)}R cost per attempt. Expectancy becomes <strong>${status}: ${expectancy>=0?"+":""}${dtFmt(expectancy,3)}R</strong>. That is the teaching point: <strong>control does not mean controlling the market; it means controlling exposure and executing an asymmetry that has been validated.</strong>`,
+    `La moneda sigue <strong>50/50</strong>. Lo que cambió es la economía del juego: aceptas perder <strong>${dtFmt(loss,2)}R</strong> en el lado adverso y permites <strong>${dtFmt(gain,2)}R</strong> en el favorable, con ${dtFmt(cost,2)}R de coste por intento. La expectativa queda <strong>${status}: ${expectancy>=0?"+":""}${dtFmt(expectancy,3)}R</strong>. Ese es el mensaje: <strong>control no significa controlar el mercado; significa controlar la exposición y ejecutar una asimetría que haya sido validada.</strong>`
   );
 }
 
