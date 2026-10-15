@@ -301,3 +301,14 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b10
 .val-param-bars .observed{position:absolute;left:0;bottom:2px;height:7px;background:rgba(96,165,250,.72);border-radius:4px}
 .val-param-row.best{background:rgba(110,231,183,.035);border-radius:7px;padding:3px 5px}
 .val-param-row.best b{color:var(--accent)}
+
+
+/* Day-trading session lab */
+#sessao-day-trade .lesson-callout{margin-bottom:22px}
+#dt-time-results table input{min-width:82px;padding:8px 9px}
+.dt-best-row{background:rgba(110,231,183,.055)}
+.dt-best-row td:first-child{color:var(--accent);font-weight:850}
+#dt-boot-data{min-height:115px}
+@media(max-width:650px){
+  #dt-time-results table{min-width:620px}
+}
