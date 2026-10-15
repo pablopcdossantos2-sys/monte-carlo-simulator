@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build:offline": "node scripts/build-offline.mjs",
-    "test": "node --check app.js && node --check education.js && node --check intermediate.js && node --check core.js && node --check i18n.js && node --test tests/*.test.mjs"
+    "test": "node --check app.js && node --check education.js && node --check statistics.js && node --check intermediate.js && node --check core.js && node --check i18n.js && node --test tests/*.test.mjs"
   },
   "engines": {
     "node": ">=20"
