@@ -92,6 +92,13 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
   - comparador de estratégias com mesma expectância e diferentes dispersões;
   - laboratório de losing streak com dependência serial;
   - laboratório de regressão à média com seleção da melhor entre várias amostras.
+- Terceiro laboratório sobre **Distribuições e Incerteza**:
+  - distribuição de retornos em R;
+  - eventos raros e risco de cauda;
+  - assimetria e dispersão;
+  - atualização bayesiana do win rate;
+  - distribuição posterior e intervalo de credibilidade;
+  - Monte Carlo preditivo com incerteza de parâmetro.
 - Aula prática guiada com seis experimentos sobre risco, drawdown, sequência e prop firms.
 - Aula intermediária com seis experimentos sobre:
   - win rate versus payoff;
@@ -141,6 +148,7 @@ Há também um CSV de exemplo em examples/trades.csv.
 - app.js — integração entre interface, gráficos e motor.
 - education.js — laboratório introdutório de probabilidade, expectância, amostragem e Monte Carlo.
 - statistics.js — laboratório de estatística aplicada: contexto, dispersão, dependência e regressão à média.
+- inference.js — laboratório de distribuições, risco de cauda e atualização bayesiana.
 - core.js — motor estatístico e Monte Carlo, sem dependências de DOM.
 - tests/core.test.mjs — testes do motor.
 - docs/METHODOLOGY.md — metodologia, premissas, limitações e referências.
