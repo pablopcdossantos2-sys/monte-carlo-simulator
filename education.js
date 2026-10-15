@@ -4,7 +4,7 @@ const $e = (id) => document.getElementById(id);
 const eduLocale = () => window.I18N?.getLanguage?.() || "pt-BR";
 const pick = (pt, en, es) => eduLocale() === "en" ? en : eduLocale() === "es" ? es : pt;
 const fmt = (value, digits = 2) => new Intl.NumberFormat(eduLocale(), { maximumFractionDigits: digits }).format(value);
-const pct = (value, digits = 1) => `${fmt(value, digits)}%`;
+const pctEdu = (value, digits = 1) => `${fmt(value, digits)}%`;
 const esc = (value) => String(value).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c]));
 
 const eduState = {
@@ -280,7 +280,7 @@ function updateExpectancy() {
   const sign=exp>0?pick("positiva","positive","positiva"):exp<0?pick("negativa","negative","negativa"):pick("neutra","neutral","neutral");
   $e("edu-exp-results").innerHTML=[
     [pick("Expectância por trade","Expectancy per trade","Expectativa por trade"),`${exp>=0?"+":""}${fmt(exp,3)}R`],
-    [pick("Win rate de equilíbrio","Break-even win rate","Win rate de equilibrio"),pct(Math.min(100,breakeven),1)],
+    [pick("Win rate de equilíbrio","Break-even win rate","Win rate de equilibrio"),pctEdu(Math.min(100,breakeven),1)],
     [pick("Profit Factor bruto","Gross Profit Factor","Profit Factor bruto"),Number.isFinite(grossPf)?fmt(grossPf,2):"∞"],
     [pick(`Expectância em ${trades} trades`,`Expectancy over ${trades} trades`,`Expectativa en ${trades} trades`),`${total>=0?"+":""}${fmt(total,2)}R`],
   ].map(([l,v])=>`<div><span>${esc(l)}</span><strong>${esc(v)}</strong></div>`).join("");
@@ -315,8 +315,8 @@ function updateBinomial() {
   const sd=Math.sqrt(n*(winRate/100)*(1-winRate/100));
   $e("edu-bin-results").innerHTML=[
     [pick("Vitórias esperadas","Expected wins","Victorias esperadas"),fmt(expected,1)],
-    [pick(`P(exatamente ${k})`,`P(exactly ${k})`,`P(exactamente ${k})`),pct(exact,2)],
-    [pick(`P(${k} ou mais)`,`P(${k} or more)`,`P(${k} o más)`),pct(atLeast,2)],
+    [pick(`P(exatamente ${k})`,`P(exactly ${k})`,`P(exactamente ${k})`),pctEdu(exact,2)],
+    [pick(`P(${k} ou mais)`,`P(${k} or more)`,`P(${k} o más)`),pctEdu(atLeast,2)],
     [pick("Desvio-padrão da contagem","Count standard deviation","Desviación estándar del conteo"),fmt(sd,2)],
   ].map(([l,v])=>`<div><span>${esc(l)}</span><strong>${esc(v)}</strong></div>`).join("");
 
@@ -326,13 +326,13 @@ function updateBinomial() {
   let bars="";
   for(let i=start;i<=end;i++){
     const h=max>0?Math.max(2,(probs[i]/max)*100):2;
-    bars+=`<div class="bin-bar ${i===k?"selected":""}" title="${i}: ${pct(probs[i]*100,2)}"><span style="height:${h}%"></span><small>${i}</small></div>`;
+    bars+=`<div class="bin-bar ${i===k?"selected":""}" title="${i}: ${pctEdu(probs[i]*100,2)}"><span style="height:${h}%"></span><small>${i}</small></div>`;
   }
   $e("edu-bin-chart").innerHTML=bars;
   $e("edu-bin-explain").textContent=pick(
-    `Mesmo com p = ${pct(winRate)}, uma amostra de ${n} trades não precisa ter exatamente ${fmt(expected,1)} vitórias. A distribuição mostra a variedade de contagens plausíveis.`,
-    `Even with p = ${pct(winRate)}, a ${n}-trade sample does not have to contain exactly ${fmt(expected,1)} wins. The distribution shows the range of plausible counts.`,
-    `Incluso con p = ${pct(winRate)}, una muestra de ${n} trades no tiene que contener exactamente ${fmt(expected,1)} victorias. La distribución muestra la variedad de conteos plausibles.`
+    `Mesmo com p = ${pctEdu(winRate)}, uma amostra de ${n} trades não precisa ter exatamente ${fmt(expected,1)} vitórias. A distribuição mostra a variedade de contagens plausíveis.`,
+    `Even with p = ${pctEdu(winRate)}, a ${n}-trade sample does not have to contain exactly ${fmt(expected,1)} wins. The distribution shows the range of plausible counts.`,
+    `Incluso con p = ${pctEdu(winRate)}, una muestra de ${n} trades no tiene que contener exactamente ${fmt(expected,1)} victorias. La distribución muestra la variedad de conteos plausibles.`
   );
 }
 
@@ -356,10 +356,10 @@ function updateConvergence() {
   }
   drawConvergence(rates,p);
   $e("edu-conv-results").innerHTML=[
-    [pick("Probabilidade definida","Defined probability","Probabilidad definida"),pct(p*100,1)],
-    [pick("Taxa observada final","Final observed rate","Tasa observada final"),pct(rates.at(-1)*100,1)],
+    [pick("Probabilidade definida","Defined probability","Probabilidad definida"),pctEdu(p*100,1)],
+    [pick("Taxa observada final","Final observed rate","Tasa observada final"),pctEdu(rates.at(-1)*100,1)],
     [pick("Vitórias observadas","Observed wins","Victorias observadas"),`${wins} / ${n}`],
-    [pick("Maior desvio durante o caminho","Largest deviation along the path","Mayor desviación durante la trayectoria"),pct(maxDev*100,1)],
+    [pick("Maior desvio durante o caminho","Largest deviation along the path","Mayor desviación durante la trayectoria"),pctEdu(maxDev*100,1)],
   ].map(([l,v])=>`<div><span>${esc(l)}</span><strong>${esc(v)}</strong></div>`).join("");
 }
 
@@ -379,7 +379,7 @@ function drawConvergence(rates,trueP){
   ctx.strokeStyle="#60a5fa";ctx.lineWidth=2;ctx.beginPath();
   rates.forEach((v,i)=>{if(i===0)ctx.moveTo(x(i),y(v));else ctx.lineTo(x(i),y(v));});ctx.stroke();
   ctx.fillStyle="#9aa7b8";ctx.font="12px system-ui";ctx.textAlign="right";
-  for(let g=0;g<=4;g++){const v=max-g*(max-min)/4;ctx.fillText(pct(v*100,0),pad.l-7,pad.t+g*(h-pad.t-pad.b)/4+4);}
+  for(let g=0;g<=4;g++){const v=max-g*(max-min)/4;ctx.fillText(pctEdu(v*100,0),pad.l-7,pad.t+g*(h-pad.t-pad.b)/4+4);}
   ctx.textAlign="left";ctx.fillText("1",pad.l,h-10);ctx.textAlign="right";ctx.fillText(String(rates.length),w-pad.r,h-10);
 }
 
@@ -418,17 +418,17 @@ function runMiniMonteCarlo(){
     });
     const x=result.summary;
     $e("edu-mc-results").innerHTML=[
-      [pick("Probabilidade de lucro","Profit probability","Probabilidad de beneficio"),pct(x.probabilityProfitPct,1)],
+      [pick("Probabilidade de lucro","Profit probability","Probabilidad de beneficio"),pctEdu(x.probabilityProfitPct,1)],
       [pick("Saldo final P5","P5 final balance","Saldo final P5"),new Intl.NumberFormat(eduLocale(),{style:"currency",currency:"BRL",maximumFractionDigits:0}).format(x.finalBalance.p05)],
       [pick("Saldo final P50","P50 final balance","Saldo final P50"),new Intl.NumberFormat(eduLocale(),{style:"currency",currency:"BRL",maximumFractionDigits:0}).format(x.finalBalance.p50)],
       [pick("Saldo final P95","P95 final balance","Saldo final P95"),new Intl.NumberFormat(eduLocale(),{style:"currency",currency:"BRL",maximumFractionDigits:0}).format(x.finalBalance.p95)],
-      ["Drawdown P95",pct(x.maxDrawdownPct.p95,1)],
+      ["Drawdown P95",pctEdu(x.maxDrawdownPct.p95,1)],
       [pick("Sequência de perdas P95","P95 losing streak","Racha de pérdidas P95"),fmt(x.losingStreak.p95,0)],
     ].map(([l,v])=>`<div><span>${esc(l)}</span><strong>${esc(v)}</strong></div>`).join("");
     $e("edu-mc-explain").innerHTML=pick(
-      `A expectativa matemática continuou sendo apenas uma média. Monte Carlo mostrou a <strong>dispersão</strong>: 90% dos saldos finais ficaram aproximadamente entre o P5 e o P95, enquanto o drawdown P95 chegou a <strong>${pct(x.maxDrawdownPct.p95,1)}</strong>.`,
-      `Mathematical expectancy remained only an average. Monte Carlo exposed the <strong>dispersion</strong>: roughly 90% of final balances fell between P5 and P95, while P95 drawdown reached <strong>${pct(x.maxDrawdownPct.p95,1)}</strong>.`,
-      `La expectativa matemática siguió siendo solo una media. Monte Carlo mostró la <strong>dispersión</strong>: aproximadamente el 90% de los saldos finales quedó entre P5 y P95, mientras el drawdown P95 llegó a <strong>${pct(x.maxDrawdownPct.p95,1)}</strong>.`
+      `A expectativa matemática continuou sendo apenas uma média. Monte Carlo mostrou a <strong>dispersão</strong>: 90% dos saldos finais ficaram aproximadamente entre o P5 e o P95, enquanto o drawdown P95 chegou a <strong>${pctEdu(x.maxDrawdownPct.p95,1)}</strong>.`,
+      `Mathematical expectancy remained only an average. Monte Carlo exposed the <strong>dispersion</strong>: roughly 90% of final balances fell between P5 and P95, while P95 drawdown reached <strong>${pctEdu(x.maxDrawdownPct.p95,1)}</strong>.`,
+      `La expectativa matemática siguió siendo solo una media. Monte Carlo mostró la <strong>dispersión</strong>: aproximadamente el 90% de los saldos finales quedó entre P5 y P95, mientras el drawdown P95 llegó a <strong>${pctEdu(x.maxDrawdownPct.p95,1)}</strong>.`
     );
   }finally{
     btn.disabled=false;btn.textContent=pick("Executar mini Monte Carlo","Run mini Monte Carlo","Ejecutar mini Monte Carlo");
