@@ -125,7 +125,8 @@ La jerarquía de análisis es:
   - laboratorio de MFE/MAE;
   - comparación de las mismas secuencias sin stop diario y con stop diario;
   - calculadora de erosión por costes;
-  - bootstrap donde cada unidad remuestreada es una sesión completa.
+  - bootstrap donde cada unidad remuestreada es una sesión completa;
+  - laboratorio **Cara o Cruz: Stop, Ganancia y Expectativa**, que mantiene deliberadamente 50/50 para separar la incertidumbre del próximo resultado de la estructura controlable de riesgo, payoff, costes y ejecución.
 - Clase práctica guiada con desafíos de predicción.
 - Clase intermedia sobre:
   - win rate versus payoff;
