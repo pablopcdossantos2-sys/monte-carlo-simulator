@@ -70,6 +70,16 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
 - Exportação de resumo em JSON.
 - Interface responsiva, adequada para GitHub Pages.
 - Interface trilíngue em **Português (Brasil), English e Español**, com troca de idioma em tempo real e preferência salva no navegador.
+- Laboratório didático de **Probabilidade, Expectativa Matemática e Monte Carlo**, com quatro artigos integrados:
+  - probabilidade no trading;
+  - expectativa matemática em R;
+  - tamanho de amostra, variância e convergência;
+  - conexão entre expectativa e simulação de Monte Carlo.
+- Ferramentas didáticas interativas:
+  - calculadora de expectativa matemática e win rate de equilíbrio;
+  - distribuição binomial de vitórias;
+  - laboratório visual de convergência da taxa de acerto;
+  - mini Monte Carlo que transforma uma expectativa teórica em uma distribuição de resultados.
 - Aula prática guiada com seis experimentos sobre risco, drawdown, sequência e prop firms.
 - Aula intermediária com seis experimentos sobre:
   - win rate versus payoff;
