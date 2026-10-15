@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import vm from "node:vm";
 import {
   longestLosingStreak,
   maxDrawdown,
@@ -207,4 +208,14 @@ test("offline build includes probability and expectancy learning lab", () => {
   assert.match(html, /Calculadora de Expectativa Matemática/);
   assert.match(html, /Da Expectância ao Monte Carlo/);
   assert.doesNotMatch(html, /src="education\.js"/);
+});
+
+
+test("embedded offline scripts compile without identifier collisions", () => {
+  const html = fs.readFileSync("offline.html", "utf8");
+  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
+  assert.ok(scripts.length >= 2);
+  for (const script of scripts) {
+    assert.doesNotThrow(() => new vm.Script(script));
+  }
 });
