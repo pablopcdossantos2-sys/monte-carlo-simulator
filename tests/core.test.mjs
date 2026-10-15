@@ -312,3 +312,16 @@ test("offline build includes day-trading session lab", () => {
   assert.match(html, /Bootstrap de Pregões Históricos/);
   assert.doesNotMatch(html, /src="daytrade\.js"/);
 });
+
+
+test("coin-flip analogy separates market uncertainty from controllable payoff structure", () => {
+  const html = fs.readFileSync("index.html", "utf8");
+  const daytrade = fs.readFileSync("daytrade.js", "utf8");
+  assert.match(html, /href="#cara-ou-coroa"/);
+  assert.match(daytrade, /id="cara-ou-coroa"/);
+  assert.match(daytrade, /Cara ou Coroa: Stop, Ganho e Expectativa/);
+  assert.match(daytrade, /50\/50/);
+  assert.match(daytrade, /dtRunCoin/);
+  assert.match(daytrade, /controle não significa controlar o mercado/);
+  assert.match(daytrade, /mudar stop ou alvo pode mudar também o win rate/);
+});
