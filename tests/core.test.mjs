@@ -241,3 +241,23 @@ test("offline build includes applied statistics lab", () => {
   assert.match(html, /Laboratório de Regressão à Média/);
   assert.doesNotMatch(html, /src="statistics\.js"/);
 });
+
+
+test("distribution and Bayesian inference lab is present", () => {
+  const html = fs.readFileSync("index.html", "utf8");
+  const inference = fs.readFileSync("inference.js", "utf8");
+  assert.match(html, /id="distribuicoes-incerteza"/);
+  assert.match(html, /id="inference-root"/);
+  assert.match(inference, /Construtor de Distribuição de R e Caudas/);
+  assert.match(inference, /Atualizador Bayesiano de Win Rate/);
+  assert.match(inference, /infGamma/);
+  assert.match(inference, /infBeta/);
+  assert.match(inference, /incerteza de parâmetro/);
+});
+
+test("offline build includes distributions and Bayesian lab", () => {
+  const html = fs.readFileSync("offline.html", "utf8");
+  assert.match(html, /id="distribuicoes-incerteza"/);
+  assert.match(html, /Atualizador Bayesiano de Win Rate/);
+  assert.doesNotMatch(html, /src="inference\.js"/);
+});
