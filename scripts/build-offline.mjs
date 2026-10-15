@@ -11,6 +11,7 @@ const education = read("education.js");
 const statistics = read("statistics.js");
 const inference = read("inference.js");
 const validation = read("validation.js");
+const daytrade = read("daytrade.js");
 const intermediate = read("intermediate.js");
 
 html = html.replace(
@@ -24,6 +25,7 @@ html = html.replace('  <script type="module" src="education.js"></script>', "");
 html = html.replace('  <script type="module" src="statistics.js"></script>', "");
 html = html.replace('  <script type="module" src="inference.js"></script>', "");
 html = html.replace('  <script type="module" src="validation.js"></script>', "");
+html = html.replace('  <script type="module" src="daytrade.js"></script>', "");
 html = html.replace('  <script type="module" src="intermediate.js"></script>', "");
 
 const coreClassic = core.replace(/\bexport\s+(?=(function|const|let|class)\b)/g, "");
@@ -38,6 +40,7 @@ const educationClassic = education.replace(
 const statisticsClassic = statistics;
 const inferenceClassic = inference;
 const validationClassic = validation;
+const daytradeClassic = daytrade;
 
 const intermediateClassic = intermediate.replace(
   /^import\s+\{[^}]+\}\s+from\s+["']\.\/core\.js["'];\s*/m,
@@ -46,7 +49,7 @@ const intermediateClassic = intermediate.replace(
 
 html = html.replace(
   "</body>",
-  `  <script>\n${coreClassic}\n\n${appClassic}\n\n${educationClassic}\n\n${statisticsClassic}\n\n${inferenceClassic}\n\n${validationClassic}\n\n${intermediateClassic}\n  </script>\n</body>`
+  `  <script>\n${coreClassic}\n\n${appClassic}\n\n${educationClassic}\n\n${statisticsClassic}\n\n${inferenceClassic}\n\n${validationClassic}\n\n${daytradeClassic}\n\n${intermediateClassic}\n  </script>\n</body>`
 );
 
 html = html.replace(
