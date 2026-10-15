@@ -88,6 +88,17 @@ The application contains two educational tracks:
   - Bayesian win-rate updating;
   - posterior distribution and credible interval;
   - predictive Monte Carlo with parameter uncertainty.
+- Fourth **Strategy Validation** lab covering:
+  - win-rate confidence intervals and sample size;
+  - multiple testing, data snooping and overfitting;
+  - in-sample versus out-of-sample;
+  - walk-forward under regime change;
+  - parameter stability, plateaus and narrow spikes.
+- Validation tools:
+  - Wilson interval and approximate sample-size estimator;
+  - Monte Carlo simulation of the “champion” selected among many configurations;
+  - walk-forward lab with three configurations and two regimes;
+  - synthetic parameter-stability map.
 - Guided practical lesson with prediction challenges.
 - Intermediate lesson covering:
   - win rate versus payoff;
@@ -138,6 +149,7 @@ A sample CSV is available at `examples/trades.csv`.
 - `education.js` — articles and interactive tools for probability, expectancy, sampling and Monte Carlo.
 - `statistics.js` — applied-statistics lab for context, dispersion, dependence and regression to the mean.
 - `inference.js` — distributions, tail risk and Bayesian-updating lab.
+- `validation.js` — validation, overfitting, OOS, walk-forward and parameter-stability lab.
 - `core.js` — statistical and Monte Carlo engine with no DOM dependency.
 - `tests/core.test.mjs` — automated tests.
 - `docs/METHODOLOGY.md` — methodology, assumptions, limitations and references.
