@@ -301,17 +301,21 @@ function dtRunMfe(){
   );
 }
 
-function dtSimDay(p,rr,maxTrades,stopR,rng){
+function dtEvalDay(sequence,stopR=0){
   let pnl=0,peak=0,trades=0;
-  for(let i=0;i<maxTrades;i++){pnl+=dtTrade(p,rr,rng);trades++;peak=Math.max(peak,pnl);if(stopR>0 && pnl<=-stopR)break;}
+  for(const result of sequence){pnl+=result;trades++;peak=Math.max(peak,pnl);if(stopR>0 && pnl<=-stopR)break;}
   return {pnl,peak,giveback:Math.max(0,peak-pnl),trades};
 }
 function dtRunStop(){
   const p=Math.min(.99,Math.max(.01,dtRead("dt-stop-rate",45)/100)),rr=Math.max(0,dtRead("dt-stop-rr",1.5)),maxT=Math.min(20,Math.max(1,Math.floor(dtRead("dt-stop-trades",6))));
   const stop=Math.max(.5,dtRead("dt-stop-r",3)),days=Math.min(20000,Math.max(500,Math.floor(dtRead("dt-stop-days",3000)))),seed=Math.max(1,Math.floor(dtRead("dt-stop-seed",5321)));
-  const rngA=dtRng(seed),rngB=dtRng(seed);
+  const rng=dtRng(seed);
   const no=[],yes=[];
-  for(let d=0;d<days;d++){no.push(dtSimDay(p,rr,maxT,0,rngA));yes.push(dtSimDay(p,rr,maxT,stop,rngB));}
+  for(let d=0;d<days;d++){
+    const sequence=Array.from({length:maxT},()=>dtTrade(p,rr,rng));
+    no.push(dtEvalDay(sequence,0));
+    yes.push(dtEvalDay(sequence,stop));
+  }
   const card=(title,a)=>{const pnls=a.map(x=>x.pnl),avg=pnls.reduce((s,v)=>s+v,0)/a.length,g=a.reduce((s,x)=>s+x.giveback,0)/a.length,t=a.reduce((s,x)=>s+x.trades,0)/a.length;return `<div class="stats-result-card"><strong>${dtEsc(title)}</strong><div class="edu-results">${dtMetric([
     [dtPick("Média diária","Daily average","Media diaria"),dtFmt(avg,3)+"R"],
     ["P5",dtFmt(dtQuantile(pnls,.05),2)+"R"],
@@ -347,7 +351,10 @@ function dtRunCosts(){
   );
 }
 
-function dtParseDays(text){return String(text).split(/[\s,;]+/).map(x=>Number(x.replace(",","."))).filter(Number.isFinite);}
+function dtParseDays(text){
+  const matches=String(text).match(/[-+]?\d+(?:[.,]\d+)?/g)||[];
+  return matches.map(x=>Number(x.replace(",","."))).filter(Number.isFinite);
+}
 function dtRunBootstrap(){
   const data=dtParseDays(dt$("dt-boot-data")?.value||""),days=Math.min(500,Math.max(10,Math.floor(dtRead("dt-boot-days",60)))),sims=Math.min(10000,Math.max(200,Math.floor(dtRead("dt-boot-sims",3000)))),seed=Math.max(1,Math.floor(dtRead("dt-boot-seed",9127)));
   if(!data.length){dt$("dt-boot-results").innerHTML="";dt$("dt-boot-explain").textContent=dtPick("Insira ao menos um resultado diário válido.","Enter at least one valid daily result.","Introduce al menos un resultado diario válido.");return;}
