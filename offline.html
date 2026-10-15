@@ -3380,16 +3380,19 @@ function updateExpectancy() {
   const grossPf=(1-p)*loss>0?(p*win)/((1-p)*loss):Infinity;
   const total=exp*trades;
   const sign=exp>0?pick("positiva","positive","positiva"):exp<0?pick("negativa","negative","negativa"):pick("neutra","neutral","neutral");
+  const breakEvenNote=breakeven>100
+    ? pick(" O win rate de equilíbrio ficou acima de 100%, portanto estes payoff/custos não permitem break-even.", " The break-even win rate is above 100%, so these payoff/cost assumptions cannot break even.", " El win rate de equilibrio quedó por encima del 100%, por lo que estas hipótesis de payoff/costes no permiten break-even.")
+    : "";
   $e("edu-exp-results").innerHTML=[
     [pick("Expectância por trade","Expectancy per trade","Expectativa por trade"),`${exp>=0?"+":""}${fmt(exp,3)}R`],
-    [pick("Win rate de equilíbrio","Break-even win rate","Win rate de equilibrio"),pctEdu(Math.min(100,breakeven),1)],
+    [pick("Win rate de equilíbrio","Break-even win rate","Win rate de equilibrio"),pctEdu(breakeven,1)],
     [pick("Profit Factor bruto","Gross Profit Factor","Profit Factor bruto"),Number.isFinite(grossPf)?fmt(grossPf,2):"∞"],
     [pick(`Expectância em ${trades} trades`,`Expectancy over ${trades} trades`,`Expectativa en ${trades} trades`),`${total>=0?"+":""}${fmt(total,2)}R`],
   ].map(([l,v])=>`<div><span>${esc(l)}</span><strong>${esc(v)}</strong></div>`).join("");
   $e("edu-exp-explain").innerHTML=pick(
-    `Com esses números, a expectativa é <strong>${sign}</strong>. Isso é uma média teórica; uma sequência real de ${trades} trades pode terminar muito acima ou abaixo de ${fmt(total,2)}R.`,
-    `With these inputs, expectancy is <strong>${sign}</strong>. This is a theoretical average; an actual sequence of ${trades} trades can finish far above or below ${fmt(total,2)}R.`,
-    `Con estos números, la expectativa es <strong>${sign}</strong>. Es una media teórica; una secuencia real de ${trades} trades puede terminar muy por encima o por debajo de ${fmt(total,2)}R.`
+    `Com esses números, a expectativa é <strong>${sign}</strong>. Isso é uma média teórica; uma sequência real de ${trades} trades pode terminar muito acima ou abaixo de ${fmt(total,2)}R.${breakEvenNote}`,
+    `With these inputs, expectancy is <strong>${sign}</strong>. This is a theoretical average; an actual sequence of ${trades} trades can finish far above or below ${fmt(total,2)}R.${breakEvenNote}`,
+    `Con estos números, la expectativa es <strong>${sign}</strong>. Es una media teórica; una secuencia real de ${trades} trades puede terminar muy por encima o por debajo de ${fmt(total,2)}R.${breakEvenNote}`
   );
 }
 
