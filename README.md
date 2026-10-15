@@ -1,8 +1,8 @@
 **Read this in other languages:** [Português](README.md) · [English](README_EN.md) · [Español](README_ES.md)
 
-# Simulador de Monte Carlo para Trading
+# Simulador de Monte Carlo e Estatística para Day Trade
 
-Aplicação web gratuita, client-side e sem dependências de servidor para analisar incerteza, drawdown e risco de ruína em estratégias de trading e também simular trajetórias de preço por Movimento Browniano Geométrico (GBM).
+Aplicação web gratuita, client-side e sem dependências de servidor voltada exclusivamente a **day traders**. O projeto estuda probabilidade, expectativa matemática, P&L por pregão, drawdown, risco de ruína, validação, custos, overtrading, regras de prop firms e Monte Carlo, assumindo operações abertas e encerradas no mesmo pregão.
 
 > Projeto educacional. Simulações não são previsões e não constituem recomendação financeira.
 
@@ -19,7 +19,7 @@ Enquanto o motor puder continuar 100% client-side, **GitHub Pages continuará se
 
 ## Objetivo educacional
 
-A ferramenta não foi criada apenas para gerar curvas. Ela deve ensinar traders em formação a pensar em **distribuições de resultados, sobrevivência, drawdown e variabilidade**.
+A ferramenta não foi criada apenas para gerar curvas. Ela deve ensinar **day traders** a pensar em distribuições de trades e pregões, sobrevivência, expectativa, drawdown, variabilidade, custos e qualidade da evidência estatística.
 
 O principal aprendizado é:
 
@@ -31,6 +31,14 @@ A própria interface possui duas trilhas educacionais:
 
 1. **Aula prática guiada** — seis experimentos sobre drawdown, risco por trade, Reshuffle, Bootstrap e regras de prop firm. Antes de cada simulação, o aluno responde a um desafio de previsão. Roteiro: [docs/AULA-PRATICA-GUIADA.md](docs/AULA-PRATICA-GUIADA.md).
 2. **Aula intermediária** — seis experimentos sobre win rate, payoff, expectância, risco de ruína e Kelly. Ela mostra, entre outras coisas, como 70% de acerto pode ter expectância negativa e como 35% de acerto pode ter edge positivo. Roteiro: [docs/AULA-INTERMEDIARIA.md](docs/AULA-INTERMEDIARIA.md).
+
+## Escopo: day trade apenas
+
+O projeto assume que todas as posições são encerradas no mesmo pregão. Ele não é orientado a swing trade, position trade ou buy and hold. Conceitos estatísticos gerais permanecem válidos, mas exemplos e novas ferramentas são priorizados para a realidade intradiária.
+
+A hierarquia de análise adotada é:
+
+    trade → pregão → semana → distribuição de pregões → Monte Carlo
 
 ## Objetivos
 
@@ -110,6 +118,25 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
   - simulação Monte Carlo do “campeão” escolhido entre muitas configurações;
   - laboratório walk-forward com três configurações e dois regimes;
   - mapa sintético de estabilidade de parâmetros.
+- Quinto laboratório de **Estatística da Sessão de Day Trade**:
+  - P&L diário e probabilidade de pregão positivo;
+  - P5/P50/P95 do resultado por sessão;
+  - losing days e semanas negativas;
+  - duração de drawdown em número de pregões;
+  - expectativa por faixa horária;
+  - overtrading por número ordinal do trade;
+  - MFE, MAE e eficiência de captura;
+  - stop diário e giveback;
+  - custos e slippage em R;
+  - bootstrap de pregões históricos.
+- Ferramentas intradiárias:
+  - Monte Carlo por pregão;
+  - comparador de expectativa por horário;
+  - simulador de deterioração por overtrading;
+  - laboratório de MFE/MAE;
+  - comparação “sem stop diário × com stop diário” sobre as mesmas sequências;
+  - calculadora de erosão por custos;
+  - bootstrap em que cada unidade reamostrada é um pregão completo.
 - Aula prática guiada com seis experimentos sobre risco, drawdown, sequência e prop firms.
 - Aula intermediária com seis experimentos sobre:
   - win rate versus payoff;
@@ -161,6 +188,7 @@ Há também um CSV de exemplo em examples/trades.csv.
 - statistics.js — laboratório de estatística aplicada: contexto, dispersão, dependência e regressão à média.
 - inference.js — laboratório de distribuições, risco de cauda e atualização bayesiana.
 - validation.js — laboratório de validação, overfitting, OOS, walk-forward e estabilidade de parâmetros.
+- daytrade.js — laboratório de estatística intradiária, P&L por sessão, overtrading, stop diário, custos e bootstrap de pregões.
 - core.js — motor estatístico e Monte Carlo, sem dependências de DOM.
 - tests/core.test.mjs — testes do motor.
 - docs/METHODOLOGY.md — metodologia, premissas, limitações e referências.
@@ -169,6 +197,7 @@ Há também um CSV de exemplo em examples/trades.csv.
 - docs/AULA-INTERMEDIARIA.md — roteiro da segunda aula sobre expectância, payoff, ruína e Kelly.
 - docs/ESTATISTICA-APLICADA-AO-TRADING.md — guia sobre probabilidade condicional, variância, dependência serial, Lei dos Grandes Números e regressão à média.
 - docs/VALIDACAO-DE-ESTRATEGIAS.md — guia sobre tamanho de amostra, múltiplos testes, OOS, walk-forward e robustez de parâmetros.
+- docs/ESTATISTICA-DA-SESSAO-DAY-TRADE.md — guia sobre P&L diário, losing days, horários, MFE/MAE, overtrading, stop diário, giveback, custos e Monte Carlo por pregão.
 - docs/USO-LOCAL.md — instruções locais para usuários sem familiaridade com terminal.
 - docs/GITHUB-PAGES.md — tutorial para colocar a ferramenta no ar.
 - .github/workflows/tests.yml — CI.
