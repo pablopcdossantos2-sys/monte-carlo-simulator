@@ -99,6 +99,17 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
   - atualização bayesiana do win rate;
   - distribuição posterior e intervalo de credibilidade;
   - Monte Carlo preditivo com incerteza de parâmetro.
+- Quarto laboratório de **Validação de Estratégias**:
+  - intervalo de confiança do win rate e tamanho de amostra;
+  - múltiplos testes, data snooping e overfitting;
+  - in-sample versus out-of-sample;
+  - walk-forward sob mudança de regime;
+  - estabilidade de parâmetros, platôs e picos estreitos.
+- Ferramentas de validação:
+  - intervalo de Wilson e estimativa de tamanho de amostra;
+  - simulação Monte Carlo do “campeão” escolhido entre muitas configurações;
+  - laboratório walk-forward com três configurações e dois regimes;
+  - mapa sintético de estabilidade de parâmetros.
 - Aula prática guiada com seis experimentos sobre risco, drawdown, sequência e prop firms.
 - Aula intermediária com seis experimentos sobre:
   - win rate versus payoff;
@@ -149,6 +160,7 @@ Há também um CSV de exemplo em examples/trades.csv.
 - education.js — laboratório introdutório de probabilidade, expectância, amostragem e Monte Carlo.
 - statistics.js — laboratório de estatística aplicada: contexto, dispersão, dependência e regressão à média.
 - inference.js — laboratório de distribuições, risco de cauda e atualização bayesiana.
+- validation.js — laboratório de validação, overfitting, OOS, walk-forward e estabilidade de parâmetros.
 - core.js — motor estatístico e Monte Carlo, sem dependências de DOM.
 - tests/core.test.mjs — testes do motor.
 - docs/METHODOLOGY.md — metodologia, premissas, limitações e referências.
@@ -156,6 +168,7 @@ Há também um CSV de exemplo em examples/trades.csv.
 - docs/AULA-PRATICA-GUIADA.md — roteiro da aula introdutória e orientação para instrutores.
 - docs/AULA-INTERMEDIARIA.md — roteiro da segunda aula sobre expectância, payoff, ruína e Kelly.
 - docs/ESTATISTICA-APLICADA-AO-TRADING.md — guia sobre probabilidade condicional, variância, dependência serial, Lei dos Grandes Números e regressão à média.
+- docs/VALIDACAO-DE-ESTRATEGIAS.md — guia sobre tamanho de amostra, múltiplos testes, OOS, walk-forward e robustez de parâmetros.
 - docs/USO-LOCAL.md — instruções locais para usuários sem familiaridade com terminal.
 - docs/GITHUB-PAGES.md — tutorial para colocar a ferramenta no ar.
 - .github/workflows/tests.yml — CI.
