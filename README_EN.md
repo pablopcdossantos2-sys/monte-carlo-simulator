@@ -81,6 +81,13 @@ The application contains two educational tracks:
   - same-expectancy / different-dispersion comparison;
   - serial-dependence losing-streak lab;
   - regression-to-the-mean lab that selects the best of many identical samples.
+- Third lab on **Distributions and Uncertainty**:
+  - R-return distributions;
+  - rare events and tail risk;
+  - skewness and dispersion;
+  - Bayesian win-rate updating;
+  - posterior distribution and credible interval;
+  - predictive Monte Carlo with parameter uncertainty.
 - Guided practical lesson with prediction challenges.
 - Intermediate lesson covering:
   - win rate versus payoff;
@@ -130,6 +137,7 @@ A sample CSV is available at `examples/trades.csv`.
 - `intermediate.js` — intermediate lesson.
 - `education.js` — articles and interactive tools for probability, expectancy, sampling and Monte Carlo.
 - `statistics.js` — applied-statistics lab for context, dispersion, dependence and regression to the mean.
+- `inference.js` — distributions, tail risk and Bayesian-updating lab.
 - `core.js` — statistical and Monte Carlo engine with no DOM dependency.
 - `tests/core.test.mjs` — automated tests.
 - `docs/METHODOLOGY.md` — methodology, assumptions, limitations and references.
