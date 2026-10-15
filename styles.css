@@ -270,3 +270,15 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b10
   .stats-result-card .edu-results{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stats-sequence{grid-template-columns:repeat(10,minmax(0,1fr))}
 }
+
+
+/* Distributions and Bayesian inference lab */
+.inf-outcome-bars{display:grid;gap:10px;margin:14px 0}
+.inf-outcome-bars>div>span{display:block;font-size:.78rem;color:var(--muted);margin-bottom:5px}
+.inf-bar-track{height:10px;border-radius:999px;background:rgba(255,255,255,.05);overflow:hidden}
+.inf-bar-track i{display:block;height:100%;background:var(--accent2);border-radius:inherit}
+.inf-bayes-meter{margin:18px 0 8px}
+.inf-meter-track{position:relative;height:12px;border-radius:999px;background:linear-gradient(90deg,rgba(248,113,113,.18),rgba(110,231,183,.18));border:1px solid var(--line)}
+.inf-meter-track span,.inf-meter-track i{position:absolute;top:50%;transform:translate(-50%,-50%);width:3px;height:22px;border-radius:2px;background:var(--accent2)}
+.inf-meter-track i{height:28px;background:var(--accent)}
+.inf-bayes-meter small{display:block;text-align:center;color:var(--muted);margin-top:7px}
