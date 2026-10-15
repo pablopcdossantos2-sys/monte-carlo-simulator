@@ -267,6 +267,10 @@
     "Distribuições e Bayes": { en: "Distributions and Bayes", es: "Distribuciones y Bayes" }
   });
 
+  Object.assign(phraseTranslations, {
+    "Validação de estratégias": { en: "Strategy validation", es: "Validación de estrategias" }
+  });
+
   const messages = {
     "lesson.experiment": { pt: "Experimento {current} de {total}", en: "Experiment {current} of {total}", es: "Experimento {current} de {total}" },
     "lesson.progress": { pt: "{completed} de {total} experimentos", en: "{completed} of {total} experiments", es: "{completed} de {total} experimentos" },
