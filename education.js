@@ -295,11 +295,15 @@ function binomialDistribution(n,p) {
   if(p<=0) return Array.from({length:n+1},(_,i)=>i===0?1:0);
   if(p>=1) return Array.from({length:n+1},(_,i)=>i===n?1:0);
   const q=1-p;
-  const probs=new Array(n+1);
-  probs[0]=Math.pow(q,n);
-  for(let k=0;k<n;k++) probs[k+1]=probs[k]*((n-k)/(k+1))*(p/q);
-  const sum=probs.reduce((a,b)=>a+b,0);
-  return probs.map(v=>v/sum);
+  const logFact=[0];
+  for(let i=1;i<=n;i++) logFact[i]=logFact[i-1]+Math.log(i);
+  const logs=Array.from({length:n+1},(_,k)=>
+    logFact[n]-logFact[k]-logFact[n-k]+k*Math.log(p)+(n-k)*Math.log(q)
+  );
+  const maxLog=Math.max(...logs);
+  const weights=logs.map(v=>Math.exp(v-maxLog));
+  const sum=weights.reduce((a,b)=>a+b,0);
+  return weights.map(v=>v/sum);
 }
 
 function updateBinomial() {
