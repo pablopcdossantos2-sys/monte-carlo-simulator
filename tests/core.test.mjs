@@ -261,3 +261,25 @@ test("offline build includes distributions and Bayesian lab", () => {
   assert.match(html, /Atualizador Bayesiano de Win Rate/);
   assert.doesNotMatch(html, /src="inference\.js"/);
 });
+
+
+test("strategy validation lab covers uncertainty overfitting OOS walk-forward and stability", () => {
+  const html = fs.readFileSync("index.html", "utf8");
+  const validation = fs.readFileSync("validation.js", "utf8");
+  assert.match(html, /id="validacao-estrategias"/);
+  assert.match(html, /id="validation-root"/);
+  assert.match(validation, /Intervalo de Win Rate e Tamanho de Amostra/);
+  assert.match(validation, /Armadilha dos Múltiplos Testes/);
+  assert.match(validation, /Laboratório Walk-Forward com Regimes/);
+  assert.match(validation, /Mapa de Estabilidade de Parâmetros/);
+  assert.match(validation, /valWilson/);
+  assert.match(validation, /VAL_STRATEGIES/);
+});
+
+test("offline build includes strategy validation lab", () => {
+  const html = fs.readFileSync("offline.html", "utf8");
+  assert.match(html, /id="validacao-estrategias"/);
+  assert.match(html, /Armadilha dos Múltiplos Testes/);
+  assert.match(html, /Mapa de Estabilidade de Parâmetros/);
+  assert.doesNotMatch(html, /src="validation\.js"/);
+});
