@@ -283,3 +283,32 @@ test("offline build includes strategy validation lab", () => {
   assert.match(html, /Mapa de Estabilidade de Parâmetros/);
   assert.doesNotMatch(html, /src="validation\.js"/);
 });
+
+
+test("homepage is explicitly focused on day trading", () => {
+  const html = fs.readFileSync("index.html", "utf8");
+  assert.match(html, /exclusivamente a day traders/);
+  assert.match(html, /operações abertas e encerradas no mesmo pregão/);
+  assert.match(html, /id="sessao-day-trade"/);
+});
+
+test("day-trading session lab covers intraday session risk and behavior", () => {
+  const daytrade = fs.readFileSync("daytrade.js", "utf8");
+  assert.match(daytrade, /Monte Carlo por Pregão/);
+  assert.match(daytrade, /Expectativa por Faixa Horária/);
+  assert.match(daytrade, /Laboratório de Overtrading/);
+  assert.match(daytrade, /MFE \/ MAE e Captura/);
+  assert.match(daytrade, /Stop Diário e Giveback/);
+  assert.match(daytrade, /Custos e Slippage em R/);
+  assert.match(daytrade, /Bootstrap de Pregões Históricos/);
+  assert.match(daytrade, /dtMaxUnderwater/);
+  assert.match(daytrade, /dtEvalDay/);
+});
+
+test("offline build includes day-trading session lab", () => {
+  const html = fs.readFileSync("offline.html", "utf8");
+  assert.match(html, /id="sessao-day-trade"/);
+  assert.match(html, /Monte Carlo por Pregão/);
+  assert.match(html, /Bootstrap de Pregões Históricos/);
+  assert.doesNotMatch(html, /src="daytrade\.js"/);
+});
