@@ -219,3 +219,25 @@ test("embedded offline scripts compile without identifier collisions", () => {
     assert.doesNotThrow(() => new vm.Script(script));
   }
 });
+
+
+test("applied statistics lab covers conditional probability variance dependence and regression", () => {
+  const html = fs.readFileSync("index.html", "utf8");
+  const statistics = fs.readFileSync("statistics.js", "utf8");
+  assert.match(html, /id="estatistica-aplicada"/);
+  assert.match(html, /id="statistics-root"/);
+  assert.match(statistics, /Calculadora de Probabilidade Condicional/);
+  assert.match(statistics, /Mesma Expectância, Dispersão Diferente/);
+  assert.match(statistics, /Laboratório de Clusters de Perdas/);
+  assert.match(statistics, /Laboratório de Regressão à Média/);
+  assert.match(statistics, /statsClusteredSequence/);
+  assert.match(statistics, /statsStrategyMoments/);
+});
+
+test("offline build includes applied statistics lab", () => {
+  const html = fs.readFileSync("offline.html", "utf8");
+  assert.match(html, /id="estatistica-aplicada"/);
+  assert.match(html, /Calculadora de Probabilidade Condicional/);
+  assert.match(html, /Laboratório de Regressão à Média/);
+  assert.doesNotMatch(html, /src="statistics\.js"/);
+});
