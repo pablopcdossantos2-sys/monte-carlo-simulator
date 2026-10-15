@@ -246,3 +246,27 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b10
   .edu-form.cols-3{grid-template-columns:1fr}
   .edu-results{grid-template-columns:1fr 1fr}
 }
+
+
+/* Applied statistics lab */
+.stats-strategy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}
+.stats-strategy-box{border:1px solid var(--line);border-radius:15px;padding:14px;background:rgba(255,255,255,.018)}
+.stats-strategy-box>strong{display:block;margin-bottom:10px}
+.stats-compare-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:14px 0}
+.stats-result-card{border:1px solid var(--line);border-radius:15px;padding:14px;background:rgba(0,0,0,.1)}
+.stats-result-card>strong{display:block;margin-bottom:8px}
+.stats-result-card .edu-results{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:0}
+.stats-sequence-wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}
+.stats-sequence-wrap>div{border:1px solid var(--line);border-radius:15px;padding:13px;background:rgba(0,0,0,.1)}
+.stats-sequence-wrap strong{display:block;margin-bottom:9px}
+.stats-sequence{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:3px}
+.stats-sequence span{aspect-ratio:1;border-radius:3px;background:rgba(110,231,183,.72)}
+.stats-sequence span.loss{background:rgba(248,113,113,.76)}
+.table-scroll{overflow-x:auto;margin-top:14px}
+@media(max-width:900px){
+  .stats-strategy-grid,.stats-compare-results,.stats-sequence-wrap{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .stats-result-card .edu-results{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats-sequence{grid-template-columns:repeat(10,minmax(0,1fr))}
+}
