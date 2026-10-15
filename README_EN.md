@@ -69,6 +69,18 @@ The application contains two educational tracks:
   - binomial win distribution;
   - visual win-rate convergence lab;
   - mini Monte Carlo that turns theoretical expectancy into a distribution of outcomes.
+- Second **Applied Statistics for Trading** lab covering:
+  - conditional probability and market context;
+  - variance and standard deviation;
+  - independence versus serial dependence;
+  - loss clustering;
+  - Law of Large Numbers;
+  - regression to the mean and misleading backtest selection.
+- Additional tools:
+  - conditional probability calculator;
+  - same-expectancy / different-dispersion comparison;
+  - serial-dependence losing-streak lab;
+  - regression-to-the-mean lab that selects the best of many identical samples.
 - Guided practical lesson with prediction challenges.
 - Intermediate lesson covering:
   - win rate versus payoff;
@@ -117,6 +129,7 @@ A sample CSV is available at `examples/trades.csv`.
 - `app.js` — main interface, charts and introductory lesson.
 - `intermediate.js` — intermediate lesson.
 - `education.js` — articles and interactive tools for probability, expectancy, sampling and Monte Carlo.
+- `statistics.js` — applied-statistics lab for context, dispersion, dependence and regression to the mean.
 - `core.js` — statistical and Monte Carlo engine with no DOM dependency.
 - `tests/core.test.mjs` — automated tests.
 - `docs/METHODOLOGY.md` — methodology, assumptions, limitations and references.
