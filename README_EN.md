@@ -1,8 +1,8 @@
 **Read this in other languages:** [Português](README.md) · [English](README_EN.md) · [Español](README_ES.md)
 
-# Monte Carlo Simulator for Trading
+# Monte Carlo and Statistics Simulator for Day Trading
 
-A free, client-side web application with no server dependency for studying uncertainty, drawdown, risk of ruin, prop-firm constraints and Monte Carlo price paths using Geometric Brownian Motion (GBM).
+A free, client-side web application built exclusively for **day traders**. It studies probability, expectancy, session P&L, drawdown, risk of ruin, validation, trading costs, overtrading, prop-firm rules and Monte Carlo while assuming positions are opened and closed within the same trading session.
 
 > Educational project. Simulations are not forecasts and do not constitute financial advice.
 
@@ -19,7 +19,7 @@ As long as the main engine can remain 100% client-side, **GitHub Pages will rema
 
 ## Educational goal
 
-The tool was not built only to draw equity curves. It is meant to teach developing traders to think in **distributions, survival, expectancy, drawdown and variability**.
+The tool was not built only to draw equity curves. It is meant to teach **day traders** to think in trade and session distributions, survival, expectancy, drawdown, variability, costs and statistical evidence quality.
 
 A central lesson is:
 
@@ -29,6 +29,14 @@ The application contains two educational tracks:
 
 1. **Guided practical lesson** — six experiments on drawdown, risk per trade, Reshuffle, Bootstrap and prop-firm rules. Each experiment begins with a prediction challenge. See [docs/AULA-PRATICA-GUIADA.md](docs/AULA-PRATICA-GUIADA.md).
 2. **Intermediate lesson** — six experiments on win rate, payoff, expectancy, risk of ruin and Kelly. It demonstrates, among other things, how a 70% win rate can still have negative expectancy and how a 35% win rate can have a positive edge. See [docs/AULA-INTERMEDIARIA.md](docs/AULA-INTERMEDIARIA.md).
+
+## Scope: day trading only
+
+The project assumes all positions are closed within the same trading session. It is not designed around swing trading, position trading or buy-and-hold. General statistical concepts still apply, but examples and new tools are prioritized for intraday trading.
+
+The analysis hierarchy is:
+
+    trade → session → week → session distribution → Monte Carlo
 
 ## Main capabilities
 
@@ -99,6 +107,25 @@ The application contains two educational tracks:
   - Monte Carlo simulation of the “champion” selected among many configurations;
   - walk-forward lab with three configurations and two regimes;
   - synthetic parameter-stability map.
+- Fifth **Day-Trading Session Statistics** lab covering:
+  - daily/session P&L and probability of a positive session;
+  - P5/P50/P95 session outcomes;
+  - losing-day streaks and negative weeks;
+  - drawdown duration measured in sessions;
+  - expectancy by time window;
+  - overtrading by ordinal trade number;
+  - MFE, MAE and capture efficiency;
+  - daily stop and giveback;
+  - costs and slippage in R;
+  - bootstrap of historical sessions.
+- Intraday tools:
+  - session-level Monte Carlo;
+  - expectancy-by-time comparison;
+  - overtrading deterioration simulator;
+  - MFE/MAE lab;
+  - same-sequence comparison of no daily stop vs daily stop;
+  - cost erosion calculator;
+  - bootstrap where each resampled unit is a full trading session.
 - Guided practical lesson with prediction challenges.
 - Intermediate lesson covering:
   - win rate versus payoff;
@@ -150,6 +177,7 @@ A sample CSV is available at `examples/trades.csv`.
 - `statistics.js` — applied-statistics lab for context, dispersion, dependence and regression to the mean.
 - `inference.js` — distributions, tail risk and Bayesian-updating lab.
 - `validation.js` — validation, overfitting, OOS, walk-forward and parameter-stability lab.
+- `daytrade.js` — intraday statistics, session P&L, overtrading, daily stops, costs and session-bootstrap lab.
 - `core.js` — statistical and Monte Carlo engine with no DOM dependency.
 - `tests/core.test.mjs` — automated tests.
 - `docs/METHODOLOGY.md` — methodology, assumptions, limitations and references.
