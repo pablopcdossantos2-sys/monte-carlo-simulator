@@ -209,7 +209,7 @@ function dtCostsTool(){
 
 function dtCoinTool(){
   const s=dtState.coin;
-  return `<article class="edu-tool edu-tool--wide dt-coin-tool">
+  return `<article id="cara-ou-coroa" class="edu-tool edu-tool--wide dt-coin-tool">
     <div class="edu-tool__head"><span class="tool-number">23</span><div><h4>${dtEsc(dtPick("Cara ou Coroa: Stop, Ganho e Expectativa","Heads or Tails: Stop, Gain and Expectancy","Cara o Cruz: Stop, Ganancia y Expectativa"))}</h4><p>${dtEsc(dtPick("Mantenha a chance em 50/50 e altere apenas aquilo que o trader pode estruturar neste modelo didático.","Keep probability at 50/50 and change only what the trader can structure in this teaching model.","Mantén la probabilidad en 50/50 y cambia solo lo que el trader puede estructurar en este modelo didáctico."))}</p></div></div>
     <div class="dt-control-map">
       <div><span>🎲</span><strong>${dtEsc(dtPick("Você não controla","You do not control","No controlas"))}</strong><small>${dtEsc(dtPick("o próximo cara/coroa, nem o próximo movimento do mercado","the next heads/tails outcome or the market's next move","el próximo cara/cruz ni el próximo movimiento del mercado"))}</small></div>
