@@ -80,6 +80,18 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
   - distribuição binomial de vitórias;
   - laboratório visual de convergência da taxa de acerto;
   - mini Monte Carlo que transforma uma expectativa teórica em uma distribuição de resultados.
+- Segundo laboratório de **Estatística Aplicada ao Trading**, cobrindo:
+  - probabilidade condicional e contexto de mercado;
+  - variância e desvio-padrão;
+  - independência versus dependência serial;
+  - clusters de perdas;
+  - Lei dos Grandes Números;
+  - regressão à média e seleção enganosa de backtests.
+- Ferramentas adicionais:
+  - calculadora de probabilidade condicional;
+  - comparador de estratégias com mesma expectância e diferentes dispersões;
+  - laboratório de losing streak com dependência serial;
+  - laboratório de regressão à média com seleção da melhor entre várias amostras.
 - Aula prática guiada com seis experimentos sobre risco, drawdown, sequência e prop firms.
 - Aula intermediária com seis experimentos sobre:
   - win rate versus payoff;
@@ -127,12 +139,15 @@ Há também um CSV de exemplo em examples/trades.csv.
 - offline.html — versão completa em arquivo único para uso local por duplo clique.
 - styles.css — estilos.
 - app.js — integração entre interface, gráficos e motor.
+- education.js — laboratório introdutório de probabilidade, expectância, amostragem e Monte Carlo.
+- statistics.js — laboratório de estatística aplicada: contexto, dispersão, dependência e regressão à média.
 - core.js — motor estatístico e Monte Carlo, sem dependências de DOM.
 - tests/core.test.mjs — testes do motor.
 - docs/METHODOLOGY.md — metodologia, premissas, limitações e referências.
 - docs/GUIA-DIDATICO.md — introdução para traders que nunca usaram Monte Carlo.
 - docs/AULA-PRATICA-GUIADA.md — roteiro da aula introdutória e orientação para instrutores.
 - docs/AULA-INTERMEDIARIA.md — roteiro da segunda aula sobre expectância, payoff, ruína e Kelly.
+- docs/ESTATISTICA-APLICADA-AO-TRADING.md — guia sobre probabilidade condicional, variância, dependência serial, Lei dos Grandes Números e regressão à média.
 - docs/USO-LOCAL.md — instruções locais para usuários sem familiaridade com terminal.
 - docs/GITHUB-PAGES.md — tutorial para colocar a ferramenta no ar.
 - .github/workflows/tests.yml — CI.
