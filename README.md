@@ -136,7 +136,8 @@ Toda a simulação roda localmente no navegador. Dados colados ou importados pel
   - laboratório de MFE/MAE;
   - comparação “sem stop diário × com stop diário” sobre as mesmas sequências;
   - calculadora de erosão por custos;
-  - bootstrap em que cada unidade reamostrada é um pregão completo.
+  - bootstrap em que cada unidade reamostrada é um pregão completo;
+  - laboratório **Cara ou Coroa: Stop, Ganho e Expectativa**, que mantém 50/50 fixos para demonstrar a diferença entre não controlar o próximo resultado e controlar a estrutura de risco, payoff, custos e execução.
 - Aula prática guiada com seis experimentos sobre risco, drawdown, sequência e prop firms.
 - Aula intermediária com seis experimentos sobre:
   - win rate versus payoff;
