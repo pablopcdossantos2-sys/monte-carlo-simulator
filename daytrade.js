@@ -29,6 +29,15 @@ function dtQuantile(values,q){if(!values.length)return NaN;const s=[...values].s
 function dtTrade(p,rr,rng){return rng()<p?rr:-1;}
 function dtLongestNegativeStreak(values){let best=0,cur=0;for(const v of values){if(v<0){cur++;best=Math.max(best,cur);}else cur=0;}return best;}
 function dtMaxDrawdown(values){let eq=0,peak=0,worst=0;for(const v of values){eq+=v;peak=Math.max(peak,eq);worst=Math.max(worst,peak-eq);}return worst;}
+function dtMaxUnderwater(values){
+  let eq=0,peak=0,current=0,worst=0;
+  for(const v of values){
+    eq+=v;
+    if(eq>=peak){peak=eq;current=0;}
+    else {current++;worst=Math.max(worst,current);}
+  }
+  return worst;
+}
 
 function dtArticle(number,title,lead,body){
   return `<details class="concept-article"><summary><span class="concept-number">${number}</span><span><strong>${dtEsc(title)}</strong><small>${dtEsc(lead)}</small></span></summary><div class="concept-article__body">${body}</div></details>`;
@@ -235,8 +244,13 @@ function dtRunSession(){
   const p=Math.min(.99,Math.max(.01,dtRead("dt-ses-rate",45)/100)),rr=Math.max(0,dtRead("dt-ses-rr",1.5));
   const tpd=Math.min(20,Math.max(1,Math.floor(dtRead("dt-ses-trades",4)))),days=Math.min(500,Math.max(10,Math.floor(dtRead("dt-ses-days",60))));
   const sims=Math.min(10000,Math.max(200,Math.floor(dtRead("dt-ses-sims",2500)))),seed=Math.max(1,Math.floor(dtRead("dt-ses-seed",8162)));
-  const rng=dtRng(seed),totals=[],streaks=[],dds=[],allDays=[];let positiveDays=0,totalDays=0;
-  for(let s=0;s<sims;s++){const ds=[];for(let d=0;d<days;d++){let r=0;for(let t=0;t<tpd;t++)r+=dtTrade(p,rr,rng);ds.push(r);allDays.push(r);if(r>0)positiveDays++;totalDays++;}totals.push(ds.reduce((a,b)=>a+b,0));streaks.push(dtLongestNegativeStreak(ds));dds.push(dtMaxDrawdown(ds));}
+  const rng=dtRng(seed),totals=[],streaks=[],dds=[],underwater=[],allDays=[],allWeeks=[];let positiveDays=0,totalDays=0;
+  for(let s=0;s<sims;s++){
+    const ds=[];
+    for(let d=0;d<days;d++){let r=0;for(let t=0;t<tpd;t++)r+=dtTrade(p,rr,rng);ds.push(r);allDays.push(r);if(r>0)positiveDays++;totalDays++;}
+    for(let i=0;i<ds.length;i+=5) allWeeks.push(ds.slice(i,i+5).reduce((a,b)=>a+b,0));
+    totals.push(ds.reduce((a,b)=>a+b,0));streaks.push(dtLongestNegativeStreak(ds));dds.push(dtMaxDrawdown(ds));underwater.push(dtMaxUnderwater(ds));
+  }
   dt$("dt-ses-results").innerHTML=dtMetric([
     [dtPick("Pregão positivo","Positive session","Sesión positiva"),dtPct(positiveDays/totalDays*100,1)],
     ["P5 "+dtPick("P&L diário","daily P&L","P&L diario"),dtFmt(dtQuantile(allDays,.05),2)+"R"],
@@ -245,7 +259,9 @@ function dtRunSession(){
     [`P5 · ${days} ${dtPick("pregões","sessions","sesiones")}`,dtFmt(dtQuantile(totals,.05),1)+"R"],
     [`P50 · ${days} ${dtPick("pregões","sessions","sesiones")}`,dtFmt(dtQuantile(totals,.50),1)+"R"],
     [dtPick("Losing days P95","P95 losing-day streak","Racha P95 de días negativos"),dtFmt(dtQuantile(streaks,.95),0)],
+    [dtPick("Semana negativa","Negative week","Semana negativa"),dtPct(allWeeks.filter(v=>v<0).length/allWeeks.length*100,1)],
     [dtPick("Drawdown diário acumulado P95","P95 session-equity drawdown","Drawdown acumulado diario P95"),dtFmt(dtQuantile(dds,.95),1)+"R"],
+    [dtPick("Tempo submerso P95","P95 underwater duration","Duración bajo máximo P95"),dtFmt(dtQuantile(underwater,.95),0)+" "+dtPick("pregões","sessions","sesiones")],
   ]);
   dt$("dt-ses-explain").innerHTML=dtPick(
     `A mesma hipótese por trade foi reorganizada em <strong>pregões de ${tpd} operações</strong>. Isso permite medir coisas que uma lista contínua de trades não mostra diretamente: distribuição diária, sequências de dias negativos e drawdown em unidades de sessão.`,
@@ -358,8 +374,8 @@ function dtParseDays(text){
 function dtRunBootstrap(){
   const data=dtParseDays(dt$("dt-boot-data")?.value||""),days=Math.min(500,Math.max(10,Math.floor(dtRead("dt-boot-days",60)))),sims=Math.min(10000,Math.max(200,Math.floor(dtRead("dt-boot-sims",3000)))),seed=Math.max(1,Math.floor(dtRead("dt-boot-seed",9127)));
   if(!data.length){dt$("dt-boot-results").innerHTML="";dt$("dt-boot-explain").textContent=dtPick("Insira ao menos um resultado diário válido.","Enter at least one valid daily result.","Introduce al menos un resultado diario válido.");return;}
-  const rng=dtRng(seed),totals=[],streaks=[],dds=[];
-  for(let s=0;s<sims;s++){const path=[];for(let d=0;d<days;d++)path.push(data[Math.floor(rng()*data.length)]);totals.push(path.reduce((a,b)=>a+b,0));streaks.push(dtLongestNegativeStreak(path));dds.push(dtMaxDrawdown(path));}
+  const rng=dtRng(seed),totals=[],streaks=[],dds=[],underwater=[];
+  for(let s=0;s<sims;s++){const path=[];for(let d=0;d<days;d++)path.push(data[Math.floor(rng()*data.length)]);totals.push(path.reduce((a,b)=>a+b,0));streaks.push(dtLongestNegativeStreak(path));dds.push(dtMaxDrawdown(path));underwater.push(dtMaxUnderwater(path));}
   const mean=data.reduce((a,b)=>a+b,0)/data.length;
   dt$("dt-boot-results").innerHTML=dtMetric([
     [dtPick("Pregões históricos","Historical sessions","Sesiones históricas"),String(data.length)],
@@ -369,6 +385,7 @@ function dtRunBootstrap(){
     [`P95 · ${days} ${dtPick("pregões","sessions","sesiones")}`,dtFmt(dtQuantile(totals,.95),1)+"R"],
     [dtPick("Losing days P95","P95 losing-day streak","Racha P95 de días negativos"),dtFmt(dtQuantile(streaks,.95),0)],
     [dtPick("Drawdown P95","P95 drawdown","Drawdown P95"),dtFmt(dtQuantile(dds,.95),1)+"R"],
+    [dtPick("Tempo submerso P95","P95 underwater duration","Duración bajo máximo P95"),dtFmt(dtQuantile(underwater,.95),0)+" "+dtPick("pregões","sessions","sesiones")],
   ]);
   dt$("dt-boot-explain").innerHTML=dtPick(
     `Aqui cada amostra sorteada é um <strong>pregão inteiro</strong>, não um trade. Isso preserva o P&L diário observado como unidade e responde melhor a perguntas sobre sequências de dias negativos e drawdown por sessão. Ainda assim, bootstrap supõe que os pregões históricos sejam uma base representativa e, neste formato simples, sorteia dias independentemente.`,
