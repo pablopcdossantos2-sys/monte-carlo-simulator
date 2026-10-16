@@ -36,6 +36,8 @@ A central lesson is:
 
 > a strategy may have a statistical edge and still go through difficult sequences; risk management determines whether the account can survive long enough for that edge to have a chance to appear.
 
+For a step-by-step introduction, see [docs/GUIA-DIDATICO.md](docs/GUIA-DIDATICO.md).
+
 The application contains two educational tracks:
 
 1. **Guided practical lesson** — six experiments on drawdown, risk per trade, Reshuffle, Bootstrap and prop-firm rules. Each experiment begins with a prediction challenge. See [docs/AULA-PRATICA-GUIADA.md](docs/AULA-PRATICA-GUIADA.md).
@@ -85,7 +87,7 @@ All simulations run locally in the browser. Data pasted or imported by the user 
 - Seeded RNG for reproducible results.
 - JSON summary export.
 - Responsive interface suitable for GitHub Pages.
-- Three-language interface: **Português (Brasil), English and Español**.
+- Three-language interface: **Português (Brasil), English and Español**, with real-time switching and the selected preference stored in the browser.
 - Learning lab on **Probability, Mathematical Expectancy and Monte Carlo**, with four integrated articles:
   - probability in trading;
   - mathematical expectancy in R;
@@ -212,6 +214,8 @@ A sample CSV is available at `examples/trades.csv`.
 - `docs/USO-LOCAL.md` — local-use instructions for users unfamiliar with the terminal.
 - `docs/GITHUB-PAGES.md` — GitHub Pages publishing guide.
 - `.github/workflows/tests.yml` — CI tests.
+- `.github/workflows/pages.yml` — GitHub Pages deployment.
+- `package.json` — test commands.
 
 ## Methodological principles
 
