@@ -1,4 +1,8 @@
-**Read this in other languages:** [Português](README.md) · [English](README_EN.md) · [Español](README_ES.md)
+*Read this in other languages: [English](README-en.md)*
+
+---
+
+**Versão adicional:** [Español](README_ES.md)
 
 # Simulador de Monte Carlo e Estatística para Day Trade
 
@@ -6,6 +10,13 @@ Aplicação web gratuita, client-side e sem dependências de servidor voltada ex
 
 > Projeto educacional. Simulações não são previsões e não constituem recomendação financeira.
 
+## 👤 Autoria e desenvolvimento
+
+Aplicação web educacional e simulador estatístico client-side desenvolvida de forma independente por Pablo Phillipe Cândido dos Santos, destinada a apoiar o estudo de probabilidade, expectativa matemática, risco e variabilidade em estratégias de day trade. A ferramenta reúne simulações de Monte Carlo, análise de trades e pregões, laboratórios estatísticos interativos e recursos de validação de estratégias, com execução local no navegador.
+
+O desenvolvimento contou com a utilização de ferramentas de inteligência artificial generativa como recurso auxiliar no processo de desenvolvimento. Permanecem sob responsabilidade do autor a concepção, implementação, integração e verificação do projeto.
+
+Currículo Lattes: [http://lattes.cnpq.br/9500873674712528](http://lattes.cnpq.br/9500873674712528)
 ## Formas de uso
 
 O projeto foi desenhado deliberadamente para funcionar em dois contextos:
