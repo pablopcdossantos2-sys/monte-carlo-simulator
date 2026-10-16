@@ -170,14 +170,20 @@ test("intermediate lesson covers expectancy payoff ruin and Kelly", () => {
   assert.match(lesson, /winRatePct: 35/);
 });
 
-test("all supported language READMEs cross-link each other", () => {
-  for (const path of ["README.md", "README_EN.md", "README_ES.md"]) {
-    const readme = fs.readFileSync(path, "utf8");
-    assert.match(readme, /\[Português\]\(README\.md\)/);
-    assert.match(readme, /\[English\]\(README_EN\.md\)/);
-    assert.match(readme, /\[Español\]\(README_ES\.md\)/);
-    assert.match(readme, /Read this in other languages:/);
-  }
+test("mandatory Portuguese and English READMEs use reciprocal language links", () => {
+  const pt = fs.readFileSync("README.md", "utf8");
+  const en = fs.readFileSync("README-en.md", "utf8");
+  assert.match(pt, /^\*Read this in other languages: \[English\]\(README-en\.md\)\*\n\n---/);
+  assert.match(en, /^\*Leia isto em outros idiomas: \[Português\]\(README\.md\)\*\n\n---/);
+  assert.match(pt, /## 👤 Autoria e desenvolvimento/);
+  assert.match(en, /## 👤 Authorship and development/);
+  assert.match(pt, /Pablo Phillipe Cândido dos Santos/);
+  assert.match(en, /Pablo Phillipe Cândido dos Santos/);
+});
+
+test("Spanish README links to the standardized English README", () => {
+  const es = fs.readFileSync("README_ES.md", "utf8");
+  assert.match(es, /\[English\]\(README-en\.md\)/);
 });
 
 test("offline build includes the intermediate lesson", () => {
