@@ -1,3 +1,20 @@
+/**
+ * Simulador de Monte Carlo e Estatística para Day Trade /
+ * Monte Carlo and Statistics Simulator for Day Trading
+ *
+ * Aplicação web educacional e simulador estatístico desenvolvida de forma independente por
+ * Pablo Phillipe Cândido dos Santos para estudo de probabilidade, risco e Monte Carlo em day trade.
+ *
+ * Client-side educational web application and statistical simulator independently developed by
+ * Pablo Phillipe Cândido dos Santos for studying probability, risk and Monte Carlo in day trading.
+ *
+ * Ferramentas de inteligência artificial generativa foram utilizadas como recurso auxiliar;
+ * a concepção, implementação, integração e verificação permanecem sob responsabilidade do autor.
+ * Generative AI tools were used as auxiliary resources; conception, implementation,
+ * integration and verification remain the author’s responsibility.
+ *
+ * Currículo Lattes: http://lattes.cnpq.br/9500873674712528
+ */
 import { parsePnlText, runGbmMonteCarlo, runTradeMonteCarlo } from "./core.js";
 
 const $ = (id) => document.getElementById(id);
