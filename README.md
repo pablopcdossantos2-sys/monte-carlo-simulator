@@ -195,7 +195,9 @@ Há também um CSV de exemplo em examples/trades.csv.
 - index.html — interface usada no GitHub Pages.
 - offline.html — versão completa em arquivo único para uso local por duplo clique.
 - styles.css — estilos.
+- i18n.js — internacionalização em PT-BR, inglês e espanhol.
 - app.js — integração entre interface, gráficos e motor.
+- intermediate.js — aula intermediária.
 - education.js — laboratório introdutório de probabilidade, expectância, amostragem e Monte Carlo.
 - statistics.js — laboratório de estatística aplicada: contexto, dispersão, dependência e regressão à média.
 - inference.js — laboratório de distribuições, risco de cauda e atualização bayesiana.
@@ -213,6 +215,7 @@ Há também um CSV de exemplo em examples/trades.csv.
 - docs/USO-LOCAL.md — instruções locais para usuários sem familiaridade com terminal.
 - docs/GITHUB-PAGES.md — tutorial para colocar a ferramenta no ar.
 - .github/workflows/tests.yml — CI.
+- .github/workflows/pages.yml — deployment do GitHub Pages.
 - package.json — comandos de teste.
 
 ## Princípios metodológicos
